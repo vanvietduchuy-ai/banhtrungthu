@@ -8,9 +8,9 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Curator Cafe">
 <meta property="og:title" content="Trung Thu 2026 — Ba set quà bánh trung thu | The Curator Cafe">
-<meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bánh thủ công 6 vị, làm theo đơn. Đặt hàng: 0846 413 314.">
-<meta property="og:image" content="https://https://banhtrungthu-lemon.vercel.app//img/share.jpg">
-<meta property="og:url" content="https://https://banhtrungthu-lemon.vercel.app/">
+<meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bảy vị bánh thủ công, bán lẻ từ 35.000đ. Đặt hàng: 0846 413 314.">
+<meta property="og:image" content="https://TEN-MIEN-CUA-ANH/img/share.jpg">
+<meta property="og:url" content="https://TEN-MIEN-CUA-ANH/">
 <meta property="og:locale" content="vi_VN">
 <meta name="theme-color" content="#FDF8EF">
 <meta name="twitter:card" content="summary_large_image">
@@ -40,7 +40,7 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
-section[id],header[id]{scroll-margin-top:70px}
+section[id],header[id],#summary{scroll-margin-top:76px}
 body{
   margin:0;background:var(--cream);color:var(--ink);
   font-family:var(--body);font-weight:300;font-size:16px;line-height:1.65;
@@ -359,6 +359,88 @@ dl.spec{margin:28px 0 0}
 .toast.on{transform:translate(-50%,0)}
 @media(max-width:900px){.order-grid{grid-template-columns:1fr}.summary{position:relative;top:0}}
 
+/* ---------- chon hang ---------- */
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.tab{border:1px solid var(--line);border-radius:5px;background:#FDFAF3;padding:13px 10px;
+  font-family:var(--body);font-size:14px;font-weight:400;letter-spacing:.06em;color:var(--mute);
+  cursor:pointer;transition:.2s}
+.tab:hover{border-color:rgba(42,29,22,.35);color:var(--ink)}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#FDF8EF;font-weight:500}
+
+.sp-row{display:grid;grid-template-columns:66px 1fr 132px;gap:14px;align-items:center;
+  padding:12px 0;border-bottom:1px solid var(--line)}
+.sp-row:last-of-type{border-bottom:0}
+.sp-row img{width:66px;height:66px;object-fit:cover;border-radius:4px;border:1px solid var(--line)}
+.sp-info{min-width:0}
+.sp-nm{font-family:var(--disp);font-size:20px;font-weight:500;line-height:1.18}
+.sp-sp{font-size:12.5px;color:var(--mute);margin-top:2px}
+.sp-pr{font-size:14.5px;font-weight:500;margin-top:4px}
+.step-note{font-size:12.5px;color:var(--mute);margin:14px 0 0;line-height:1.6;
+  border-top:1px solid var(--line);padding-top:12px}
+.req{color:var(--red);font-style:normal}
+
+.cart{margin:0 0 6px;padding:0;list-style:none}
+.cart li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;
+  border-bottom:1px dotted var(--line);font-size:14.5px}
+.cart .c-nm{flex:1;min-width:0;line-height:1.4}
+.cart .c-nm small{display:block;font-size:12.5px;color:var(--mute);margin-top:1px}
+.cart .c-vl{font-weight:500;white-space:nowrap}
+.cart .c-x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:17px;
+  line-height:1;padding:2px 0 2px 4px;flex:0 0 auto}
+.cart .c-x:hover{color:var(--red)}
+.cart-empty{font-size:14px;color:var(--mute);padding:8px 0 6px;line-height:1.6;margin:0}
+.field .err{border-color:var(--red)!important;background:#FFF7F5!important}
+
+.sent{text-align:center;padding:6px 0 2px}
+.sent-ic{width:54px;height:54px;border-radius:50%;background:#1F6B4A;color:#fff;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px}
+.sent h5{font-family:var(--disp);font-size:26px;font-weight:500;margin:0 0 8px}
+.sent p{font-size:14.5px;color:var(--mute);margin:0 0 6px;line-height:1.6}
+.sent .code{display:inline-block;margin-top:10px;padding:7px 16px;border:1px solid var(--line);
+  border-radius:999px;font-size:13px;letter-spacing:.1em;background:#FDFAF3}
+.btn[disabled]{opacity:.55;pointer-events:none}
+.btn-link{border:0;background:none;color:var(--mute);font-size:12.5px;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;padding:8px;font-family:var(--body)}
+.btn-link:hover{color:var(--ink)}
+
+.rt-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:clamp(24px,3.4vw,48px);align-items:start}
+.rt-table{background:#FDFAF3;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.rt-head{display:grid;grid-template-columns:1fr 118px 118px;gap:10px;align-items:center;
+  padding:12px 16px;background:var(--ink);color:#FDF8EF}
+.rt-head span{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
+.rt-head span:not(:first-child){text-align:center;color:rgba(253,248,239,.72)}
+.rt-row{display:grid;grid-template-columns:1fr 118px 118px;gap:10px;align-items:center;
+  padding:10px 16px;border-bottom:1px solid var(--line)}
+.rt-row:last-child{border-bottom:0}
+.rt-row:nth-child(even){background:rgba(42,29,22,.03)}
+.rt-name{display:flex;align-items:center;gap:11px;font-size:15.5px;min-width:0}
+.rt-name .dot{width:14px;height:14px;border-radius:50%;flex:0 0 14px;
+  box-shadow:inset 0 -3px 5px rgba(0,0,0,.2)}
+.rt-name b{font-weight:400}
+.stp{display:flex;align-items:center;justify-content:space-between;
+  border:1px solid var(--line);border-radius:5px;background:#FDFAF3;height:42px}
+.stp button{width:34px;height:40px;border:0;background:transparent;cursor:pointer;
+  font-size:17px;color:var(--mute);font-family:var(--body);border-radius:4px;padding:0}
+.stp button:hover{background:rgba(42,29,22,.07);color:var(--ink)}
+.stp .n{flex:1;text-align:center;font-size:16px;min-width:0}
+.stp.has .n{font-weight:500}
+.stp.has{border-color:var(--ink);background:#fff}
+@media(max-width:640px){
+  .rt-head{display:none}
+  .rt-row{grid-template-columns:1fr 1fr;gap:8px 10px;padding:13px 14px 15px}
+  .rt-name{grid-column:1/-1;font-size:16px;margin-bottom:1px}
+  .rt-cell{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .rt-cell::before{content:attr(data-lb);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--mute)}
+  .stp{height:46px}
+  .stp button{width:42px;height:44px;font-size:19px}
+  .stp .n{font-size:17px}
+  .sp-row{grid-template-columns:56px 1fr;gap:12px 12px;padding:14px 0}
+  .sp-row img{width:56px;height:56px}
+  .sp-stp{grid-column:1/-1}
+  .sp-nm{font-size:18.5px}
+}
+
 /* ---------- faq + footer ---------- */
 .faq{border-top:1px solid var(--line)}
 .faq details{border-bottom:1px solid var(--line);padding:18px 0}
@@ -573,7 +655,7 @@ footer a:hover{color:var(--ink)}
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 50g mỗi chiếc</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp giấy mỹ thuật màu son, dập chìm · tuỳ chọn giỏ tre quai da</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 6 vị, không phụ thu</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị, không phụ thu</dd></div>
           <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, ghi trên từng bánh</dd></div>
           <div class="spec-row"><dt>Hợp để</dt><dd>Biếu người thân, tặng nhân viên, mang về nhà thắp hương</dd></div>
         </dl>
@@ -602,11 +684,11 @@ footer a:hover{color:var(--ink)}
         <div class="set-label rv"><span class="phase p2"></span><span class="eyebrow">Set 02</span></div>
         <h3 class="display rv">Minh Viên Nguyệt</h3>
         <p class="kicker rv">Hộp FULL MOON · 6 bánh 50g · quà biếu</p>
-        <p class="lead rv">Nắp gập màu kem in tranh thuỷ mặc, bốn ô cửa nhìn thấy bánh bên trong, tua rua lụa buông từ quai da. Bên trong lót vàng ánh kim, sáu chiếc bánh nằm trong sáu hộp giấy riêng — mỗi hộp một vị, đủ cả sáu vị của mùa này.</p>
+        <p class="lead rv">Nắp gập màu kem in tranh thuỷ mặc, bốn ô cửa nhìn thấy bánh bên trong, tua rua lụa buông từ quai da. Bên trong lót vàng ánh kim, sáu chiếc bánh nằm trong sáu hộp giấy riêng — mỗi hộp một vị, tự chọn 6 trong 7 vị của mùa này.</p>
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>6 bánh · 50g mỗi chiếc, đựng trong 6 hộp giấy riêng</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng nắp gập, lót vàng ánh kim, quai da thật, tua rua lụa</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Đủ 6 vị, mỗi bánh một vị · đổi vị được nếu báo trước</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 6 trong 7 vị, mỗi bánh một vị</dd></div>
           <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, ghi trên từng bánh</dd></div>
           <div class="spec-row"><dt>Hợp để</dt><dd>Biếu sếp, tặng khách hàng, mang đi thăm nhà</dd></div>
         </dl>
@@ -643,7 +725,7 @@ footer a:hover{color:var(--ink)}
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 150g mỗi chiếc</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng phủ vải, mặt khảm trai, quai tre, ngăn kéo · kèm túi xách xanh rêu</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 6 vị, không phụ thu</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị, không phụ thu</dd></div>
           <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, ghi trên từng bánh</dd></div>
           <div class="spec-row"><dt>Hợp để</dt><dd>Tặng đối tác, quà cưới hỏi, quà cảm ơn</dd></div>
         </dl>
@@ -671,22 +753,24 @@ footer a:hover{color:var(--ink)}
   <div class="wrap">
     <div class="band-head rv">
       <div>
-        <p class="eyebrow">Sáu vị</p>
+        <p class="eyebrow">Bảy vị</p>
         <h2 class="display">Vị bánh</h2>
       </div>
-      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Sáu vị cho cả mùa. Set nào cũng tự chọn vị — nói lúc đặt, hoặc để chúng tôi xếp giúp một hộp cân bằng.</p>
+      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Bảy vị cho cả mùa. Set nào cũng tự chọn vị — nói lúc đặt, hoặc để chúng tôi xếp giúp một hộp cân bằng.</p>
     </div>
     <ul class="flav rv" style="margin:0;padding:0">
-      <li><h5><span class="dot" style="background:#A8B84A"></span>Cốm</h5><p>Cốm non, thơm mùi lúa mới. Ngọt nhẹ nhất trong sáu vị, ai cũng ăn được.</p><span class="tag">50g · 150g</span></li>
+      <li><h5><span class="dot" style="background:#A8B84A"></span>Cốm</h5><p>Cốm non, thơm mùi lúa mới. Ngọt nhẹ nhất trong bảy vị, ai cũng ăn được.</p><span class="tag">50g · 150g</span></li>
       <li><h5><span class="dot" style="background:#4A2C20"></span>Sô cô la</h5><p>Nhân sô cô la đắng, không gắt đường. Vị trẻ nhất, hợp khách nhỏ tuổi.</p><span class="tag">50g · 150g</span></li>
       <li><h5><span class="dot" style="background:#2E2A2A"></span>Mè đen</h5><p>Mè đen rang thơm, xay nhuyễn. Đậm và bùi, hợp uống cùng trà đặc.</p><span class="tag">50g · 150g</span></li>
       <li><h5><span class="dot" style="background:#E0B14A"></span>Sầu riêng</h5><p>Sầu riêng thật, mùi rõ. Bánh bọc riêng để không ám sang các vị khác trong hộp.</p><span class="tag">50g · 150g</span></li>
       <li><h5><span class="dot" style="background:#7E9A3E"></span>Trà xanh</h5><p>Bột trà xanh nguyên chất. Ngọt nhẹ, hậu hơi chát, cân lại cả hộp.</p><span class="tag">50g · 150g</span></li>
       <li><h5><span class="dot" style="background:#8E4038"></span>Đậu đỏ</h5><p>Đậu đỏ ninh mềm, tán vừa tay còn lợn cợn. Vị truyền thống nhất.</p><span class="tag">50g · 150g</span></li>
+      <li><h5><span class="dot" style="background:#C8892F"></span>Thập cẩm trứng muối</h5><p>Mứt bí, hạt dưa, lạp xưởng, lá chanh, thêm lòng đỏ trứng muối. Vị mặn ngọt đủ đầy, hợp mâm cỗ.</p><span class="tag">50g · 150g</span></li>
     </ul>
     <p class="rv" style="margin-top:26px;font-size:15px;color:var(--mute);border-top:1px solid var(--line);padding-top:20px">
-      Mua lẻ từng chiếc tại quán, bọc riêng sẵn: <strong style="color:var(--ink);font-weight:500">35.000đ</strong> loại 50g ·
-      <strong style="color:var(--ink);font-weight:500">80.000đ</strong> loại 150g. Không cần đặt trước.
+      Mua lẻ từng chiếc: <strong style="color:var(--ink);font-weight:500">35.000đ</strong> loại 50g ·
+      <strong style="color:var(--ink);font-weight:500">80.000đ</strong> loại 150g —
+      <a href="#dat-hang" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px">tính tiền ở mục Đặt hàng</a>.
     </p>
   </div>
 </section>
@@ -734,119 +818,275 @@ footer a:hover{color:var(--ink)}
         <p class="eyebrow">Đặt trước</p>
         <h2 class="display">Đặt hàng</h2>
       </div>
-      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Điền thông tin, gửi qua Zalo hoặc gọi trực tiếp. Bánh làm theo đơn, đặt trước ít nhất 2 ngày. Ngừng nhận đơn set sau 20/09.</p>
+      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Chọn set quà, bánh lẻ, hoặc cả hai trong cùng một đơn. Điền thông tin rồi gửi qua Zalo — chúng tôi gọi lại xác nhận.</p>
     </div>
 
     <div class="order-grid">
       <form id="orderForm" class="rv" novalidate>
-        <section class="step">
-        <div class="step-hd"><span class="step-n">1</span><span class="step-t">Chọn set và số lượng</span></div>
-        <div class="pick">
-          <label>
-            <input type="radio" name="set" value="moon" checked>
-            <span class="box">
-              <img src="img/d1.webp" alt="">
-              <span class="txt"><span class="nm">Mộc Nguyệt Đoàn Viên</span><span class="pr" id="prMoon">350.000đ</span></span>
-            </span>
-          </label>
-          <label>
-            <input type="radio" name="set" value="full">
-            <span class="box">
-              <img src="img/d5.webp" alt="">
-              <span class="txt"><span class="nm">Minh Viên Nguyệt</span><span class="pr">380.000đ</span></span>
-            </span>
-          </label>
-          <label>
-            <input type="radio" name="set" value="lotus">
-            <span class="box">
-              <img src="img/d10.webp" alt="">
-              <span class="txt"><span class="nm">An Nhiên Sen Thu</span><span class="pr">560.000đ</span></span>
-            </span>
-          </label>
-        </div>
 
-        <div class="two">
-          <div class="field">
-            <label for="variant">Quy cách</label>
-            <select id="variant"></select>
+        <section class="step">
+          <div class="step-hd"><span class="step-n">1</span><span class="step-t">Chọn bánh</span></div>
+
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab on" id="tabSet" role="tab" aria-selected="true" aria-controls="panelSet">Set quà</button>
+            <button type="button" class="tab" id="tabRt" role="tab" aria-selected="false" aria-controls="panelRt">Bánh lẻ</button>
           </div>
-          <div class="field">
-            <label for="qty">Số set</label>
-            <div class="qty">
-              <button type="button" id="minus" aria-label="Bớt một set">−</button>
-              <input id="qty" type="number" min="1" max="999" value="1" inputmode="numeric" aria-label="Số set">
-              <button type="button" id="plus" aria-label="Thêm một set">+</button>
+
+          <div id="panelSet" role="tabpanel" aria-labelledby="tabSet">
+            <div class="sp-row">
+              <img src="img/d1.webp" alt="">
+              <div class="sp-info">
+                <div class="sp-nm">Mộc Nguyệt Đoàn Viên</div>
+                <div class="sp-sp">Hộp MOON · 4 bánh × 50g</div>
+                <div class="sp-pr">350.000đ / set</div>
+              </div>
+              <div class="stp sp-stp" data-set="moon">
+                <button type="button" data-d="-1" aria-label="Bớt Mộc Nguyệt Đoàn Viên">−</button>
+                <span class="n">0</span>
+                <button type="button" data-d="1" aria-label="Thêm Mộc Nguyệt Đoàn Viên">+</button>
+              </div>
+            </div>
+            <div class="sp-row">
+              <img src="img/d5.webp" alt="">
+              <div class="sp-info">
+                <div class="sp-nm">Minh Viên Nguyệt</div>
+                <div class="sp-sp">Hộp FULL MOON · 6 bánh × 50g</div>
+                <div class="sp-pr">380.000đ / set</div>
+              </div>
+              <div class="stp sp-stp" data-set="full">
+                <button type="button" data-d="-1" aria-label="Bớt Minh Viên Nguyệt">−</button>
+                <span class="n">0</span>
+                <button type="button" data-d="1" aria-label="Thêm Minh Viên Nguyệt">+</button>
+              </div>
+            </div>
+            <div class="sp-row">
+              <img src="img/d10.webp" alt="">
+              <div class="sp-info">
+                <div class="sp-nm">An Nhiên Sen Thu</div>
+                <div class="sp-sp">Hộp LOTUS · 4 bánh × 150g</div>
+                <div class="sp-pr">560.000đ / set</div>
+              </div>
+              <div class="stp sp-stp" data-set="lotus">
+                <button type="button" data-d="-1" aria-label="Bớt An Nhiên Sen Thu">−</button>
+                <span class="n">0</span>
+                <button type="button" data-d="1" aria-label="Thêm An Nhiên Sen Thu">+</button>
+              </div>
+            </div>
+            <p class="step-note">Đặt từ 10 set được giảm giá, mức giảm tự áp khi bạn chọn đủ số lượng.</p>
+          </div>
+
+          <div id="panelRt" role="tabpanel" aria-labelledby="tabRt" hidden>
+            <div class="rt-table">
+              <div class="rt-head">
+                <span>Vị bánh</span>
+                <span>50g — 35.000đ</span>
+                <span>150g — 80.000đ</span>
+              </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#A8B84A"></span><b>Cốm</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="com" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Cốm 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Cốm 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="com" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Cốm 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Cốm 150g">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#4A2C20"></span><b>Sô cô la</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="socola" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Sô cô la 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Sô cô la 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="socola" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Sô cô la 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Sô cô la 150g">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#2E2A2A"></span><b>Mè đen</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="meden" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Mè đen 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Mè đen 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="meden" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Mè đen 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Mè đen 150g">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#E0B14A"></span><b>Sầu riêng</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="saurieng" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Sầu riêng 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Sầu riêng 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="saurieng" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Sầu riêng 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Sầu riêng 150g">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#7E9A3E"></span><b>Trà xanh</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="traxanh" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Trà xanh 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Trà xanh 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="traxanh" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Trà xanh 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Trà xanh 150g">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#8E4038"></span><b>Đậu đỏ</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="daudo" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Đậu đỏ 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Đậu đỏ 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="daudo" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Đậu đỏ 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Đậu đỏ 150g">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="rt-row">
+              <div class="rt-name"><span class="dot" style="background:#C8892F"></span><b>Thập cẩm trứng muối</b></div>
+              <div class="rt-cell" data-lb="50g">
+                <div class="stp" data-f="thapcam" data-sz="50">
+                  <button type="button" data-d="-1" aria-label="Bớt Thập cẩm trứng muối 50g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Thập cẩm trứng muối 50g">+</button>
+                </div>
+              </div>
+              <div class="rt-cell" data-lb="150g">
+                <div class="stp" data-f="thapcam" data-sz="150">
+                  <button type="button" data-d="-1" aria-label="Bớt Thập cẩm trứng muối 150g">−</button>
+                  <span class="n">0</span>
+                  <button type="button" data-d="1" aria-label="Thêm Thập cẩm trứng muối 150g">+</button>
+                </div>
+              </div>
+            </div>
+            </div>
+            <p class="step-note">Bánh lẻ bọc riêng từng chiếc, không áp ưu đãi số lượng.</p>
+          </div>
+        </section>
+
+        <section class="step">
+          <div class="step-hd"><span class="step-n">2</span><span class="step-t">Thông tin người đặt</span></div>
+          <div class="two">
+            <div class="field">
+              <label for="name">Tên người đặt <em class="req">*</em></label>
+              <input id="name" type="text" autocomplete="name" placeholder="Nguyễn Văn A">
+            </div>
+            <div class="field">
+              <label for="phone">Số điện thoại <em class="req">*</em></label>
+              <input id="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx">
             </div>
           </div>
-        </div>
-
         </section>
 
         <section class="step">
-        <div class="step-hd"><span class="step-n">2</span><span class="step-t">Thông tin người đặt</span></div>
-        <div class="two">
-          <div class="field">
-            <label for="name">Tên người đặt</label>
-            <input id="name" type="text" autocomplete="name" placeholder="Nguyễn Văn A">
+          <div class="step-hd"><span class="step-n">3</span><span class="step-t">Nhận hàng và ghi chú</span></div>
+          <div class="field" style="margin-top:0">
+            <p class="fl" style="margin-bottom:9px">Cách nhận hàng</p>
+            <div class="radios">
+              <label><input type="radio" name="ship" value="Nhận tại quán" checked><span>Tại quán</span></label>
+              <label><input type="radio" name="ship" value="Giao tận nơi"><span>Giao tận nơi</span></label>
+            </div>
+          </div>
+          <div class="two">
+            <div class="field">
+              <label for="date">Ngày nhận</label>
+              <input id="date" type="date">
+            </div>
+            <div class="field" id="addrField" hidden>
+              <label for="addr">Địa chỉ giao</label>
+              <input id="addr" type="text" placeholder="Số nhà, đường, phường">
+            </div>
           </div>
           <div class="field">
-            <label for="phone">Số điện thoại</label>
-            <input id="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx">
+            <label for="note">Chọn vị &amp; lời nhắn</label>
+            <textarea id="note" placeholder="Ví dụ: set Mộc Nguyệt chọn 2 cốm, 1 trà xanh, 1 đậu đỏ. Thiệp ghi tên đơn vị: Công ty ABC."></textarea>
           </div>
-        </div>
-
-        </section>
-
-        <section class="step">
-        <div class="step-hd"><span class="step-n">3</span><span class="step-t">Nhận hàng và ghi chú</span></div>
-        <div class="field" style="margin-top:0">
-          <p class="fl" style="margin-bottom:9px">Cách nhận hàng</p>
-          <div class="radios">
-            <label><input type="radio" name="ship" value="Nhận tại quán" checked><span>Tại quán</span></label>
-            <label><input type="radio" name="ship" value="Giao tận nơi"><span>Giao tận nơi</span></label>
-          </div>
-        </div>
-
-        <div class="two">
-          <div class="field">
-            <label for="date">Ngày nhận</label>
-            <input id="date" type="date">
-          </div>
-          <div class="field" id="addrField" hidden>
-            <label for="addr">Địa chỉ giao</label>
-            <input id="addr" type="text" placeholder="Số nhà, đường, phường">
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="note">Chọn vị &amp; lời nhắn</label>
-          <textarea id="note" placeholder="Ví dụ: 2 cốm, 1 trà xanh, 1 đậu đỏ. Thiệp ghi tên đơn vị: Công ty ABC."></textarea>
-        </div>
         </section>
       </form>
 
-      <aside class="summary rv" aria-live="polite">
+      <aside class="summary rv" id="summary" aria-live="polite">
         <div class="summary-hd">
           <h4>Đơn của bạn</h4>
           <p class="sub">Tạm tính, chưa gồm phí giao hàng.</p>
         </div>
         <div class="summary-bd">
-        <div class="sum-line"><span>Set</span><strong id="sName">Mộc Nguyệt Đoàn Viên</strong></div>
-        <div class="sum-line"><span>Quy cách</span><strong id="sVar">4 bánh × 50g</strong></div>
-        <div class="sum-line"><span>Số lượng</span><strong id="sQty">1 set</strong></div>
-        <div class="sum-line" id="sDiscLine" hidden><span>Chiết khấu</span><strong id="sDisc">−12%</strong></div>
-        <div class="sum-total"><span class="lb">Tạm tính</span><span class="vl" id="sTotal">350.000đ</span></div>
-        <div class="sum-actions">
-          <a class="btn btn-ink" id="btnZalo" href="https://zalo.me/0846413314" target="_blank" rel="noopener">Gửi đơn qua Zalo</a>
-          <button class="btn" type="button" id="btnCopy">Sao chép đơn hàng</button>
-          <a class="btn" id="btnCall" href="tel:0846413314">Gọi 0846 413 314</a>
+          <ul class="cart" id="cart"></ul>
+          <p class="cart-empty" id="cartEmpty">Chưa chọn món nào. Bấm dấu cộng ở bảng bên để thêm vào đơn.</p>
+
+          <div class="sum-line" id="lineSet" hidden><span>Tiền set</span><strong id="valSet">0đ</strong></div>
+          <div class="sum-line" id="lineDisc" hidden><span id="labDisc">Ưu đãi</span><strong id="valDisc">0đ</strong></div>
+          <div class="sum-line" id="lineRt" hidden><span>Tiền bánh lẻ</span><strong id="valRt">0đ</strong></div>
+
+          <div class="sum-total"><span class="lb">Tổng cộng</span><span class="vl" id="grand">0đ</span></div>
+
+          <div class="sum-actions" id="actions">
+            <button class="btn btn-ink" type="button" id="btnSend">Gửi đơn hàng</button>
+            <a class="btn" id="btnZalo" href="https://zalo.me/0846413314" target="_blank" rel="noopener">Nhắn Zalo</a>
+            <a class="btn" id="btnCall" href="tel:0846413314">Gọi 0846 413 314</a>
+          </div>
+          <p class="hint" id="hint">Bấm “Gửi đơn hàng” là đơn tới thẳng chúng tôi, không cần sao chép gì cả.</p>
+
+          <div id="sentBox" hidden>
+            <div class="sent">
+              <div class="sent-ic">✓</div>
+              <h5>Đã nhận đơn của bạn</h5>
+              <p id="sentName">Chúng tôi sẽ gọi lại trong hôm nay để xác nhận.</p>
+              <p>Cần đổi hoặc bổ sung gì, nhắn Zalo giúp chúng tôi nhé.</p>
+              <span class="code" id="sentCode">MÃ ĐƠN</span>
+            </div>
+            <div class="sum-actions" style="margin-top:20px">
+              <a class="btn btn-ink" href="https://zalo.me/0846413314" target="_blank" rel="noopener" id="sentZalo">Nhắn Zalo cho quán</a>
+              <button class="btn" type="button" id="btnAgain">Đặt thêm đơn khác</button>
+            </div>
+          </div>
         </div>
-        </div>
-        <p class="hint" id="hint" style="padding:0 24px 22px;margin-top:-4px">Bấm “Gửi đơn qua Zalo” để mở cửa sổ chat — nội dung đơn đã được sao chép sẵn, chỉ cần dán và gửi.</p>
       </aside>
     </div>
   </div>
 </section>
+
 
 <!-- ============ FAQ ============ -->
 <section class="band faq">
@@ -891,11 +1131,13 @@ footer a:hover{color:var(--ink)}
 
 <div class="mbar" id="mbar" aria-hidden="false">
   <div class="mb-txt">
-    <div class="mb-lb">Từ</div>
+    <div class="mb-lb" id="mbLb">Từ</div>
     <div class="mb-vl" id="mbVal">350.000đ / set</div>
   </div>
-  <a class="btn btn-solid" href="#dat-hang">Đặt hàng</a>
+  <a class="btn btn-solid" id="mbBtn" href="#dat-hang">Đặt hàng</a>
 </div>
+
+<iframe name="gsink" id="gsink" style="display:none" title="gửi đơn" aria-hidden="true"></iframe>
 
 <div class="toast" id="toast">Đã sao chép đơn hàng</div>
 
@@ -909,16 +1151,35 @@ const SHOP = {
 };
 
 const SETS = {
-  moon:  { name:"Mộc Nguyệt Đoàn Viên", box:"MOON",      cap:1, variants:[ {id:"m4",label:"4 bánh × 50g",price:350000} ] },
-  full:  { name:"Minh Viên Nguyệt",     box:"FULL MOON", cap:1, variants:[ {id:"f6",label:"6 bánh × 50g, đủ 6 vị",price:380000} ] },
-  lotus: { name:"An Nhiên Sen Thu",     box:"LOTUS",     cap:1, variants:[ {id:"l4",label:"4 bánh × 150g",price:560000} ] }
+  moon:  { name:"Mộc Nguyệt Đoàn Viên", box:"MOON",      spec:"4 bánh × 50g",  price:350000 },
+  full:  { name:"Minh Viên Nguyệt",     box:"FULL MOON", spec:"6 bánh × 50g",  price:380000 },
+  lotus: { name:"An Nhiên Sen Thu",     box:"LOTUS",     spec:"4 bánh × 150g", price:560000 }
 };
 const TIERS = [ {min:100,off:.20}, {min:50,off:.15}, {min:30,off:.12}, {min:10,off:.10} ];
+
+/* ====== GOOGLE FORM NHAN DON — sua o day neu doi form ====== */
+const GFORM = {
+  id: "1FAIpQLSct_Jsf_F3h8vDh-gSHcdVMMwaQAWZp7O92imAM2G2zCF3IZg",
+  f: {
+    name:   "entry.848714164",   // Ten nguoi dat
+    phone:  "entry.646613149",   // So dien thoai
+    detail: "entry.11073450",    // Chi tiet don
+    total:  "entry.1283776519",  // Tong tien
+    ship:   "entry.1497425492",  // Cach nhan hang
+    date:   "entry.1261362641",  // Ngay nhan
+    addr:   "entry.370000774",   // Dia chi giao
+    note:   "entry.617206514"    // Ghi chu
+  }
+};
+
+const RT_PRICE = { "50": 35000, "150": 80000 };
+const RT_NAME = { com:"Cốm", socola:"Sô cô la", meden:"Mè đen", saurieng:"Sầu riêng",
+                  traxanh:"Trà xanh", daudo:"Đậu đỏ", thapcam:"Thập cẩm trứng muối" };
 
 const $ = s => document.querySelector(s);
 const vnd = n => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + "đ";
 
-/* --- nav state --- */
+/* --- nav --- */
 const nav = $('#nav');
 const onScroll = () => nav.classList.toggle('solid', window.scrollY > window.innerHeight * .72);
 window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
@@ -929,90 +1190,174 @@ const io = new IntersectionObserver((es)=>{
 },{threshold:.12, rootMargin:"0px 0px -8% 0px"});
 document.querySelectorAll('.rv').forEach((el,i)=>{ el.style.transitionDelay = (i%4)*70 + 'ms'; io.observe(el); });
 
-/* --- contact links --- */
-const telHref = "tel:" + SHOP.phoneRaw;
-const zaloHref = "https://zalo.me/" + SHOP.phoneRaw;
-$('#btnCall').href = telHref;
-$('#btnCall').textContent = "Gọi " + SHOP.phone;
+/* --- lien he --- */
+const telHref = "tel:" + SHOP.phoneRaw, zaloHref = "https://zalo.me/" + SHOP.phoneRaw;
+$('#btnCall').href = telHref; $('#btnCall').textContent = "Gọi " + SHOP.phone;
+$('#btnZalo').href = zaloHref;
 $('#fPhone').href = telHref; $('#fPhone').textContent = SHOP.phone;
 $('#fZalo').href = zaloHref;
-$('#btnZalo').href = zaloHref;
 
-/* --- order state --- */
-const variantSel = $('#variant'), qtyInput = $('#qty');
-let currentSet = 'moon';
+/* ================= GIO HANG ================= */
+const cartSet = {};   /* moon: 2 */
+const cartRt  = {};   /* "com|50": 3 */
 
-function fillVariants(){
-  const vs = SETS[currentSet].variants;
-  variantSel.innerHTML = vs.map(v=>`<option value="${v.id}">${v.label} — ${vnd(v.price)}</option>`).join('');
-  variantSel.disabled = vs.length === 1;
+function tierFor(q){ return TIERS.find(t=>q>=t.min) || null; }
+
+function calc(){
+  let setQty = 0, setGross = 0, rtTotal = 0;
+  Object.keys(cartSet).forEach(k=>{
+    const n = cartSet[k]; if(!n) return;
+    setQty += n; setGross += n * SETS[k].price;
+  });
+  Object.keys(cartRt).forEach(k=>{
+    const n = cartRt[k]; if(!n) return;
+    rtTotal += n * RT_PRICE[k.split("|")[1]];
+  });
+  const tier = tierFor(setQty);
+  const discount = tier ? setGross * tier.off : 0;
+  return { setQty, setGross, discount, tier, rtTotal, grand: setGross - discount + rtTotal };
 }
-function activeVariant(){
-  return SETS[currentSet].variants.find(v=>v.id===variantSel.value) || SETS[currentSet].variants[0];
+
+function syncSteppers(){
+  document.querySelectorAll('.stp[data-set]').forEach(el=>{
+    const n = cartSet[el.dataset.set] || 0;
+    el.querySelector('.n').textContent = n;
+    el.classList.toggle('has', n > 0);
+  });
+  document.querySelectorAll('.stp[data-f]').forEach(el=>{
+    const n = cartRt[el.dataset.f + "|" + el.dataset.sz] || 0;
+    el.querySelector('.n').textContent = n;
+    el.classList.toggle('has', n > 0);
+  });
 }
-function tierFor(q){
-  const t = TIERS.find(t=>q>=t.min);
-  if(!t) return null;
-  const off = Math.min(t.off, SETS[currentSet].cap);
-  return { min:t.min, off:off, label:"−" + Math.round(off*100) + "%" };
+
+function row(title, sub, value, onRemove){
+  const li = document.createElement('li');
+  const nm = document.createElement('div'); nm.className = 'c-nm';
+  nm.appendChild(document.createTextNode(title));
+  if(sub){ const s = document.createElement('small'); s.textContent = sub; nm.appendChild(s); }
+  const vl = document.createElement('span'); vl.className = 'c-vl'; vl.textContent = value;
+  const x = document.createElement('button');
+  x.type = 'button'; x.className = 'c-x'; x.textContent = '×';
+  x.setAttribute('aria-label', 'Bỏ ' + title);
+  x.addEventListener('click', onRemove);
+  li.appendChild(nm); li.appendChild(vl); li.appendChild(x);
+  return li;
 }
 
 function render(){
-  const v = activeVariant();
-  const q = Math.max(1, parseInt(qtyInput.value||1,10));
-  const tier = tierFor(q);
-  const gross = v.price * q;
-  const total = tier ? gross * (1 - tier.off) : gross;
+  const c = calc();
+  const list = $('#cart'); list.innerHTML = "";
 
-  $('#sName').textContent = SETS[currentSet].name;
-  $('#sVar').textContent  = v.label;
-  $('#sQty').textContent  = q + " set";
-  $('#sDiscLine').hidden  = !tier;
-  if(tier) $('#sDisc').textContent = tier.label;
-  $('#sTotal').textContent = vnd(total);
-  $('#hint').textContent = tier
-    ? "Đơn từ " + tier.min + " set đã được áp ưu đãi " + tier.label + ". Cọc 30% với đơn từ 10 set, 50% từ 50 set."
-    : "Bấm “Gửi đơn qua Zalo” để mở cửa sổ chat — nội dung đơn đã được sao chép sẵn, chỉ cần dán và gửi.";
-  $('#prMoon').textContent = vnd(SETS.moon.variants[0].price);
+  Object.keys(SETS).forEach(k=>{
+    const n = cartSet[k]; if(!n) return;
+    list.appendChild(row(SETS[k].name, SETS[k].spec + " × " + n + " set",
+      vnd(n * SETS[k].price), ()=>{ delete cartSet[k]; syncSteppers(); render(); }));
+  });
+  Object.keys(cartRt).forEach(k=>{
+    const n = cartRt[k]; if(!n) return;
+    const [f, sz] = k.split("|");
+    list.appendChild(row(RT_NAME[f], "Bánh lẻ " + sz + "g × " + n,
+      vnd(n * RT_PRICE[sz]), ()=>{ delete cartRt[k]; syncSteppers(); render(); }));
+  });
+
+  const empty = list.children.length === 0;
+  $('#cartEmpty').hidden = !empty;
+
+  $('#lineSet').hidden = c.setGross === 0;
+  $('#valSet').textContent = vnd(c.setGross);
+  $('#lineDisc').hidden = c.discount === 0;
+  if(c.tier){
+    $('#labDisc').textContent = "Ưu đãi từ " + c.tier.min + " set (−" + Math.round(c.tier.off*100) + "%)";
+    $('#valDisc').textContent = "−" + vnd(c.discount);
+  }
+  $('#lineRt').hidden = c.rtTotal === 0;
+  $('#valRt').textContent = vnd(c.rtTotal);
+  $('#grand').textContent = vnd(c.grand);
+
   const mv = $('#mbVal');
-  if(mv) mv.textContent = vnd(total / q) + " / set";
+  if(mv) mv.textContent = empty ? vnd(SETS.moon.price) + " / set" : vnd(c.grand);
+  const ml = $('#mbLb');
+  if(ml) ml.textContent = empty ? "Từ" : "Tổng cộng";
+  const mb = $('#mbBtn');
+  if(mb){
+    mb.textContent = empty ? "Đặt hàng" : "Xem đơn";
+    mb.setAttribute('href', empty ? '#dat-hang' : '#summary');
+  }
+
+  let hint;
+  if(empty) hint = "Bấm “Gửi đơn qua Zalo” — nội dung đơn được sao chép sẵn, chỉ cần dán vào khung chat và gửi.";
+  else if(c.setQty > 0 && c.setQty < 10) hint = "Thêm " + (10 - c.setQty) + " set nữa là được giảm 10%.";
+  else if(c.tier) hint = "Đã áp ưu đãi −" + Math.round(c.tier.off*100) + "%. Cọc 30% với đơn từ 10 set, 50% từ 50 set.";
+  else hint = "Bấm “Gửi đơn qua Zalo” — nội dung đơn được sao chép sẵn, chỉ cần dán vào khung chat và gửi.";
+  $('#hint').textContent = hint;
 }
 
-document.querySelectorAll('input[name="set"]').forEach(r=>{
-  r.addEventListener('change', e=>{ currentSet = e.target.value; fillVariants(); render(); });
+/* --- bam cong tru --- */
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.stp button[data-d]'); if(!btn) return;
+  const stp = btn.closest('.stp');
+  const d = parseInt(btn.dataset.d, 10);
+  if(stp.dataset.set){
+    const k = stp.dataset.set;
+    cartSet[k] = Math.max(0, Math.min(999, (cartSet[k] || 0) + d));
+    if(!cartSet[k]) delete cartSet[k];
+  }else{
+    const k = stp.dataset.f + "|" + stp.dataset.sz;
+    cartRt[k] = Math.max(0, Math.min(99, (cartRt[k] || 0) + d));
+    if(!cartRt[k]) delete cartRt[k];
+  }
+  syncSteppers(); render();
 });
-variantSel.addEventListener('change', render);
-qtyInput.addEventListener('input', render);
-$('#plus').addEventListener('click', ()=>{ qtyInput.value = Math.min(999,(+qtyInput.value||1)+1); render(); });
-$('#minus').addEventListener('click', ()=>{ qtyInput.value = Math.max(1,(+qtyInput.value||1)-1); render(); });
 
-/* --- delivery toggle --- */
+/* --- tab --- */
+function showTab(which){
+  const isSet = which === 'set';
+  $('#tabSet').classList.toggle('on', isSet);
+  $('#tabRt').classList.toggle('on', !isSet);
+  $('#tabSet').setAttribute('aria-selected', isSet);
+  $('#tabRt').setAttribute('aria-selected', !isSet);
+  $('#panelSet').hidden = !isSet;
+  $('#panelRt').hidden = isSet;
+}
+$('#tabSet').addEventListener('click', ()=>showTab('set'));
+$('#tabRt').addEventListener('click', ()=>showTab('rt'));
+
+/* --- giao tan noi --- */
 document.querySelectorAll('input[name="ship"]').forEach(r=>{
   r.addEventListener('change', ()=>{
     $('#addrField').hidden = document.querySelector('input[name="ship"]:checked').value !== "Giao tận nơi";
   });
 });
 
-/* --- date default: 2 days out --- */
-const d = new Date(); d.setDate(d.getDate()+2);
-$('#date').value = d.toISOString().slice(0,10);
+/* --- ngay mac dinh --- */
+const d0 = new Date(); d0.setDate(d0.getDate()+2);
+$('#date').value = d0.toISOString().slice(0,10);
 $('#date').min = new Date().toISOString().slice(0,10);
 
-/* --- build message --- */
+/* --- soan tin nhan --- */
 function orderText(){
-  const v = activeVariant();
-  const q = Math.max(1, parseInt(qtyInput.value||1,10));
-  const tier = tierFor(q);
-  const gross = v.price*q;
-  const total = tier ? gross*(1-tier.off) : gross;
-  const ship = document.querySelector('input[name="ship"]:checked').value;
+  const c = calc();
   const L = [];
   L.push("ĐẶT BÁNH TRUNG THU — THE CURATOR CAFE");
-  L.push("Set: " + SETS[currentSet].name + " (hộp " + SETS[currentSet].box + ") — " + v.label);
-  L.push("Số lượng: " + q + " set");
-  if(tier) L.push("Ưu đãi: " + tier.label + " (đơn từ " + tier.min + " set)");
-  L.push("Tạm tính: " + vnd(total));
-  L.push("---");
+  L.push("");
+  Object.keys(SETS).forEach(k=>{
+    const n = cartSet[k]; if(!n) return;
+    L.push("• " + SETS[k].name + " (hộp " + SETS[k].box + ", " + SETS[k].spec + ") × " + n + " set = " + vnd(n * SETS[k].price));
+  });
+  const rtKeys = Object.keys(cartRt).filter(k=>cartRt[k]);
+  if(rtKeys.length){
+    L.push("• Bánh lẻ:");
+    rtKeys.forEach(k=>{
+      const n = cartRt[k], [f, sz] = k.split("|");
+      L.push("   - " + RT_NAME[f] + " " + sz + "g × " + n + " = " + vnd(n * RT_PRICE[sz]));
+    });
+  }
+  L.push("");
+  if(c.discount > 0) L.push("Ưu đãi " + c.setQty + " set (−" + Math.round(c.tier.off*100) + "%): −" + vnd(c.discount));
+  L.push("TỔNG CỘNG: " + vnd(c.grand));
+  L.push("");
+  const ship = document.querySelector('input[name="ship"]:checked').value;
   L.push("Người đặt: " + ($('#name').value.trim() || "(chưa điền)"));
   L.push("Điện thoại: " + ($('#phone').value.trim() || "(chưa điền)"));
   L.push("Nhận hàng: " + ship + " — ngày " + ($('#date').value || "(chưa chọn)"));
@@ -1024,14 +1369,38 @@ function orderText(){
 
 function toast(msg){
   const t = $('#toast'); t.textContent = msg; t.classList.add('on');
-  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 2600);
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 2800);
 }
+
+function validate(){
+  const c = calc();
+  if(c.grand === 0){
+    toast("Chưa chọn món nào — bấm dấu cộng để thêm");
+    $('#dat-hang').scrollIntoView({behavior:'smooth'});
+    return false;
+  }
+  const miss = [];
+  [['#name','tên'],['#phone','số điện thoại']].forEach(([sel,lb])=>{
+    const el = $(sel);
+    if(!el.value.trim()){ el.classList.add('err'); miss.push([el,lb]); }
+    else el.classList.remove('err');
+  });
+  if(miss.length){
+    toast("Vui lòng điền " + miss.map(m=>m[1]).join(" và "));
+    miss[0][0].scrollIntoView({behavior:'smooth', block:'center'});
+    setTimeout(()=>miss[0][0].focus(), 400);
+    return false;
+  }
+  return true;
+}
+['#name','#phone'].forEach(sel=>{
+  $(sel).addEventListener('input', e=> e.target.classList.remove('err'));
+});
+
 async function copyOrder(){
   const txt = orderText();
-  try{
-    await navigator.clipboard.writeText(txt);
-    return true;
-  }catch(e){
+  try{ await navigator.clipboard.writeText(txt); return true; }
+  catch(e){
     const ta = document.createElement('textarea');
     ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
     document.body.appendChild(ta); ta.select();
@@ -1040,28 +1409,119 @@ async function copyOrder(){
     return ok;
   }
 }
-$('#btnCopy').addEventListener('click', async ()=>{
-  toast(await copyOrder() ? "Đã sao chép đơn hàng" : "Không sao chép được — chụp màn hình gửi giúp nhé");
-});
-$('#btnZalo').addEventListener('click', async ()=>{
-  const ok = await copyOrder();
-  toast(ok ? "Đã sao chép — dán vào Zalo và gửi" : "Mở Zalo, nhắn giúp nội dung đơn nhé");
+/* --- gui don sang Google Form --- */
+function dmy(iso){
+  if(!iso) return "";
+  const [y,m,d] = iso.split("-");
+  return d + "/" + m + "/" + y;
+}
+function makeCode(){
+  const n = new Date();
+  const p = x => String(x).padStart(2,'0');
+  return "TT" + p(n.getDate()) + p(n.getMonth()+1) + "-" + p(n.getHours()) + p(n.getMinutes())
+       + "-" + String(Math.floor(Math.random()*900)+100);
+}
+function detailLines(code){
+  const c = calc();
+  const L = ["Mã đơn: " + code];
+  Object.keys(SETS).forEach(k=>{
+    const n = cartSet[k]; if(!n) return;
+    L.push(SETS[k].name + " (hộp " + SETS[k].box + ", " + SETS[k].spec + ") x " + n + " set = " + vnd(n * SETS[k].price));
+  });
+  Object.keys(cartRt).forEach(k=>{
+    const n = cartRt[k]; if(!n) return;
+    const [f, sz] = k.split("|");
+    L.push("Bánh lẻ " + RT_NAME[f] + " " + sz + "g x " + n + " = " + vnd(n * RT_PRICE[sz]));
+  });
+  if(c.discount > 0) L.push("Ưu đãi " + c.setQty + " set (-" + Math.round(c.tier.off*100) + "%): -" + vnd(c.discount));
+  return L.join("\n");
+}
+
+function sendOrder(code){
+  const c = calc();
+  const ship = document.querySelector('input[name="ship"]:checked').value;
+  const data = {};
+  data[GFORM.f.name]   = $('#name').value.trim();
+  data[GFORM.f.phone]  = $('#phone').value.trim();
+  data[GFORM.f.detail] = detailLines(code);
+  data[GFORM.f.total]  = vnd(c.grand);
+  data[GFORM.f.ship]   = ship;
+  data[GFORM.f.date]   = dmy($('#date').value);
+  data[GFORM.f.addr]   = ship === "Giao tận nơi" ? $('#addr').value.trim() : "";
+  data[GFORM.f.note]   = $('#note').value.trim();
+
+  const f = document.createElement('form');
+  f.action = "https://docs.google.com/forms/d/e/" + GFORM.id + "/formResponse";
+  f.method = "POST";
+  f.target = "gsink";
+  f.style.display = "none";
+  Object.keys(data).forEach(k=>{
+    const i = document.createElement('input');
+    i.type = "hidden"; i.name = k; i.value = data[k];
+    f.appendChild(i);
+  });
+  document.body.appendChild(f);
+  f.submit();
+  setTimeout(()=>f.remove(), 4000);
+}
+
+function showSent(code){
+  $('#cart').hidden = true;
+  $('#cartEmpty').hidden = true;
+  ['#lineSet','#lineDisc','#lineRt'].forEach(id=>{ $(id).hidden = true; });
+  $('.sum-total').hidden = true;
+  $('#actions').hidden = true;
+  $('#hint').hidden = true;
+  $('#sentBox').hidden = false;
+  $('#sentCode').textContent = "Mã đơn " + code;
+  const nm = $('#name').value.trim().split(/\s+/).pop();
+  $('#sentName').textContent = (nm ? "Cảm ơn " + nm + "! " : "") + "Chúng tôi sẽ gọi lại để xác nhận đơn.";
+  $('#summary').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+$('#btnSend').addEventListener('click', function(){
+  if(!validate()) return;
+  const btn = this;
+  btn.disabled = true; btn.textContent = "Đang gửi…";
+  const code = makeCode();
+  try{
+    sendOrder(code);
+    copyOrder();   /* van sao chep san, phong khi khach muon nhan Zalo them */
+    setTimeout(()=>{ showSent(code); }, 900);
+  }catch(err){
+    btn.disabled = false; btn.textContent = "Gửi đơn hàng";
+    toast("Gửi chưa được — bấm Nhắn Zalo giúp chúng tôi nhé");
+  }
 });
 
-fillVariants(); render();
+$('#btnAgain').addEventListener('click', ()=>{
+  Object.keys(cartSet).forEach(k=>delete cartSet[k]);
+  Object.keys(cartRt).forEach(k=>delete cartRt[k]);
+  $('#note').value = "";
+  syncSteppers();
+  $('#cart').hidden = false;
+  $('.sum-total').hidden = false;
+  $('#actions').hidden = false;
+  $('#hint').hidden = false;
+  $('#sentBox').hidden = true;
+  const b = $('#btnSend'); b.disabled = false; b.textContent = "Gửi đơn hàng";
+  render();
+  $('#dat-hang').scrollIntoView({behavior:'smooth'});
+});
+
+render();
 
 /* thanh dat hang co dinh tren dien thoai */
 (function(){
-  const mbar = $('#mbar'), orderSec = $('#dat-hang');
-  if(!mbar || !orderSec) return;
+  const mbar = $('#mbar'), sum = $('#summary');
+  if(!mbar || !sum) return;
   mbar.style.transition = 'transform .35s cubic-bezier(.2,.8,.3,1)';
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(es){
       es.forEach(function(e){ mbar.style.transform = e.isIntersecting ? 'translateY(130%)' : 'translateY(0)'; });
-    },{threshold:0}).observe(orderSec);
+    },{threshold:0}).observe(sum);
   }
 })();
-
 
 /* banner truot anh */
 (function(){
@@ -1097,7 +1557,6 @@ fillVariants(); render();
   box.addEventListener('mouseleave', start);
   document.addEventListener('visibilitychange', ()=> document.hidden ? stop() : restart());
 
-  /* vuot ngang tren dien thoai */
   let x0 = null;
   box.addEventListener('touchstart', e=>{ x0 = e.touches[0].clientX; stop(); }, {passive:true});
   box.addEventListener('touchend', e=>{
@@ -1110,7 +1569,6 @@ fillVariants(); render();
   box.classList.add('ready');
   start();
 })();
-
 </script>
 </body>
 </html>
