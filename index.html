@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Curator Cafe">
 <meta property="og:title" content="Trung Thu 2026 — Ba set quà bánh trung thu | The Curator Cafe">
-<meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bánh thủ công 6 vị, làm theo đơn. Ưu đãi doanh nghiệp từ 10 set.">
+<meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bánh thủ công 6 vị, làm theo đơn. Đặt hàng: 0846 413 314.">
 <meta property="og:image" content="https://TEN-MIEN-CUA-ANH/img/share.jpg">
 <meta property="og:url" content="https://TEN-MIEN-CUA-ANH/">
 <meta property="og:locale" content="vi_VN">
@@ -82,7 +82,8 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .nav-links a{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;opacity:.85}
 .nav-links a:hover{opacity:1}
 .nav-cta{border:1px solid currentColor;border-radius:999px;padding:9px 20px;font-size:12px;
-  letter-spacing:.16em;text-transform:uppercase;text-decoration:none;transition:.25s}
+  letter-spacing:.16em;text-transform:uppercase;text-decoration:none;transition:.25s;
+  white-space:nowrap;flex:0 0 auto}
 .nav-cta:hover{background:currentColor}
 .nav-cta:hover{color:var(--cream)}
 @media(max-width:860px){.nav-links a{display:none}.nav-links .nav-cta{display:inline-block}}
@@ -107,8 +108,22 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .hero-figure .disc{position:absolute;width:118%;aspect-ratio:1;left:-2%;top:-14%;border-radius:50%;
   background:radial-gradient(circle at 44% 40%,rgba(184,145,47,.14),rgba(184,145,47,.03) 60%,transparent 72%);
   border:1px solid rgba(184,145,47,.24);pointer-events:none}
-.hero-figure img{position:relative;border-radius:4px;aspect-ratio:1;object-fit:cover;
-  box-shadow:0 30px 70px -32px rgba(90,60,35,.45)}
+.slides{position:relative;aspect-ratio:1;border-radius:5px;overflow:hidden;
+  border:1px solid var(--line);box-shadow:0 30px 70px -32px rgba(90,60,35,.45);background:#F0E6D4}
+.slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transform:scale(1.04);
+  transition:opacity 1.1s ease,transform 6s ease-out}
+.slides img.on{opacity:1;transform:scale(1)}
+.slide-cap{position:absolute;left:0;right:0;bottom:0;padding:34px 22px 16px;
+  background:linear-gradient(to top,rgba(30,18,12,.72),rgba(30,18,12,0));
+  color:#FDF8EF;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  opacity:0;transition:opacity .6s}
+.slides.ready .slide-cap{opacity:1}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:16px}
+.dots button{width:26px;height:3px;border:0;padding:0;cursor:pointer;border-radius:2px;
+  background:rgba(42,29,22,.2);transition:background .3s,width .3s}
+.dots button[aria-current="true"]{background:var(--gold);width:40px}
+@media(prefers-reduced-motion:reduce){.slides img{transition:opacity .01s;transform:none}}
 @media(max-width:900px){
   .hero{min-height:auto;padding:112px 0 64px}
   .hero-grid{grid-template-columns:1fr;gap:36px}
@@ -127,24 +142,38 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .btn-ink:hover{background:#000}
 
 /* ---------- section frame ---------- */
+/* --- khoi noi dung dung chung --- */
+.card{background:#FFFDF8;border:1px solid var(--line);border-radius:6px;
+  box-shadow:0 2px 0 rgba(42,29,22,.04)}
+.card-pad{padding:clamp(22px,2.6vw,34px)}
+.sec-no{font-family:var(--disp);font-size:13px;letter-spacing:.1em;color:var(--gold-soft);
+  border:1px solid currentColor;border-radius:999px;width:30px;height:30px;
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+
 .band{padding:clamp(72px,9vw,132px) 0}
 .band-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;
-  padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:clamp(38px,5vw,64px)}
+  padding-bottom:22px;border-bottom:2px solid var(--ink);margin-bottom:clamp(34px,4.5vw,52px)}
+.band-head .eyebrow{display:flex;align-items:center;gap:10px}
 .band-head .eyebrow{color:var(--mute)}
 @media(max-width:760px){.band-head{flex-direction:column;align-items:flex-start;gap:14px}}
 
 /* ---------- index of three ---------- */
 .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,34px)}
-.trio-card{text-decoration:none;display:block;position:relative;transition:transform .5s cubic-bezier(.2,.7,.3,1)}
-.trio-card:hover{transform:translateY(-6px)}
-.trio-card .ph{aspect-ratio:1;overflow:hidden;background:#e4d9c2}
+.trio-card{text-decoration:none;display:flex;flex-direction:column;position:relative;
+  background:#FFFDF8;border:1px solid var(--line);border-radius:6px;overflow:hidden;
+  transition:transform .45s cubic-bezier(.2,.7,.3,1),box-shadow .45s,border-color .45s}
+.trio-card:hover{transform:translateY(-5px);box-shadow:0 20px 40px -26px rgba(90,60,35,.5);border-color:rgba(42,29,22,.3)}
+.trio-body{padding:20px 22px 24px;display:flex;flex-direction:column;flex:1}
+.trio-card .ph{aspect-ratio:1;overflow:hidden;background:#F0E6D4;border-bottom:1px solid var(--line)}
 .trio-card .ph img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.3,1)}
 .trio-card:hover .ph img{transform:scale(1.06)}
-.trio-meta{display:flex;align-items:center;gap:12px;margin-top:16px;color:var(--mute)}
+.trio-meta{display:flex;align-items:center;gap:10px;color:var(--mute)}
 .trio-meta .lbl{font-size:11px;letter-spacing:.28em;text-transform:uppercase}
-.trio-card h4{font-family:var(--disp);font-size:30px;font-weight:500;margin:6px 0 4px;letter-spacing:.02em}
-.trio-card p{margin:0;font-size:14px;color:var(--mute);line-height:1.6}
-.trio-card .price{margin-top:10px;font-size:13.5px;letter-spacing:.05em}
+.trio-card h4{font-family:var(--disp);font-size:28px;font-weight:500;margin:8px 0 6px;
+  letter-spacing:.01em;line-height:1.14}
+.trio-card p{margin:0;font-size:14px;color:var(--mute);line-height:1.6;flex:1}
+.trio-card .price{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+  font-size:16px;font-weight:500;letter-spacing:.02em;color:var(--ink)}
 @media(max-width:760px){.trio{grid-template-columns:1fr;gap:34px}}
 
 /* ---------- set sections ---------- */
@@ -153,8 +182,11 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .set--full{background:linear-gradient(180deg,#FDF9F0,#F9F1DF);color:var(--ink)}
 .set--lotus{background:linear-gradient(180deg,#F1F6EF,#E7F0E6);color:#22352C}
 .set--moon .kicker,.set--full .kicker,.set--lotus .kicker{color:var(--mute)}
-.set-hero img{box-shadow:0 26px 60px -30px rgba(90,60,35,.42);border-radius:4px}
-.set-top{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,72px);align-items:center}
+.set-hero img{box-shadow:0 20px 44px -30px rgba(90,60,35,.4)}
+.set-top{display:grid;grid-template-columns:1fr 1fr;gap:clamp(26px,3.4vw,52px);align-items:center}
+.set-body{background:#FFFDF8;border:1px solid var(--line);border-radius:6px;
+  padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;justify-content:center}
+.set--lotus .set-body{background:#FBFDFA}
 .set--full .set-top{direction:rtl}
 .set--full .set-top>*{direction:ltr}
 .set-label{display:flex;align-items:center;gap:14px;margin-bottom:20px}
@@ -163,27 +195,34 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .set .kicker{font-family:var(--disp);font-style:italic;font-size:20px;opacity:.72;margin:0 0 22px}
 .set .lead{opacity:.84}
 .set-hero{position:relative}
-.set-hero img{width:100%;aspect-ratio:1;object-fit:cover}
-.set-hero .halo{position:absolute;width:56%;aspect-ratio:1;border-radius:50%;
-  right:-7%;top:-7%;border:1px solid currentColor;opacity:.3;pointer-events:none}
+.set-hero{display:block}
+.set-hero img{width:100%;aspect-ratio:1;object-fit:cover;
+  border:1px solid var(--line);border-radius:6px}
+.set-hero .halo{display:none}
 
-.spec{margin-top:38px;border-top:1px solid currentColor;padding-top:22px}
-.spec-row{display:flex;gap:18px;padding:11px 0;border-bottom:1px dotted;border-color:inherit;
-  font-size:14.5px;opacity:.9}
-.spec-row dt{flex:0 0 118px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.62;
-  padding-top:4px;margin:0}
+.spec{border:1px solid var(--line);border-radius:5px;overflow:hidden;background:#FDFAF3}
+.spec-row{display:flex;gap:18px;padding:12px 16px;font-size:14.5px;
+  border-bottom:1px solid var(--line)}
+.spec-row:last-child{border-bottom:0}
+.spec-row:nth-child(odd){background:rgba(42,29,22,.025)}
+.spec-row dt{flex:0 0 108px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);padding-top:4px;margin:0}
 .spec-row dd{margin:0;flex:1}
-dl.spec{margin:38px 0 0}
+dl.spec{margin:28px 0 0}
 
-.tiers{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
-.tier{border:1px solid currentColor;padding:16px 22px;min-width:190px;flex:1 1 190px}
+.tiers{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.tier{border:1px solid var(--line);border-radius:5px;background:#FDFAF3;
+  padding:16px 20px;min-width:180px;flex:1 1 180px}
+.tier:first-child{background:var(--ink);border-color:var(--ink);color:#FDF8EF}
+.tier:first-child .t-name,.tier:first-child .t-note{color:rgba(253,248,239,.7)}
 .tier .t-name{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.65}
 .tier .t-price{font-family:var(--disp);font-size:30px;font-weight:500;margin-top:6px;line-height:1}
 .tier .t-note{font-size:12.5px;opacity:.65;margin-top:4px}
 
 .gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:clamp(34px,4.5vw,58px)}
-.gallery img{width:100%;aspect-ratio:1;object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.3,1),opacity .4s;opacity:.94}
-.gallery img:hover{transform:scale(1.03);opacity:1}
+.gallery img{width:100%;aspect-ratio:1;object-fit:cover;border:1px solid var(--line);
+  border-radius:4px;transition:transform .7s cubic-bezier(.2,.7,.3,1),box-shadow .4s}
+.gallery img:hover{transform:scale(1.02);box-shadow:0 14px 30px -20px rgba(90,60,35,.5)}
 .gallery.g2{grid-template-columns:repeat(2,1fr);max-width:640px}
 @media(max-width:900px){
   .set-top{grid-template-columns:1fr}
@@ -192,8 +231,9 @@ dl.spec{margin:38px 0 0}
 }
 
 /* ---------- flavours ---------- */
-.flav{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line)}
-.flav li{list-style:none;background:#FFFDF8;padding:26px 24px}
+.flav{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:transparent}
+.flav li{list-style:none;background:#FFFDF8;padding:22px 22px 24px;
+  border:1px solid var(--line);border-radius:5px}
 .flav .dot{width:15px;height:15px;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:10px;
   box-shadow:inset 0 -3px 6px rgba(0,0,0,.22)}
 .flav h5{margin:0;font-family:var(--disp);font-size:23px;font-weight:500}
@@ -221,45 +261,88 @@ dl.spec{margin:38px 0 0}
 .pick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .pick label{display:block;cursor:pointer}
 .pick input{position:absolute;width:1px;height:1px;opacity:0;margin:0;pointer-events:none}
-.pick .box{display:block;border:1px solid var(--line);padding:14px;background:rgba(255,255,255,.4);
-  height:100%;transition:.25s}
-.pick .box img{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:12px}
+.pick{margin-bottom:4px}
+.pick .box{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:5px;
+  padding:12px;background:#FDFAF3;height:100%;transition:.22s}
+.pick .box .txt{display:flex;flex-direction:column;flex:1}
+.pick .box .pr{margin-top:auto;padding-top:8px}
+.pick .box img{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:12px;border-radius:3px}
 .pick .box .nm{display:block;font-family:var(--disp);font-size:19.5px;font-weight:500;line-height:1.18}
-.pick .box .pr{display:block;font-size:12.5px;color:var(--mute);margin-top:3px}
-.pick input:checked + .box{border-color:var(--ink);background:#fff;box-shadow:0 10px 30px -18px rgba(27,18,14,.7)}
+.pick .box .pr{display:block;font-size:14px;font-weight:500;color:var(--ink)}
+.pick input:checked + .box{border-color:var(--ink);border-width:2px;padding:11px;background:#fff}
 .pick input:focus-visible + .box{outline:2px solid var(--red);outline-offset:3px}
-@media(max-width:620px){.pick{grid-template-columns:1fr}.pick .box{display:flex;gap:14px;align-items:center}
-  .pick .box .txt{flex:1}
-  .pick .box img{width:74px;margin:0;flex:0 0 74px}}
+@media(max-width:620px){.pick{grid-template-columns:1fr}}
 
-.field{margin-top:20px}
+/* --- form chia buoc --- */
+.step{background:#FFFDF8;border:1px solid var(--line);border-radius:6px;
+  padding:22px 24px 26px;margin-bottom:16px}
+.step-hd{display:flex;align-items:center;gap:11px;margin-bottom:18px;
+  padding-bottom:12px;border-bottom:1px solid var(--line)}
+.step-n{font-family:var(--disp);font-size:14px;font-weight:500;color:#FDF8EF;background:var(--ink);
+  border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;
+  justify-content:center;flex:0 0 auto}
+.step-t{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.step .field:first-of-type{margin-top:0}
+
+.field{margin-top:18px}
 .field label,.fl{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--mute);margin-bottom:7px}
+  color:var(--mute);margin-bottom:8px;line-height:1.4}
 .field select{padding-right:34px}
-.field input,.field select,.field textarea{
-  width:100%;border:1px solid var(--line);background:rgba(255,255,255,.55);
-  padding:13px 14px;font-family:var(--body);font-size:15px;font-weight:300;color:var(--ink);
-  border-radius:0;transition:.2s}
+.field input:not([type="radio"]):not([type="checkbox"]),.field select,.field textarea{
+  width:100%;height:50px;border:1px solid var(--line);background:#FDFAF3;
+  padding:0 14px;font-family:var(--body);font-size:15px;font-weight:300;color:var(--ink);
+  text-align:left;border-radius:5px;transition:.2s;
+  -webkit-appearance:none;appearance:none}
+.field select{-webkit-appearance:none;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--mute) 50%),linear-gradient(135deg,var(--mute) 50%,transparent 50%);
+  background-position:calc(100% - 19px) 22px,calc(100% - 13px) 22px;
+  background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:38px}
+.field input[type="date"]{text-align:left}
+.field textarea{height:auto;padding:13px 14px}
+.radios input[type="radio"]{
+  -webkit-appearance:none;appearance:none;
+  width:18px!important;height:18px!important;min-width:18px;max-width:18px;
+  min-height:18px;max-height:18px;flex:0 0 18px;margin:0;padding:0;
+  border:1.5px solid var(--mute);border-radius:50%;background:#fff;
+  display:inline-block;position:relative;cursor:pointer;transition:.2s}
+.radios input[type="radio"]:checked{border-color:var(--red);border-width:5px}
+.radios input[type="radio"]:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--ink);background:#fff}
+.field select:focus{background-color:#fff}
 .field textarea{min-height:92px;resize:vertical}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin-top:18px}
+.two > .field{margin-top:0}
+.two > .field > label,.two > .field > .fl{min-height:16px}
+.pick + .two{margin-top:20px}
 @media(max-width:620px){.two{grid-template-columns:1fr}}
-.qty{display:flex;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.55);width:fit-content}
-.qty button{width:46px;height:48px;border:0;background:transparent;font-size:19px;cursor:pointer;color:var(--ink);font-family:var(--body)}
+.qty{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);
+  border-radius:5px;background:#FDFAF3;width:100%}
+.qty button{width:52px;height:50px;border:0;background:transparent;font-size:20px;cursor:pointer;
+  color:var(--ink);font-family:var(--body);border-radius:4px}
 .qty button:hover{background:rgba(27,18,14,.07)}
-.qty input{width:62px;text-align:center;border:0;background:transparent;font-size:16px;padding:13px 0;
+.qty input[type="number"]{flex:1;min-width:0;width:auto!important;height:48px!important;
+  text-align:center!important;border:0!important;background:transparent!important;
+  border-radius:0!important;font-size:17px;padding:0!important;
   -moz-appearance:textfield;appearance:textfield}
 .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .qty input:focus{outline:none}
-.radios{display:flex;gap:10px;flex-wrap:wrap}
-.radios label{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);
-  padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:0;text-transform:none;color:var(--ink);margin:0}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.radios label{display:flex;align-items:center;justify-content:flex-start;gap:11px;
+  border:1px solid var(--line);border-radius:5px;background:#FDFAF3;
+  min-height:50px;padding:0 14px;font-size:14.5px;cursor:pointer;letter-spacing:0;
+  text-transform:none;color:var(--ink);margin:0;white-space:nowrap;transition:.2s;
+  -webkit-tap-highlight-color:transparent;overflow:hidden}
+.radios label span{overflow:hidden;text-overflow:ellipsis}
 .radios input{accent-color:var(--red)}
-.radios label:has(input:checked){border-color:var(--ink);background:#fff}
+.radios label:has(input:checked){border-color:var(--ink);border-width:2px;padding:0 13px;background:#fff}
+.radios label:hover{border-color:rgba(42,29,22,.35)}
 
-.summary{border:1px solid var(--ink);background:#fff;padding:26px;position:sticky;top:88px}
-.summary h4{font-family:var(--disp);font-size:26px;font-weight:500;margin:0 0 4px}
-.summary .sub{font-size:12.5px;color:var(--mute);margin:0 0 20px}
+.summary{border:1px solid var(--ink);border-radius:6px;background:#fff;padding:0;
+  position:sticky;top:88px;overflow:hidden;box-shadow:0 16px 34px -26px rgba(90,60,35,.5)}
+.summary-hd{background:var(--ink);color:#FDF8EF;padding:18px 24px}
+.summary-bd{padding:20px 24px 24px}
+.summary h4{font-family:var(--disp);font-size:24px;font-weight:500;margin:0}
+.summary .sub{font-size:12px;color:rgba(253,248,239,.68);margin:3px 0 0}
 .sum-line{display:flex;justify-content:space-between;gap:14px;padding:9px 0;
   border-bottom:1px dotted var(--line);font-size:14.5px}
 .sum-line span:first-child{color:var(--mute);font-size:12.5px;letter-spacing:.05em}
@@ -339,16 +422,23 @@ footer a:hover{color:var(--ink)}
   .trio-card .price{font-size:15px;font-weight:500;color:var(--ink)}
 
   /* form: o bam to, de cham */
-  .pick .box{padding:12px;gap:12px}
-  .pick .box img{width:66px;flex:0 0 66px;border-radius:3px}
+  .pick{grid-template-columns:1fr;gap:10px}
+  .pick .box{flex-direction:row;align-items:center;padding:12px;gap:14px}
+  .pick .box img{width:72px;flex:0 0 72px;aspect-ratio:1;margin:0;border-radius:4px}
+  .pick .box .txt{flex-direction:row;align-items:baseline;justify-content:space-between;gap:10px}
+  .pick .box .pr{margin-top:0;padding-top:0;white-space:nowrap}
+  .pick input:checked + .box{padding:11px}
+  .step{padding:18px 16px 22px}
+  .step-hd{margin-bottom:16px}
   .pick .box .nm{font-size:19px}
   .field input,.field select,.field textarea{font-size:16px;padding:15px 14px}
   .qty{width:100%;justify-content:space-between}
   .qty button{width:56px;height:54px;font-size:22px}
   .qty input{flex:1;font-size:18px}
   .radios{gap:8px}
-  .radios label{flex:1;justify-content:center;padding:14px 8px;font-size:14.5px;white-space:nowrap}
-  .radios input{flex:0 0 auto}
+  .radios{grid-template-columns:1fr 1fr;gap:10px}
+  .radios label{min-height:54px;padding:0 12px;font-size:14.5px;gap:9px}
+  .radios label:has(input:checked){padding:0 11px}
   .summary{padding:20px;border-width:1px}
   .sum-total .vl{font-size:32px}
   .sum-actions .btn{padding:16px 22px;font-size:12.5px}
@@ -364,6 +454,21 @@ footer a:hover{color:var(--ink)}
   .set-hero .halo{display:none}
 }
 @media(max-width:400px){
+  .wrap{padding:0 16px}
+  .nav{padding:12px 16px}
+  .nav-brand{font-size:17px}
+  .nav-cta{padding:8px 15px;font-size:11px;letter-spacing:.12em}
+  .field select{font-size:14px;padding-right:42px}
+  .step{padding:16px 13px 20px}
+  .radios{gap:8px}
+  .radios label{font-size:13px;padding:0 9px;gap:7px}
+  .radios input[type="radio"]{width:16px!important;height:16px!important;
+    min-width:16px;max-width:16px;min-height:16px;max-height:16px;flex:0 0 16px}
+  .pick .box{gap:11px;padding:11px}
+  .pick .box img{width:60px;flex:0 0 60px}
+  .pick .box .txt{flex-direction:column;align-items:flex-start;gap:2px}
+  .pick .box .nm{font-size:17.5px;line-height:1.16}
+  .pick .box .pr{font-size:13.5px}
   .hero h1{font-size:46px}
   h2.display{font-size:33px}
   h3.display{font-size:27px}
@@ -401,7 +506,15 @@ footer a:hover{color:var(--ink)}
     </div>
     <figure class="hero-figure rv" style="margin:0">
       <span class="disc"></span>
-      <img fetchpriority="high" decoding="async" src="img/d3.webp" alt="Hộp bánh trung thu MOON của The Curator Cafe mở nắp, tám chiếc bánh nhiều màu">
+      <div class="slides" id="slides" aria-live="polite">
+        <img class="on" fetchpriority="high" src="img/d3.webp" alt="Hộp MOON mở nắp, bánh nhiều màu xếp trong khay" data-cap="Set 01 · Mộc Nguyệt Đoàn Viên">
+        <img src="img/d5.webp" alt="Hộp FULL MOON lót vàng ánh kim, sáu hộp bánh lẻ" data-cap="Set 02 · Minh Viên Nguyệt">
+        <img src="img/d10.webp" alt="Hộp LOTUS xanh rêu khảm trai, quai tre" data-cap="Set 03 · An Nhiên Sen Thu">
+        <img src="img/d2.webp" alt="Bánh dẻo nhiều màu bày trên khay gỗ" data-cap="Sáu vị cho cả mùa">
+        <img src="img/d12.webp" alt="Cận cảnh mặt hộp khảm trai hình sen và chuồn chuồn" data-cap="Tranh sen khảm trai">
+        <div class="slide-cap" id="slideCap">Set 01 · Mộc Nguyệt Đoàn Viên</div>
+      </div>
+      <div class="dots" id="dots" role="tablist" aria-label="Chọn ảnh"></div>
     </figure>
   </div>
 </header>
@@ -419,24 +532,30 @@ footer a:hover{color:var(--ink)}
     <div class="trio">
       <a class="trio-card rv" href="#set-moon">
         <div class="ph"><img src="img/d1.webp" alt="Hộp MOON màu son và giỏ tre đan"></div>
-        <div class="trio-meta"><span class="phase p1" style="color:var(--mute)"></span><span class="lbl">Set 01 · Moon</span></div>
+        <div class="trio-body">
+          <div class="trio-meta"><span class="phase p1" style="color:var(--mute)"></span><span class="lbl">Set 01 · Moon</span></div>
         <h4>Mộc Nguyệt Đoàn Viên</h4>
         <p>Hộp son dập chìm, tuỳ chọn giỏ tre quai da. Bốn bánh 50g — quà mang về nhà, biếu hàng xóm, tặng nhân viên.</p>
         <p class="price">4 × 50g · 350.000đ</p>
+      </div>
       </a>
       <a class="trio-card rv" href="#set-full">
         <div class="ph"><img src="img/d5.webp" alt="Hộp FULL MOON màu kem lót vàng, quai da và tua rua lụa"></div>
-        <div class="trio-meta"><span class="phase p2" style="color:var(--mute)"></span><span class="lbl">Set 02 · Full Moon</span></div>
+        <div class="trio-body">
+          <div class="trio-meta"><span class="phase p2" style="color:var(--mute)"></span><span class="lbl">Set 02 · Full Moon</span></div>
         <h4>Minh Viên Nguyệt</h4>
         <p>Hộp cứng lót vàng ánh kim, quai da thật, tua rua lụa. Sáu bánh 50g, mỗi chiếc một vị khác nhau.</p>
         <p class="price">6 × 50g · 380.000đ</p>
+      </div>
       </a>
       <a class="trio-card rv" href="#set-lotus">
         <div class="ph"><img src="img/d10.webp" alt="Hộp LOTUS xanh rêu mặt tranh sen khảm trai, quai tre"></div>
-        <div class="trio-meta"><span class="phase p3" style="color:var(--mute)"></span><span class="lbl">Set 03 · Lotus</span></div>
+        <div class="trio-body">
+          <div class="trio-meta"><span class="phase p3" style="color:var(--mute)"></span><span class="lbl">Set 03 · Lotus</span></div>
         <h4>An Nhiên Sen Thu</h4>
         <p>Tranh sen khảm trai ánh xà cừ, quai tre, ngăn kéo trượt. Bốn bánh cỡ lớn 150g, dành cho đối tác.</p>
         <p class="price">4 × 150g · 560.000đ</p>
+      </div>
       </a>
     </div>
   </div>
@@ -446,7 +565,7 @@ footer a:hover{color:var(--ink)}
 <section class="set set--moon" id="set-moon">
   <div class="wrap">
     <div class="set-top">
-      <div>
+      <div class="set-body">
         <div class="set-label rv"><span class="phase p1"></span><span class="eyebrow">Set 01</span></div>
         <h3 class="display rv">Mộc Nguyệt Đoàn Viên</h3>
         <p class="kicker rv">Hộp MOON · 4 bánh 50g · quà thân tình</p>
@@ -460,7 +579,7 @@ footer a:hover{color:var(--ink)}
         </dl>
         <div class="tiers rv">
           <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">350.000đ</div><div class="t-note">4 bánh 50g · hộp son 4 ô</div></div>
-          <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−15%</div><div class="t-note">Từ 30 set trở lên</div></div>
+          <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 100 set trở lên</div></div>
         </div>
       </div>
       <figure class="set-hero rv" style="margin:0">
@@ -479,7 +598,7 @@ footer a:hover{color:var(--ink)}
 <section class="set set--full" id="set-full">
   <div class="wrap">
     <div class="set-top">
-      <div>
+      <div class="set-body">
         <div class="set-label rv"><span class="phase p2"></span><span class="eyebrow">Set 02</span></div>
         <h3 class="display rv">Minh Viên Nguyệt</h3>
         <p class="kicker rv">Hộp FULL MOON · 6 bánh 50g · quà biếu</p>
@@ -493,7 +612,7 @@ footer a:hover{color:var(--ink)}
         </dl>
         <div class="tiers rv">
           <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">380.000đ</div><div class="t-note">6 bánh 50g · đủ 6 vị · túi giấy</div></div>
-          <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 50 set trở lên</div></div>
+          <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 100 set trở lên</div></div>
         </div>
       </div>
       <figure class="set-hero rv" style="margin:0">
@@ -516,7 +635,7 @@ footer a:hover{color:var(--ink)}
 <section class="set set--lotus" id="set-lotus">
   <div class="wrap">
     <div class="set-top">
-      <div>
+      <div class="set-body">
         <div class="set-label rv"><span class="phase p3"></span><span class="eyebrow">Set 03</span></div>
         <h3 class="display rv">An Nhiên Sen Thu</h3>
         <p class="kicker rv">Hộp LOTUS · 4 bánh 150g · quà cao cấp</p>
@@ -530,7 +649,7 @@ footer a:hover{color:var(--ink)}
         </dl>
         <div class="tiers rv">
           <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">560.000đ</div><div class="t-note">4 bánh 150g · túi xách đi kèm</div></div>
-          <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−25%</div><div class="t-note">Từ 100 set trở lên</div></div>
+          <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 100 set trở lên</div></div>
         </div>
       </div>
       <figure class="set-hero rv" style="margin:0">
@@ -594,12 +713,12 @@ footer a:hover{color:var(--ink)}
       <div class="rv">
         <div style="border:1px solid var(--line);background:#FFFDF8;padding:28px">
           <p class="eyebrow" style="color:var(--gold-soft);margin:0 0 14px">Ưu đãi theo số lượng</p>
-          <div class="sum-line"><span>10 – 29 set</span><span>−12%</span></div>
-          <div class="sum-line"><span>30 – 49 set</span><span>−15%</span></div>
-          <div class="sum-line"><span>50 – 99 set</span><span>−20%</span></div>
-          <div class="sum-line"><span>Từ 100 set</span><span>−25%</span></div>
+          <div class="sum-line"><span>10 – 29 set</span><span>−10%</span></div>
+          <div class="sum-line"><span>30 – 49 set</span><span>−12%</span></div>
+          <div class="sum-line"><span>50 – 99 set</span><span>−15%</span></div>
+          <div class="sum-line"><span>Từ 100 set</span><span>−20%</span></div>
           <p style="font-size:12.5px;color:var(--mute);margin:14px 0 0;line-height:1.55">
-            Mức tối đa khác nhau theo từng set: Mộc Nguyệt Đoàn Viên −15%, Minh Viên Nguyệt −20%, An Nhiên Sen Thu −25%. Mỗi đơn chỉ áp một mức, không cộng dồn.</p>
+            Áp dụng cho cả ba set. Mỗi đơn chỉ áp một mức, không cộng dồn. Số lượng tính trên tổng set của cùng một đơn.</p>
           <a class="btn btn-solid" style="margin-top:22px;width:100%;justify-content:center" href="#dat-hang">Nhận báo giá</a>
         </div>
       </div>
@@ -620,7 +739,8 @@ footer a:hover{color:var(--ink)}
 
     <div class="order-grid">
       <form id="orderForm" class="rv" novalidate>
-        <p class="fl">Chọn set</p>
+        <section class="step">
+        <div class="step-hd"><span class="step-n">1</span><span class="step-t">Chọn set và số lượng</span></div>
         <div class="pick">
           <label>
             <input type="radio" name="set" value="moon" checked>
@@ -660,6 +780,10 @@ footer a:hover{color:var(--ink)}
           </div>
         </div>
 
+        </section>
+
+        <section class="step">
+        <div class="step-hd"><span class="step-n">2</span><span class="step-t">Thông tin người đặt</span></div>
         <div class="two">
           <div class="field">
             <label for="name">Tên người đặt</label>
@@ -671,11 +795,15 @@ footer a:hover{color:var(--ink)}
           </div>
         </div>
 
-        <div class="field">
+        </section>
+
+        <section class="step">
+        <div class="step-hd"><span class="step-n">3</span><span class="step-t">Nhận hàng và ghi chú</span></div>
+        <div class="field" style="margin-top:0">
           <p class="fl" style="margin-bottom:9px">Cách nhận hàng</p>
           <div class="radios">
-            <label><input type="radio" name="ship" value="Nhận tại quán" checked> Nhận tại quán</label>
-            <label><input type="radio" name="ship" value="Giao tận nơi"> Giao tận nơi</label>
+            <label><input type="radio" name="ship" value="Nhận tại quán" checked><span>Tại quán</span></label>
+            <label><input type="radio" name="ship" value="Giao tận nơi"><span>Giao tận nơi</span></label>
           </div>
         </div>
 
@@ -694,22 +822,27 @@ footer a:hover{color:var(--ink)}
           <label for="note">Chọn vị &amp; lời nhắn</label>
           <textarea id="note" placeholder="Ví dụ: 2 cốm, 1 trà xanh, 1 đậu đỏ. Thiệp ghi tên đơn vị: Công ty ABC."></textarea>
         </div>
+        </section>
       </form>
 
       <aside class="summary rv" aria-live="polite">
-        <h4>Đơn của bạn</h4>
-        <p class="sub">Tạm tính, chưa gồm phí giao hàng.</p>
+        <div class="summary-hd">
+          <h4>Đơn của bạn</h4>
+          <p class="sub">Tạm tính, chưa gồm phí giao hàng.</p>
+        </div>
+        <div class="summary-bd">
         <div class="sum-line"><span>Set</span><strong id="sName">Mộc Nguyệt Đoàn Viên</strong></div>
         <div class="sum-line"><span>Quy cách</span><strong id="sVar">4 bánh × 50g</strong></div>
         <div class="sum-line"><span>Số lượng</span><strong id="sQty">1 set</strong></div>
         <div class="sum-line" id="sDiscLine" hidden><span>Chiết khấu</span><strong id="sDisc">−12%</strong></div>
         <div class="sum-total"><span class="lb">Tạm tính</span><span class="vl" id="sTotal">350.000đ</span></div>
         <div class="sum-actions">
-          <a class="btn btn-ink" id="btnZalo" href="#" target="_blank" rel="noopener">Gửi đơn qua Zalo</a>
+          <a class="btn btn-ink" id="btnZalo" href="https://zalo.me/0846413314" target="_blank" rel="noopener">Gửi đơn qua Zalo</a>
           <button class="btn" type="button" id="btnCopy">Sao chép đơn hàng</button>
-          <a class="btn" id="btnCall" href="#">Gọi đặt hàng</a>
+          <a class="btn" id="btnCall" href="tel:0846413314">Gọi 0846 413 314</a>
         </div>
-        <p class="hint" id="hint">Bấm “Gửi đơn qua Zalo” để mở cửa sổ chat — nội dung đơn đã được sao chép sẵn, chỉ cần dán và gửi.</p>
+        </div>
+        <p class="hint" id="hint" style="padding:0 24px 22px;margin-top:-4px">Bấm “Gửi đơn qua Zalo” để mở cửa sổ chat — nội dung đơn đã được sao chép sẵn, chỉ cần dán và gửi.</p>
       </aside>
     </div>
   </div>
@@ -743,9 +876,9 @@ footer a:hover{color:var(--ink)}
       </div>
       <div>
         <h6>Đặt bánh</h6>
-        <p style="margin-bottom:4px">The Curator</p>
-        <a href="#" id="fPhone">0846 413 314</a>
-        <a href="#" id="fZalo">Nhắn Zalo</a>
+        <p style="margin-bottom:4px">Gặp Huy</p>
+        <a href="tel:0846413314" id="fPhone">0846 413 314</a>
+        <a href="https://zalo.me/0846413314" id="fZalo">Nhắn Zalo</a>
         <a href="#dat-hang">Điền phiếu đặt hàng</a>
       </div>
     </div>
@@ -770,17 +903,17 @@ footer a:hover{color:var(--ink)}
 /* ====== SỬA THÔNG TIN QUÁN Ở ĐÂY ====== */
 const SHOP = {
   name: "The Curator Cafe",
-  phone: "0846413314",        // số hiển thị
+  phone: "0846 413 314",        // số hiển thị
   phoneRaw: "0846413314",       // số dùng cho nút gọi & Zalo (chỉ chữ số)
   address: "Vincom Royal Park, Nam Đông Hà, Quảng Trị"
 };
 
 const SETS = {
-  moon:  { name:"Mộc Nguyệt Đoàn Viên", box:"MOON",      cap:.15, variants:[ {id:"m4",label:"4 bánh × 50g",price:350000} ] },
-  full:  { name:"Minh Viên Nguyệt",     box:"FULL MOON", cap:.20, variants:[ {id:"f6",label:"6 bánh × 50g, đủ 6 vị",price:380000} ] },
-  lotus: { name:"An Nhiên Sen Thu",     box:"LOTUS",     cap:.25, variants:[ {id:"l4",label:"4 bánh × 150g",price:560000} ] }
+  moon:  { name:"Mộc Nguyệt Đoàn Viên", box:"MOON",      cap:1, variants:[ {id:"m4",label:"4 bánh × 50g",price:350000} ] },
+  full:  { name:"Minh Viên Nguyệt",     box:"FULL MOON", cap:1, variants:[ {id:"f6",label:"6 bánh × 50g, đủ 6 vị",price:380000} ] },
+  lotus: { name:"An Nhiên Sen Thu",     box:"LOTUS",     cap:1, variants:[ {id:"l4",label:"4 bánh × 150g",price:560000} ] }
 };
-const TIERS = [ {min:100,off:.25}, {min:50,off:.20}, {min:30,off:.15}, {min:10,off:.12} ];
+const TIERS = [ {min:100,off:.20}, {min:50,off:.15}, {min:30,off:.12}, {min:10,off:.10} ];
 
 const $ = s => document.querySelector(s);
 const vnd = n => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + "đ";
@@ -928,6 +1061,56 @@ fillVariants(); render();
     },{threshold:0}).observe(orderSec);
   }
 })();
+
+
+/* banner truot anh */
+(function(){
+  const box = $('#slides'); if(!box) return;
+  const imgs = Array.from(box.querySelectorAll('img'));
+  const cap = $('#slideCap'), dotBox = $('#dots');
+  if(imgs.length < 2) return;
+  let i = 0, timer = null;
+  const DELAY = 4500;
+  const slow = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  imgs.forEach((im, n)=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Ảnh ' + (n+1));
+    b.setAttribute('aria-current', n === 0 ? 'true' : 'false');
+    b.addEventListener('click', ()=>{ show(n); restart(); });
+    dotBox.appendChild(b);
+  });
+  const dots = Array.from(dotBox.children);
+
+  function show(n){
+    i = (n + imgs.length) % imgs.length;
+    imgs.forEach((im, k)=> im.classList.toggle('on', k === i));
+    dots.forEach((d, k)=> d.setAttribute('aria-current', k === i ? 'true' : 'false'));
+    if(cap && imgs[i].dataset.cap) cap.textContent = imgs[i].dataset.cap;
+  }
+  function start(){ if(!slow) timer = setInterval(()=> show(i+1), DELAY); }
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+  function restart(){ stop(); start(); }
+
+  box.addEventListener('mouseenter', stop);
+  box.addEventListener('mouseleave', start);
+  document.addEventListener('visibilitychange', ()=> document.hidden ? stop() : restart());
+
+  /* vuot ngang tren dien thoai */
+  let x0 = null;
+  box.addEventListener('touchstart', e=>{ x0 = e.touches[0].clientX; stop(); }, {passive:true});
+  box.addEventListener('touchend', e=>{
+    if(x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
+    x0 = null; start();
+  }, {passive:true});
+
+  box.classList.add('ready');
+  start();
+})();
+
 </script>
 </body>
 </html>

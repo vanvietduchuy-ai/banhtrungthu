@@ -1,46 +1,13 @@
 # Trung Thu 2026 — The Curator Cafe
 
 Trang đặt bánh trung thu (HTML tĩnh, không cần build).
+`index.html` phải nằm ở **thư mục gốc** của repo.
 
-## Cấu trúc — QUAN TRỌNG
+## Còn một việc trước khi chạy thật
+Tìm `TEN-MIEN-CUA-ANH` trong `index.html` (2 chỗ), thay bằng `banhtrungthu-lemon.vercel.app`.
+Chỗ này quyết định ảnh hiện ra khi dán link lên Facebook / Zalo.
 
-`index.html` **phải nằm ở thư mục gốc của repo**, không nằm trong thư mục con.
-
-```
-repo/
-├── index.html        ← ngay ở đây
-├── vercel.json
-├── img/
-│   ├── d1.webp ... d12.webp
-│   ├── share.jpg
-│   └── favicon.png
-└── README.md
-```
-
-Nếu trên GitHub anh thấy phải bấm vào một thư mục (ví dụ `dist/`) rồi mới thấy `index.html`
-→ đó chính là nguyên nhân lỗi **404: NOT_FOUND**.
-
-## Cấu hình trên Vercel
-
-Vào **Project → Settings → Build and Deployment**:
-
-| Mục | Giá trị |
-|---|---|
-| Framework Preset | **Other** |
-| Build Command | để trống (tắt Override) |
-| Output Directory | để trống (tắt Override) |
-| Install Command | để trống |
-| Root Directory | `./` — trừ khi file nằm trong thư mục con thì điền tên thư mục đó |
-
-Sửa xong vào tab **Deployments → ... → Redeploy**.
-
-## Ba việc cần sửa trong index.html trước khi chạy thật
-
-1. `const SHOP = {` — thay số điện thoại `09xx xxx xxx` ở cả `phone` và `phoneRaw`.
-   `phoneRaw` chỉ gồm chữ số, dùng cho nút Gọi và Zalo.
-2. `TEN-MIEN-CUA-ANH` — thay bằng tên miền thật (ví dụ `banhtrungthu-lemon.vercel.app`),
-   quyết định ảnh hiện ra khi chia sẻ Facebook/Zalo.
-3. `const SETS = {` — xác nhận giá 350.000 / 380.000 / 560.000.
+Số điện thoại **0846 413 314** đã điền sẵn cho nút Gọi và Zalo.
 
 ## Ba set
 
@@ -51,3 +18,15 @@ Sửa xong vào tab **Deployments → ... → Redeploy**.
 | 03 | An Nhiên Sen Thu | LOTUS | 4 × 150g | 560.000đ |
 
 Bánh lẻ tại quán: 35.000đ (50g) · 80.000đ (150g)
+
+## Ưu đãi theo số lượng (cả ba set)
+
+| Số lượng | Giảm |
+|---|---|
+| 10 – 29 set | 10% |
+| 30 – 49 set | 12% |
+| 50 – 99 set | 15% |
+| Từ 100 set | 20% |
+
+Sửa bậc ưu đãi: `const TIERS`. Sửa giá: `const SETS`.
+Banner đầu trang: `<div class="slides"`, tốc độ ở `const DELAY = 4500`.
