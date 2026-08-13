@@ -1,22 +1,18 @@
 # Trung Thu 2026 — The Curator Cafe
 
-Trang đặt bánh trung thu (HTML tĩnh). `index.html` phải nằm ở thư mục gốc repo.
+Trang đặt bánh trung thu (HTML tĩnh). `index.html` nằm ở thư mục gốc repo.
 
 ## Đơn hàng
-Khách bấm "Gửi đơn hàng" → Google Form → Google Sheet.
-Form: `1FAIpQLSct_Jsf_F3h8vDh-gSHcdVMMwaQAWZp7O92imAM2G2zCF3IZg`
-Đổi form: `const GFORM`. Bật báo email: Form → Câu trả lời → ⋮.
+"Gửi đơn hàng" → Google Form → Google Sheet.
+Form: `1FAIpQLSct_Jsf_F3h8vDh-gSHcdVMMwaQAWZp7O92imAM2G2zCF3IZg` (const GFORM)
+Bật báo email: Form → Câu trả lời → ⋮.
 
 ## Còn một việc
 Thay `TEN-MIEN-CUA-ANH` (2 chỗ) bằng `banhtrungthu-lemon.vercel.app`.
 
-## Bố cục mobile
-- Set: ảnh + tên + giá + nút; chi tiết gấp sau "Xem chi tiết hộp quà"
-- Doanh nghiệp: quyền lợi gấp, bảng ưu đãi luôn hiện
-- Vị bánh: lưới 2 cột, bấm mở popup, thêm bánh lẻ ngay trong popup
-- Footer: 2 cột (Ghé quán / Đặt bánh)
-- Menu ba gạch điều hướng
-Desktop luôn hiện đầy đủ.
+## Bố cục
+Desktop: mỗi set 2 cột cân nhau — chữ một bên, ảnh lớn + 4 ảnh chi tiết một bên.
+Mobile: chi tiết gấp/mở; vị bánh 2 cột popup; footer 2 cột; menu ba gạch.
 
 ## Giá
 Set: 350.000 / 380.000 / 560.000 (const SETS)

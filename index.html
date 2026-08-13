@@ -240,23 +240,25 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .set-label{display:flex;align-items:center;gap:14px;margin-bottom:20px}
 .set-label .eyebrow{opacity:.75}
 .set h3.display{margin-bottom:6px}
-.set .kicker{font-family:var(--disp);font-style:italic;font-size:20px;opacity:.72;margin:0 0 22px}
+.set .kicker{font-family:var(--disp);font-style:italic;font-size:19px;opacity:.72;margin:0 0 16px}
 .set .lead{opacity:.84}
 .set-hero{position:relative}
 .set-hero{display:block}
-.set-hero img{width:100%;aspect-ratio:1;object-fit:cover;
+.set-hero > img{width:100%;aspect-ratio:1;object-fit:cover;
   border:1px solid var(--line);border-radius:6px}
+.set-hero .gallery{margin-top:10px;grid-template-columns:repeat(4,1fr);gap:9px}
+.set-hero .gallery::after{margin-top:0}
 .set-hero .halo{display:none}
 
 .spec{border:1px solid var(--line);border-radius:5px;overflow:hidden;background:#FDFAF3}
-.spec-row{display:flex;gap:20px;padding:15px 20px;font-size:14.5px;
-  border-bottom:1px solid var(--line);line-height:1.65}
+.spec-row{display:flex;gap:18px;padding:12px 18px;font-size:14px;
+  border-bottom:1px solid var(--line);line-height:1.6}
 .spec-row:last-child{border-bottom:0}
 .spec-row:nth-child(odd){background:rgba(42,29,22,.02)}
 .spec-row dt{flex:0 0 112px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--mute);padding-top:5px;margin:0;line-height:1.5}
 .spec-row dd{margin:0;flex:1}
-dl.spec{margin:28px 0 0}
+dl.spec{margin:22px 0 0}
 
 .tiers{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
 .tier{border:1px solid var(--line);border-radius:5px;background:#FDFAF3;
@@ -820,13 +822,13 @@ footer a:hover{color:var(--ink)}
         <div class="set-label rv"><span class="phase p1"></span><span class="eyebrow">Set 01</span></div>
         <h3 class="display rv">Mộc Nguyệt Đoàn Viên</h3>
         <p class="kicker rv">Hộp MOON · 4 bánh 50g · quà tặng thân tình</p>
-        <p class="lead rv">Hộp giấy mỹ thuật màu son, chữ MOON dập chìm, mở ra là bốn ngăn bánh xếp ngay ngắn. Kích thước vừa tay, mức giá dễ chịu — thích hợp để trao gửi cả tập thể mà vẫn giữ trọn sự chỉn chu.</p>
+        <p class="lead rv">Hộp giấy mỹ thuật màu son, chữ MOON dập chìm, bốn ngăn bánh xếp ngay ngắn. Kích thước vừa tay, mức giá dễ chịu — hợp trao gửi cả tập thể.</p>
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 50g mỗi chiếc</dd></div>
-          <div class="spec-row"><dt>Hộp</dt><dd>Giấy mỹ thuật màu son, dập chìm · tuỳ chọn giỏ tre quai da</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Quý khách tự chọn 4 trong 7 vị, không phụ thu</dd></div>
-          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, in rõ trên từng chiếc</dd></div>
-          <div class="spec-row"><dt>Hợp để</dt><dd>Kính biếu người thân, tặng cán bộ nhân viên, dâng lên bàn thờ gia tiên</dd></div>
+          <div class="spec-row"><dt>Hộp</dt><dd>Giấy mỹ thuật màu son · tuỳ chọn giỏ tre quai da</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị · không phụ thu</dd></div>
+          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày · in trên từng chiếc</dd></div>
+          <div class="spec-row"><dt>Hợp để</dt><dd>Biếu người thân, tặng nhân viên, dâng gia tiên</dd></div>
         </dl>
         <div class="tiers rv">
           <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">350.000đ</div><div class="t-note">4 bánh 50g · hộp son bốn ngăn</div></div>
@@ -840,12 +842,13 @@ footer a:hover{color:var(--ink)}
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
         <img src="img/d1.webp" alt="Giỏ tre và hộp son MOON đặt cạnh nhau">
-      </figure>
-    </div>
-    <div class="gallery g2 rv">
+        <div class="gallery g2 rv">
       <img src="img/d3.webp" alt="Hai khay bánh MOON tám vị bày trong hộp son" loading="lazy">
       <img src="img/d1.webp" alt="Hộp MOON 4 bánh mở nắp bên cạnh giỏ tre" loading="lazy">
     </div>
+      </figure>
+    </div>
+    
   </div>
 </section>
 
@@ -857,13 +860,13 @@ footer a:hover{color:var(--ink)}
         <div class="set-label rv"><span class="phase p2"></span><span class="eyebrow">Set 02</span></div>
         <h3 class="display rv">Minh Viên Nguyệt</h3>
         <p class="kicker rv">Hộp FULL MOON · 6 bánh 50g · quà biếu trang trọng</p>
-        <p class="lead rv">Nắp gập màu kem in tranh thuỷ mặc, bốn ô cửa hé lộ bánh bên trong, tua rua lụa buông từ quai da. Lòng hộp lót vàng ánh kim, sáu chiếc bánh đặt trong sáu hộp giấy riêng — mỗi hộp một hương vị, quý khách tự chọn 6 trong 7 vị của mùa này.</p>
+        <p class="lead rv">Nắp gập màu kem in tranh thuỷ mặc, tua rua lụa buông từ quai da. Lòng hộp lót vàng ánh kim, sáu chiếc bánh trong sáu hộp giấy riêng — mỗi hộp một hương vị.</p>
         <dl class="spec rv">
-          <div class="spec-row"><dt>Quy cách</dt><dd>6 bánh · 50g mỗi chiếc, đựng trong 6 hộp giấy riêng</dd></div>
-          <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng nắp gập, lót vàng ánh kim, quai da thật, tua rua lụa</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Quý khách tự chọn 6 trong 7 vị, mỗi bánh một hương vị</dd></div>
-          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, in rõ trên từng chiếc</dd></div>
-          <div class="spec-row"><dt>Hợp để</dt><dd>Kính biếu cấp trên, tri ân khách hàng, thăm hỏi gia đình</dd></div>
+          <div class="spec-row"><dt>Quy cách</dt><dd>6 bánh × 50g · sáu hộp giấy riêng</dd></div>
+          <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng nắp gập, lót vàng ánh kim, quai da, tua rua lụa</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 6 trong 7 vị · mỗi bánh một vị</dd></div>
+          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày · in trên từng chiếc</dd></div>
+          <div class="spec-row"><dt>Hợp để</dt><dd>Biếu cấp trên, tri ân khách hàng</dd></div>
         </dl>
         <div class="tiers rv">
           <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">380.000đ</div><div class="t-note">6 bánh 50g · sáu hương vị · kèm túi giấy</div></div>
@@ -877,9 +880,7 @@ footer a:hover{color:var(--ink)}
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
         <img src="img/d5.webp" alt="Hộp FULL MOON mở ra, sáu hộp bánh lẻ xếp trên nền vàng ánh kim">
-      </figure>
-    </div>
-    <div class="gallery rv">
+        <div class="gallery rv">
       <img src="img/d4.webp" alt="Hai tay mở nắp hộp FULL MOON dưới ánh đèn lồng" loading="lazy">
       <img src="img/d8.webp" alt="Hộp FULL MOON và nắp có bốn ô cửa, tua rua vàng" loading="lazy">
       <img src="img/d7.webp" alt="Hộp FULL MOON được cầm bằng quai da, bánh bày trên khay gỗ" loading="lazy">
@@ -887,6 +888,9 @@ footer a:hover{color:var(--ink)}
       <img src="img/d6.webp" alt="Bánh đầu lân, bánh dẻo trà xanh và bánh nướng nhìn từ trên xuống" loading="lazy">
       <img src="img/d5.webp" alt="Hộp FULL MOON nhìn nghiêng cùng hộp bánh lẻ" loading="lazy">
     </div>
+      </figure>
+    </div>
+    
   </div>
 </section>
 
@@ -898,13 +902,13 @@ footer a:hover{color:var(--ink)}
         <div class="set-label rv"><span class="phase p3"></span><span class="eyebrow">Set 03</span></div>
         <h3 class="display rv">An Nhiên Sen Thu</h3>
         <p class="kicker rv">Hộp LOTUS · 4 bánh 150g · quà tặng cao cấp</p>
-        <p class="lead rv">Hộp xanh rêu, mặt tranh sen — lá, hoa và chuồn chuồn khảm bằng vỏ trai ánh xà cừ, chuyển sắc theo góc nhìn. Quai tre uốn thủ công, ngăn kéo trượt bên dưới. Bên trong là bốn chiếc bánh cỡ lớn 150g, an vị trên lá sen ép.</p>
+        <p class="lead rv">Hộp xanh rêu, mặt tranh sen khảm vỏ trai ánh xà cừ, chuyển sắc theo góc nhìn. Quai tre uốn thủ công, bốn chiếc bánh cỡ lớn 150g an vị trên lá sen ép.</p>
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 150g mỗi chiếc</dd></div>
-          <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng phủ vải, mặt khảm trai, quai tre, ngăn kéo · kèm túi xách xanh rêu</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Quý khách tự chọn 4 trong 7 vị, không phụ thu</dd></div>
-          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, in rõ trên từng chiếc</dd></div>
-          <div class="spec-row"><dt>Hợp để</dt><dd>Tặng đối tác, quà cưới hỏi, quà tri ân trọng thể</dd></div>
+          <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng phủ vải, khảm trai, quai tre · kèm túi xách</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị · không phụ thu</dd></div>
+          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày · in trên từng chiếc</dd></div>
+          <div class="spec-row"><dt>Hợp để</dt><dd>Tặng đối tác, cưới hỏi, tri ân trọng thể</dd></div>
         </dl>
         <div class="tiers rv">
           <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">560.000đ</div><div class="t-note">4 bánh 150g · kèm túi xách</div></div>
@@ -918,14 +922,15 @@ footer a:hover{color:var(--ink)}
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
         <img src="img/d10.webp" alt="Hộp LOTUS xanh rêu quai tre bên cạnh bốn chiếc bánh trên khay gỗ">
-      </figure>
-    </div>
-    <div class="gallery rv">
+        <div class="gallery rv">
       <img src="img/d9.webp" alt="Hộp LOTUS mở ra, bánh đặt trên lá sen ép, hộp trà ở giữa" loading="lazy">
       <img src="img/d12.webp" alt="Cận cảnh mặt hộp khảm trai hình hoa sen và chuồn chuồn" loading="lazy">
       <img src="img/d2.webp" alt="Bốn chiếc bánh dẻo nhiều màu bày trước hộp LOTUS" loading="lazy">
       <img src="img/d10.webp" alt="Hộp LOTUS cùng túi giấy xanh rêu bên khung cửa gỗ" loading="lazy">
     </div>
+      </figure>
+    </div>
+    
   </div>
 </section>
 
@@ -1851,7 +1856,7 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
       im.addEventListener('click', ()=> open(imgs, i));
     });
   });
-  document.querySelectorAll('.set-hero img').forEach(im=>{
+  document.querySelectorAll('.set-hero > img').forEach(im=>{
     im.addEventListener('click', ()=> open([im], 0));
   });
 
