@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The Curator Cafe">
 <meta property="og:title" content="Trung Thu 2026 — Ba set quà bánh trung thu | The Curator Cafe">
-<meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bảy vị bánh thủ công, bán lẻ từ 35.000đ. Đặt hàng: 0846 413 314.">
+<meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bảy hương vị thủ công, bán lẻ từ 35.000đ. Đặt hàng: 0846 413 314.">
 <meta property="og:image" content="https://TEN-MIEN-CUA-ANH/img/share.jpg">
 <meta property="og:url" content="https://TEN-MIEN-CUA-ANH/">
 <meta property="og:locale" content="vi_VN">
@@ -86,7 +86,40 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
   white-space:nowrap;flex:0 0 auto}
 .nav-cta:hover{background:currentColor}
 .nav-cta:hover{color:var(--cream)}
-@media(max-width:860px){.nav-links a{display:none}.nav-links .nav-cta{display:inline-block}}
+/* --- nut menu + bang dieu huong --- */
+.burger{display:none;width:44px;height:40px;border:1px solid currentColor;border-radius:6px;
+  background:transparent;cursor:pointer;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;padding:0;color:inherit}
+.burger span{display:block;width:18px;height:1.5px;background:currentColor;border-radius:2px;
+  transition:transform .3s,opacity .2s}
+.burger.on span:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.burger.on span:nth-child(2){opacity:0}
+.burger.on span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg)}
+
+.drawer{position:fixed;left:0;right:0;top:0;z-index:55;background:rgba(253,248,239,.985);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  padding:78px 20px 22px;transform:translateY(-102%);transition:transform .4s cubic-bezier(.2,.8,.3,1);
+  box-shadow:0 20px 40px -30px rgba(90,60,35,.5);max-height:100svh;overflow:auto}
+.drawer.on{transform:translateY(0)}
+.drawer a{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:15px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);
+  font-family:var(--disp);font-size:21px;font-weight:500}
+.drawer a:last-of-type{border-bottom:0}
+.drawer a small{font-family:var(--body);font-size:12.5px;font-weight:300;color:var(--mute);
+  letter-spacing:.04em}
+.drawer .d-cta{margin-top:16px;justify-content:center;background:var(--ink);color:#FDF8EF;
+  border-radius:999px;border:0;font-family:var(--body);font-size:13px;letter-spacing:.18em;
+  text-transform:uppercase;padding:16px}
+.drawer-bg{position:fixed;inset:0;z-index:50;background:rgba(24,15,10,.35);
+  opacity:0;visibility:hidden;transition:.3s}
+.drawer-bg.on{opacity:1;visibility:visible}
+
+@media(max-width:860px){
+  .nav-links a:not(.nav-cta){display:none}
+  .burger{display:flex}
+  .nav-links .nav-cta{display:none}
+}
+@media(min-width:861px){.drawer,.drawer-bg{display:none}}
 
 /* ---------- hero ---------- */
 .hero{position:relative;min-height:100svh;display:flex;align-items:center;
@@ -174,7 +207,22 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .trio-card p{margin:0;font-size:14px;color:var(--mute);line-height:1.6;flex:1}
 .trio-card .price{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
   font-size:16px;font-weight:500;letter-spacing:.02em;color:var(--ink)}
-@media(max-width:760px){.trio{grid-template-columns:1fr;gap:34px}}
+@media(max-width:760px){
+  /* muc luc gon: mot hang moi set, khong lap anh lon */
+  .trio{grid-template-columns:1fr;gap:10px}
+  .trio-card{flex-direction:row;align-items:center;gap:14px;padding:11px}
+  .trio-card .ph{aspect-ratio:1;width:78px;flex:0 0 78px;border:1px solid var(--line);
+    border-bottom:1px solid var(--line);border-radius:4px}
+  .trio-body{padding:0;flex:1;min-width:0}
+  .trio-card .trio-meta .lbl{font-size:10px;letter-spacing:.18em}
+  .trio-card h4{font-size:19px;margin:3px 0 0;line-height:1.2}
+  .trio-card p{display:none}
+  .trio-card p.price{display:block;margin-top:3px;padding-top:0;border-top:0;
+    font-size:14.5px;color:var(--ink);font-weight:500}
+  .trio-card::after{content:"›";font-family:var(--disp);font-size:26px;color:var(--mute);
+    line-height:1;padding-right:4px;flex:0 0 auto}
+  .trio-card:hover{transform:none}
+}
 
 /* ---------- set sections ---------- */
 .set{padding:clamp(78px,10vw,140px) 0;position:relative;overflow:hidden}
@@ -201,47 +249,122 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .set-hero .halo{display:none}
 
 .spec{border:1px solid var(--line);border-radius:5px;overflow:hidden;background:#FDFAF3}
-.spec-row{display:flex;gap:18px;padding:12px 16px;font-size:14.5px;
-  border-bottom:1px solid var(--line)}
+.spec-row{display:flex;gap:20px;padding:15px 20px;font-size:14.5px;
+  border-bottom:1px solid var(--line);line-height:1.65}
 .spec-row:last-child{border-bottom:0}
-.spec-row:nth-child(odd){background:rgba(42,29,22,.025)}
-.spec-row dt{flex:0 0 108px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--mute);padding-top:4px;margin:0}
+.spec-row:nth-child(odd){background:rgba(42,29,22,.02)}
+.spec-row dt{flex:0 0 112px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);padding-top:5px;margin:0;line-height:1.5}
 .spec-row dd{margin:0;flex:1}
 dl.spec{margin:28px 0 0}
 
 .tiers{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
 .tier{border:1px solid var(--line);border-radius:5px;background:#FDFAF3;
-  padding:16px 20px;min-width:180px;flex:1 1 180px}
+  padding:18px 22px;min-width:180px;flex:1 1 180px}
 .tier:first-child{background:var(--ink);border-color:var(--ink);color:#FDF8EF}
 .tier:first-child .t-name,.tier:first-child .t-note{color:rgba(253,248,239,.7)}
 .tier .t-name{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.65}
-.tier .t-price{font-family:var(--disp);font-size:30px;font-weight:500;margin-top:6px;line-height:1}
-.tier .t-note{font-size:12.5px;opacity:.65;margin-top:4px}
+.tier .t-price{font-family:var(--disp);font-size:30px;font-weight:500;margin-top:8px;line-height:1}
+.tier .t-note{font-size:12.5px;opacity:.68;margin-top:6px;line-height:1.5}
 
-.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:clamp(34px,4.5vw,58px)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;
+  margin-top:clamp(26px,3.4vw,42px)}
 .gallery img{width:100%;aspect-ratio:1;object-fit:cover;border:1px solid var(--line);
-  border-radius:4px;transition:transform .7s cubic-bezier(.2,.7,.3,1),box-shadow .4s}
-.gallery img:hover{transform:scale(1.02);box-shadow:0 14px 30px -20px rgba(90,60,35,.5)}
+  border-radius:4px;cursor:zoom-in;
+  transition:transform .5s cubic-bezier(.2,.7,.3,1),box-shadow .35s,opacity .3s}
+.gallery img:hover{transform:scale(1.04);box-shadow:0 14px 30px -20px rgba(90,60,35,.5)}
+.gallery.g2{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));max-width:none}
+.set-hero img{cursor:zoom-in}
+.gallery::after{content:"Bấm vào ảnh để xem lớn";grid-column:1/-1;font-size:12px;
+  color:var(--mute);letter-spacing:.04em;margin-top:2px}
+
+/* --- xem anh phong to --- */
+.lb{position:fixed;inset:0;z-index:120;background:rgba(24,15,10,.94);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.lb.on{opacity:1;visibility:visible}
+body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:opacity .25s}
+.lb img{max-width:92vw;max-height:80vh;object-fit:contain;border-radius:4px;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+.lb-x,.lb-nav{position:absolute;border:1px solid rgba(244,233,212,.4);background:rgba(0,0,0,.3);
+  color:#FDF8EF;border-radius:50%;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:.2s;font-family:var(--body);backdrop-filter:blur(4px)}
+.lb-x{top:18px;right:18px;width:46px;height:46px;font-size:22px;line-height:1}
+.lb-nav{top:50%;transform:translateY(-50%);width:48px;height:48px;font-size:26px;line-height:1}
+.lb-prev{left:14px}.lb-next{right:14px}
+.lb-x:hover,.lb-nav:hover{background:rgba(244,233,212,.2)}
+.lb-count{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  color:rgba(244,233,212,.85);font-size:13px;letter-spacing:.16em}
+@media(max-width:640px){
+  .lb-nav{width:42px;height:42px;font-size:22px}
+  .lb-prev{left:8px}.lb-next{right:8px}
+  .lb img{max-width:94vw;max-height:74vh}
+}
 .gallery.g2{grid-template-columns:repeat(2,1fr);max-width:640px}
 @media(max-width:900px){
   .set-top{grid-template-columns:1fr}
+  .set-hero{order:-1}
+  .set-body{background:transparent;border:0;padding:18px 2px 0}
   .set--full .set-top{direction:ltr}
   .gallery{grid-template-columns:repeat(2,1fr)}
 }
 
 /* ---------- flavours ---------- */
 .flav{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:transparent}
-.flav li{list-style:none;background:#FFFDF8;padding:22px 22px 24px;
+.flav li{list-style:none;background:#FFFDF8;padding:24px 24px 26px;
   border:1px solid var(--line);border-radius:5px}
 .flav .dot{width:15px;height:15px;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:10px;
   box-shadow:inset 0 -3px 6px rgba(0,0,0,.22)}
 .flav h5{margin:0;font-family:var(--disp);font-size:23px;font-weight:500}
-.flav p{margin:6px 0 0;font-size:13.5px;color:var(--mute);line-height:1.6}
-.flav .tag{display:inline-block;margin-top:10px;font-size:10.5px;letter-spacing:.18em;
+.flav p{margin:9px 0 0;font-size:13.5px;color:var(--mute);line-height:1.68}
+.flav .tag{display:inline-block;margin-top:14px;font-size:10.5px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
-@media(max-width:860px){.flav{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.flav{grid-template-columns:1fr}}
+.flav li{cursor:pointer;transition:border-color .2s,box-shadow .25s,transform .25s}
+.flav li:hover{border-color:rgba(42,29,22,.32);transform:translateY(-2px);
+  box-shadow:0 12px 26px -20px rgba(90,60,35,.5)}
+.flav li:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+@media(max-width:860px){.flav{grid-template-columns:repeat(2,1fr);gap:9px}
+  .flav li{padding:16px 14px 15px}
+  .flav h5{font-size:19px;display:flex;align-items:center;gap:8px}
+  .flav .dot{margin-right:0;width:13px;height:13px;flex:0 0 13px}
+  .flav p{display:none}
+  .flav .tag{margin-top:9px;font-size:10px;padding:3px 9px}
+  .flav li::after{content:"Xem chi tiết ›";display:block;margin-top:7px;
+    font-size:11px;color:var(--gold-soft);letter-spacing:.06em}
+}
+
+/* --- bang thong tin vi banh --- */
+.fsheet-bg{position:fixed;inset:0;z-index:130;background:rgba(24,15,10,.5);
+  opacity:0;visibility:hidden;transition:.3s}
+.fsheet-bg.on{opacity:1;visibility:visible}
+.fsheet{position:fixed;left:0;right:0;bottom:0;z-index:131;background:#FFFDF8;
+  border-radius:14px 14px 0 0;padding:14px 22px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(105%);transition:transform .38s cubic-bezier(.2,.8,.3,1);
+  box-shadow:0 -20px 60px -20px rgba(24,15,10,.45);max-height:82svh;overflow:auto}
+.fsheet.on{transform:translateY(0)}
+.fsheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px}
+.fsheet-hd{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.fsheet-hd .dot{width:18px;height:18px;border-radius:50%;flex:0 0 18px;
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.22)}
+.fsheet-hd h5{font-family:var(--disp);font-size:27px;font-weight:500;margin:0;flex:1}
+.fsheet-x{border:0;background:none;font-size:24px;color:var(--mute);cursor:pointer;
+  padding:6px;line-height:1;flex:0 0 auto}
+.fsheet-p{font-size:15px;color:#5A4636;line-height:1.7;margin:0 0 18px}
+.fsheet-buy{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fbuy{border:1px solid var(--line);border-radius:6px;background:#FDFAF3;padding:14px;
+  cursor:pointer;text-align:left;font-family:var(--body);transition:.2s}
+.fbuy:hover{border-color:var(--ink)}
+.fbuy .sz{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.fbuy .pr{font-family:var(--disp);font-size:23px;font-weight:500;margin-top:4px}
+.fbuy .add{font-size:12px;color:var(--gold-soft);margin-top:6px;letter-spacing:.04em}
+.fsheet-note{font-size:12.5px;color:var(--mute);margin:14px 0 0;line-height:1.55}
+@media(min-width:861px){
+  .fsheet{left:50%;right:auto;bottom:auto;top:50%;width:min(480px,92vw);
+    transform:translate(-50%,-46%) scale(.96);opacity:0;border-radius:10px;
+    padding:22px 26px 26px;visibility:hidden;transition:.3s}
+  .fsheet.on{transform:translate(-50%,-50%) scale(1);opacity:1;visibility:visible}
+  .fsheet .grab{display:none}
+}
 
 /* ---------- corporate ---------- */
 .corp{background:#F6EEE0;color:var(--ink)}
@@ -249,10 +372,10 @@ dl.spec{margin:28px 0 0}
 .corp .band-head .eyebrow{color:var(--gold-soft)}
 .corp-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(30px,5vw,70px);align-items:start}
 .corp-list{margin:0;padding:0}
-.corp-list li{list-style:none;display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.corp-list li{list-style:none;display:flex;gap:18px;padding:18px 0;border-top:1px solid var(--line)}
 .corp-list .n{font-family:var(--disp);font-size:15px;color:var(--gold-soft);flex:0 0 26px;padding-top:2px}
 .corp-list strong{font-weight:500;font-size:15px;display:block}
-.corp-list span{font-size:14px;color:var(--mute)}
+.corp-list span{font-size:14px;color:var(--mute);line-height:1.6;display:block;margin-top:3px}
 @media(max-width:860px){.corp-grid{grid-template-columns:1fr}}
 
 /* ---------- order ---------- */
@@ -343,8 +466,8 @@ dl.spec{margin:28px 0 0}
 .summary-bd{padding:20px 24px 24px}
 .summary h4{font-family:var(--disp);font-size:24px;font-weight:500;margin:0}
 .summary .sub{font-size:12px;color:rgba(253,248,239,.68);margin:3px 0 0}
-.sum-line{display:flex;justify-content:space-between;gap:14px;padding:9px 0;
-  border-bottom:1px dotted var(--line);font-size:14.5px}
+.sum-line{display:flex;justify-content:space-between;gap:16px;padding:11px 0;
+  border-bottom:1px dotted var(--line);font-size:14.5px;line-height:1.5}
 .sum-line span:first-child{color:var(--mute);font-size:12.5px;letter-spacing:.05em}
 .sum-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;
   padding-top:16px;border-top:1px solid var(--ink)}
@@ -375,6 +498,26 @@ dl.spec{margin:28px 0 0}
 .sp-nm{font-family:var(--disp);font-size:20px;font-weight:500;line-height:1.18}
 .sp-sp{font-size:12.5px;color:var(--mute);margin-top:2px}
 .sp-pr{font-size:14.5px;font-weight:500;margin-top:4px}
+/* --- nut xem chi tiet (chi mobile) --- */
+.xp-btn{display:none;width:100%;align-items:center;justify-content:center;gap:8px;
+  margin-top:14px;padding:13px;border:1px dashed rgba(42,29,22,.3);border-radius:6px;
+  background:transparent;font-family:var(--body);font-size:12.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mute);cursor:pointer}
+.xp-btn .ar{transition:transform .3s;font-size:14px;line-height:1}
+@media(max-width:760px){
+  .xp-btn{display:flex}
+  .set .lead,.set dl.spec,.set .gallery{display:none}
+  .set.xp .lead{display:block}
+  .set.xp dl.spec{display:block}
+  .set.xp .gallery{display:grid}
+  .set.xp .xp-btn .ar{transform:rotate(180deg)}
+  .corp .corp-list{display:none}
+  .corp.xp .corp-list{display:block}
+  .corp.xp .xp-btn .ar{transform:rotate(180deg)}
+}
+
+.pick-btn{width:100%;justify-content:center;margin-top:18px}
+.pick-btn.added{background:#1F6B4A;border-color:#1F6B4A;color:#fff}
 .step-note{font-size:12.5px;color:var(--mute);margin:14px 0 0;line-height:1.6;
   border-top:1px solid var(--line);padding-top:12px}
 .req{color:var(--red);font-style:normal}
@@ -406,11 +549,11 @@ dl.spec{margin:28px 0 0}
 .rt-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:clamp(24px,3.4vw,48px);align-items:start}
 .rt-table{background:#FDFAF3;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .rt-head{display:grid;grid-template-columns:1fr 118px 118px;gap:10px;align-items:center;
-  padding:12px 16px;background:var(--ink);color:#FDF8EF}
+  padding:14px 18px;background:var(--ink);color:#FDF8EF}
 .rt-head span{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
 .rt-head span:not(:first-child){text-align:center;color:rgba(253,248,239,.72)}
 .rt-row{display:grid;grid-template-columns:1fr 118px 118px;gap:10px;align-items:center;
-  padding:10px 16px;border-bottom:1px solid var(--line)}
+  padding:12px 18px;border-bottom:1px solid var(--line)}
 .rt-row:last-child{border-bottom:0}
 .rt-row:nth-child(even){background:rgba(42,29,22,.03)}
 .rt-name{display:flex;align-items:center;gap:11px;font-size:15.5px;min-width:0}
@@ -462,7 +605,17 @@ footer p,footer a{font-size:14.5px;color:#5A4636;margin:0 0 8px;text-decoration:
 footer a:hover{color:var(--ink)}
 .f-bot{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);
   display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--mute)}
-@media(max-width:760px){.f-grid{grid-template-columns:1fr;gap:30px}}
+@media(max-width:760px){
+  footer{padding:44px 0 24px}
+  .f-grid{grid-template-columns:1fr 1fr;gap:24px 18px}
+  .f-grid>div:first-child{grid-column:1/-1}
+  footer .brand{font-size:21px}
+  footer .brand span{font-size:8px}
+  .f-grid>div:first-child p:last-child{max-width:none;margin-top:12px;font-size:13.5px}
+  footer h6{font-size:10px;margin-bottom:10px}
+  footer p,footer a{font-size:13.5px;margin-bottom:6px;line-height:1.55}
+  .f-bot{margin-top:30px;padding-top:16px;font-size:11px;gap:8px}
+}
 
 /* ---------- reveal ---------- */
 .rv{opacity:0;transform:translateY(26px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.3,1)}
@@ -526,12 +679,14 @@ footer a:hover{color:var(--ink)}
   .sum-actions .btn{padding:16px 22px;font-size:12.5px}
 
   /* spec: nhan tren, noi dung duoi */
-  .spec-row{flex-direction:column;gap:3px;padding:12px 0}
+  .spec-row{flex-direction:column;gap:6px;padding:15px 17px}
   .spec-row dt{flex:none;padding-top:0}
+  .spec-row dd{line-height:1.6}
   .tiers{gap:10px}
   .tier{min-width:0;flex:1 1 140px;padding:14px 16px}
   .tier .t-price{font-size:26px}
-  .gallery{gap:8px}
+  .gallery{grid-template-columns:repeat(4,1fr);gap:7px}
+  .gallery.g2{grid-template-columns:repeat(4,1fr)}
   .faq summary{font-size:19px}
   .set-hero .halo{display:none}
 }
@@ -570,7 +725,21 @@ footer a:hover{color:var(--ink)}
     <a href="#vi-banh">Vị bánh</a>
     <a href="#doanh-nghiep">Quà doanh nghiệp</a>
     <a class="nav-cta" href="#dat-hang">Đặt hàng</a>
+    <button class="burger" id="burger" type="button" aria-label="Mở danh mục" aria-expanded="false" aria-controls="drawer">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+</nav>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<nav class="drawer" id="drawer" aria-label="Danh mục">
+  <a href="#bo-suu-tap">Ba set quà <small>Xem tổng quan</small></a>
+  <a href="#set-moon">Mộc Nguyệt Đoàn Viên <small>350.000đ</small></a>
+  <a href="#set-full">Minh Viên Nguyệt <small>380.000đ</small></a>
+  <a href="#set-lotus">An Nhiên Sen Thu <small>560.000đ</small></a>
+  <a href="#vi-banh">Bảy vị bánh <small>Lẻ từ 35.000đ</small></a>
+  <a href="#doanh-nghiep">Quà doanh nghiệp <small>Từ 10 set</small></a>
+  <a class="d-cta" href="#dat-hang">Đặt hàng ngay</a>
 </nav>
 
 <!-- ============ HERO ============ -->
@@ -579,12 +748,12 @@ footer a:hover{color:var(--ink)}
     <div>
       <p class="eyebrow rv">The Curator Cafe · Trung Thu 2026</p>
       <h1 class="rv">Trăng<em>gói trong ba set quà</em></h1>
-      <p class="lead rv">Mỗi mùa trăng, chúng tôi làm một số lượng bánh có hạn — nướng theo mẻ nhỏ, nhân trộn tay, hộp chọn riêng cho từng kiểu người nhận. Ba bộ, ba mức quà, cùng một vị đoàn viên.</p>
+      <p class="lead rv">Mỗi mùa trăng, The Curator dành riêng một số lượng bánh có hạn — nướng theo mẻ nhỏ, nhân chế biến thủ công, hộp tuyển chọn cho từng dịp trao gửi. Ba set quà, ba mức trang trọng, cùng một tấm lòng đoàn viên.</p>
       <div class="hero-actions rv">
         <a class="btn btn-solid" href="#bo-suu-tap">Xem ba set quà</a>
         <a class="btn btn-ghost" href="#dat-hang">Đặt trước</a>
       </div>
-      <p class="hero-note rv">Rằm 25/09/2026 · Giao set từ 10/09, nhận đơn đến hết 20/09 · Đơn từ 10 set có ưu đãi doanh nghiệp</p>
+      <p class="hero-note rv">Rằm Trung Thu 25/09/2026 · Giao set từ 10/09, nhận đơn đến hết 20/09 · Ưu đãi doanh nghiệp từ 10 set</p>
     </div>
     <figure class="hero-figure rv" style="margin:0">
       <span class="disc"></span>
@@ -609,7 +778,7 @@ footer a:hover{color:var(--ink)}
         <p class="eyebrow">Bộ sưu tập 2026</p>
         <h2 class="display">Ba set quà</h2>
       </div>
-      <p class="lead" style="font-size:15px;max-width:38ch;margin:0">Xếp theo mức trang trọng — từ hộp mang về nhà, tới hộp đặt lên bàn khách.</p>
+      <p class="lead" style="font-size:15px;max-width:38ch;margin:0">Xếp theo mức trang trọng — từ hộp quà thân tình, đến hộp quà dành cho những dịp trọng đại.</p>
     </div>
     <div class="trio">
       <a class="trio-card rv" href="#set-moon">
@@ -617,7 +786,7 @@ footer a:hover{color:var(--ink)}
         <div class="trio-body">
           <div class="trio-meta"><span class="phase p1" style="color:var(--mute)"></span><span class="lbl">Set 01 · Moon</span></div>
         <h4>Mộc Nguyệt Đoàn Viên</h4>
-        <p>Hộp son dập chìm, tuỳ chọn giỏ tre quai da. Bốn bánh 50g — quà mang về nhà, biếu hàng xóm, tặng nhân viên.</p>
+        <p>Hộp giấy màu son dập chìm, tuỳ chọn giỏ tre quai da. Bốn chiếc 50g — món quà nhã nhặn dành tặng người thân và đồng nghiệp.</p>
         <p class="price">4 × 50g · 350.000đ</p>
       </div>
       </a>
@@ -626,7 +795,7 @@ footer a:hover{color:var(--ink)}
         <div class="trio-body">
           <div class="trio-meta"><span class="phase p2" style="color:var(--mute)"></span><span class="lbl">Set 02 · Full Moon</span></div>
         <h4>Minh Viên Nguyệt</h4>
-        <p>Hộp cứng lót vàng ánh kim, quai da thật, tua rua lụa. Sáu bánh 50g, mỗi chiếc một vị khác nhau.</p>
+        <p>Hộp cứng lót vàng ánh kim, quai da thật, tua rua lụa. Sáu chiếc 50g, mỗi chiếc một hương vị riêng.</p>
         <p class="price">6 × 50g · 380.000đ</p>
       </div>
       </a>
@@ -635,7 +804,7 @@ footer a:hover{color:var(--ink)}
         <div class="trio-body">
           <div class="trio-meta"><span class="phase p3" style="color:var(--mute)"></span><span class="lbl">Set 03 · Lotus</span></div>
         <h4>An Nhiên Sen Thu</h4>
-        <p>Tranh sen khảm trai ánh xà cừ, quai tre, ngăn kéo trượt. Bốn bánh cỡ lớn 150g, dành cho đối tác.</p>
+        <p>Tranh sen khảm trai ánh xà cừ, quai tre, ngăn kéo trượt. Bốn chiếc cỡ lớn 150g, xứng tầm quà tặng đối tác.</p>
         <p class="price">4 × 150g · 560.000đ</p>
       </div>
       </a>
@@ -650,19 +819,23 @@ footer a:hover{color:var(--ink)}
       <div class="set-body">
         <div class="set-label rv"><span class="phase p1"></span><span class="eyebrow">Set 01</span></div>
         <h3 class="display rv">Mộc Nguyệt Đoàn Viên</h3>
-        <p class="kicker rv">Hộp MOON · 4 bánh 50g · quà thân tình</p>
-        <p class="lead rv">Hộp giấy màu son, chữ MOON dập chìm, mở ra là bốn ô bánh nằm gọn. Cỡ hộp vừa tay xách, giá dễ mua nhiều — hợp để tặng cả phòng, cả xóm mà không thành gánh nặng.</p>
+        <p class="kicker rv">Hộp MOON · 4 bánh 50g · quà tặng thân tình</p>
+        <p class="lead rv">Hộp giấy mỹ thuật màu son, chữ MOON dập chìm, mở ra là bốn ngăn bánh xếp ngay ngắn. Kích thước vừa tay, mức giá dễ chịu — thích hợp để trao gửi cả tập thể mà vẫn giữ trọn sự chỉn chu.</p>
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 50g mỗi chiếc</dd></div>
-          <div class="spec-row"><dt>Hộp</dt><dd>Hộp giấy mỹ thuật màu son, dập chìm · tuỳ chọn giỏ tre quai da</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị, không phụ thu</dd></div>
-          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, ghi trên từng bánh</dd></div>
-          <div class="spec-row"><dt>Hợp để</dt><dd>Biếu người thân, tặng nhân viên, mang về nhà thắp hương</dd></div>
+          <div class="spec-row"><dt>Hộp</dt><dd>Giấy mỹ thuật màu son, dập chìm · tuỳ chọn giỏ tre quai da</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Quý khách tự chọn 4 trong 7 vị, không phụ thu</dd></div>
+          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, in rõ trên từng chiếc</dd></div>
+          <div class="spec-row"><dt>Hợp để</dt><dd>Kính biếu người thân, tặng cán bộ nhân viên, dâng lên bàn thờ gia tiên</dd></div>
         </dl>
         <div class="tiers rv">
-          <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">350.000đ</div><div class="t-note">4 bánh 50g · hộp son 4 ô</div></div>
+          <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">350.000đ</div><div class="t-note">4 bánh 50g · hộp son bốn ngăn</div></div>
           <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 100 set trở lên</div></div>
         </div>
+        <button type="button" class="xp-btn" aria-expanded="false">
+          <span class="tx">Xem chi tiết hộp quà</span><span class="ar">▾</span>
+        </button>
+        <button type="button" class="btn btn-solid pick-btn rv" data-add="moon">Chọn set này</button>
       </div>
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
@@ -683,19 +856,23 @@ footer a:hover{color:var(--ink)}
       <div class="set-body">
         <div class="set-label rv"><span class="phase p2"></span><span class="eyebrow">Set 02</span></div>
         <h3 class="display rv">Minh Viên Nguyệt</h3>
-        <p class="kicker rv">Hộp FULL MOON · 6 bánh 50g · quà biếu</p>
-        <p class="lead rv">Nắp gập màu kem in tranh thuỷ mặc, bốn ô cửa nhìn thấy bánh bên trong, tua rua lụa buông từ quai da. Bên trong lót vàng ánh kim, sáu chiếc bánh nằm trong sáu hộp giấy riêng — mỗi hộp một vị, tự chọn 6 trong 7 vị của mùa này.</p>
+        <p class="kicker rv">Hộp FULL MOON · 6 bánh 50g · quà biếu trang trọng</p>
+        <p class="lead rv">Nắp gập màu kem in tranh thuỷ mặc, bốn ô cửa hé lộ bánh bên trong, tua rua lụa buông từ quai da. Lòng hộp lót vàng ánh kim, sáu chiếc bánh đặt trong sáu hộp giấy riêng — mỗi hộp một hương vị, quý khách tự chọn 6 trong 7 vị của mùa này.</p>
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>6 bánh · 50g mỗi chiếc, đựng trong 6 hộp giấy riêng</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng nắp gập, lót vàng ánh kim, quai da thật, tua rua lụa</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 6 trong 7 vị, mỗi bánh một vị</dd></div>
-          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, ghi trên từng bánh</dd></div>
-          <div class="spec-row"><dt>Hợp để</dt><dd>Biếu sếp, tặng khách hàng, mang đi thăm nhà</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Quý khách tự chọn 6 trong 7 vị, mỗi bánh một hương vị</dd></div>
+          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, in rõ trên từng chiếc</dd></div>
+          <div class="spec-row"><dt>Hợp để</dt><dd>Kính biếu cấp trên, tri ân khách hàng, thăm hỏi gia đình</dd></div>
         </dl>
         <div class="tiers rv">
-          <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">380.000đ</div><div class="t-note">6 bánh 50g · đủ 6 vị · túi giấy</div></div>
+          <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">380.000đ</div><div class="t-note">6 bánh 50g · sáu hương vị · kèm túi giấy</div></div>
           <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 100 set trở lên</div></div>
         </div>
+        <button type="button" class="xp-btn" aria-expanded="false">
+          <span class="tx">Xem chi tiết hộp quà</span><span class="ar">▾</span>
+        </button>
+        <button type="button" class="btn btn-solid pick-btn rv" data-add="full">Chọn set này</button>
       </div>
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
@@ -720,19 +897,23 @@ footer a:hover{color:var(--ink)}
       <div class="set-body">
         <div class="set-label rv"><span class="phase p3"></span><span class="eyebrow">Set 03</span></div>
         <h3 class="display rv">An Nhiên Sen Thu</h3>
-        <p class="kicker rv">Hộp LOTUS · 4 bánh 150g · quà cao cấp</p>
-        <p class="lead rv">Hộp xanh rêu, mặt tranh sen — lá, hoa và chuồn chuồn làm bằng vỏ trai ánh xà cừ, đổi màu theo góc nhìn. Quai tre uốn, ngăn kéo trượt bên dưới. Bên trong là bốn chiếc bánh cỡ lớn 150g, đặt trên lá sen ép.</p>
+        <p class="kicker rv">Hộp LOTUS · 4 bánh 150g · quà tặng cao cấp</p>
+        <p class="lead rv">Hộp xanh rêu, mặt tranh sen — lá, hoa và chuồn chuồn khảm bằng vỏ trai ánh xà cừ, chuyển sắc theo góc nhìn. Quai tre uốn thủ công, ngăn kéo trượt bên dưới. Bên trong là bốn chiếc bánh cỡ lớn 150g, an vị trên lá sen ép.</p>
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 150g mỗi chiếc</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng phủ vải, mặt khảm trai, quai tre, ngăn kéo · kèm túi xách xanh rêu</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị, không phụ thu</dd></div>
-          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, ghi trên từng bánh</dd></div>
-          <div class="spec-row"><dt>Hợp để</dt><dd>Tặng đối tác, quà cưới hỏi, quà cảm ơn</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Quý khách tự chọn 4 trong 7 vị, không phụ thu</dd></div>
+          <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày kể từ ngày sản xuất, in rõ trên từng chiếc</dd></div>
+          <div class="spec-row"><dt>Hợp để</dt><dd>Tặng đối tác, quà cưới hỏi, quà tri ân trọng thể</dd></div>
         </dl>
         <div class="tiers rv">
-          <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">560.000đ</div><div class="t-note">4 bánh 150g · túi xách đi kèm</div></div>
+          <div class="tier"><div class="t-name">Trọn hộp</div><div class="t-price">560.000đ</div><div class="t-note">4 bánh 150g · kèm túi xách</div></div>
           <div class="tier"><div class="t-name">Ưu đãi tối đa</div><div class="t-price">−20%</div><div class="t-note">Từ 100 set trở lên</div></div>
         </div>
+        <button type="button" class="xp-btn" aria-expanded="false">
+          <span class="tx">Xem chi tiết hộp quà</span><span class="ar">▾</span>
+        </button>
+        <button type="button" class="btn btn-solid pick-btn rv" data-add="lotus">Chọn set này</button>
       </div>
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
@@ -756,19 +937,19 @@ footer a:hover{color:var(--ink)}
         <p class="eyebrow">Bảy vị</p>
         <h2 class="display">Vị bánh</h2>
       </div>
-      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Bảy vị cho cả mùa. Set nào cũng tự chọn vị — nói lúc đặt, hoặc để chúng tôi xếp giúp một hộp cân bằng.</p>
+      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Bảy hương vị cho trọn mùa trăng. Set nào quý khách cũng được tự chọn vị — ghi lại khi đặt, hoặc để chúng tôi sắp xếp một hộp hài hoà.</p>
     </div>
     <ul class="flav rv" style="margin:0;padding:0">
-      <li><h5><span class="dot" style="background:#A8B84A"></span>Cốm</h5><p>Cốm non, thơm mùi lúa mới. Ngọt nhẹ nhất trong bảy vị, ai cũng ăn được.</p><span class="tag">50g · 150g</span></li>
-      <li><h5><span class="dot" style="background:#4A2C20"></span>Sô cô la</h5><p>Nhân sô cô la đắng, không gắt đường. Vị trẻ nhất, hợp khách nhỏ tuổi.</p><span class="tag">50g · 150g</span></li>
-      <li><h5><span class="dot" style="background:#2E2A2A"></span>Mè đen</h5><p>Mè đen rang thơm, xay nhuyễn. Đậm và bùi, hợp uống cùng trà đặc.</p><span class="tag">50g · 150g</span></li>
-      <li><h5><span class="dot" style="background:#E0B14A"></span>Sầu riêng</h5><p>Sầu riêng thật, mùi rõ. Bánh bọc riêng để không ám sang các vị khác trong hộp.</p><span class="tag">50g · 150g</span></li>
-      <li><h5><span class="dot" style="background:#7E9A3E"></span>Trà xanh</h5><p>Bột trà xanh nguyên chất. Ngọt nhẹ, hậu hơi chát, cân lại cả hộp.</p><span class="tag">50g · 150g</span></li>
-      <li><h5><span class="dot" style="background:#8E4038"></span>Đậu đỏ</h5><p>Đậu đỏ ninh mềm, tán vừa tay còn lợn cợn. Vị truyền thống nhất.</p><span class="tag">50g · 150g</span></li>
-      <li><h5><span class="dot" style="background:#C8892F"></span>Thập cẩm trứng muối</h5><p>Mứt bí, hạt dưa, lạp xưởng, lá chanh, thêm lòng đỏ trứng muối. Vị mặn ngọt đủ đầy, hợp mâm cỗ.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="com" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#A8B84A"></span>Cốm</h5><p>Cốm non thơm hương lúa mới. Vị ngọt thanh nhất trong bảy vị, hợp với mọi lứa tuổi.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="socola" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#4A2C20"></span>Sô cô la</h5><p>Nhân sô cô la đắng, ngọt vừa phải. Hương vị hiện đại, được các bạn nhỏ yêu thích.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="meden" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#2E2A2A"></span>Mè đen</h5><p>Mè đen rang thơm, xay nhuyễn. Vị đậm đà và béo bùi, rất hợp thưởng cùng trà đặc.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="saurieng" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#E0B14A"></span>Sầu riêng</h5><p>Sầu riêng nguyên chất, hương thơm đặc trưng. Bánh được bọc riêng để giữ trọn hương vị từng loại.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="traxanh" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#7E9A3E"></span>Trà xanh</h5><p>Bột trà xanh nguyên chất. Ngọt dịu, hậu vị chát nhẹ, làm cân bằng cả hộp bánh.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="daudo" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#8E4038"></span>Đậu đỏ</h5><p>Đậu đỏ ninh mềm, tán vừa độ để giữ lại chút bùi của hạt. Hương vị truyền thống quen thuộc.</p><span class="tag">50g · 150g</span></li>
+      <li data-f="thapcam" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#C8892F"></span>Thập cẩm trứng muối</h5><p>Mứt bí, hạt dưa, lạp xưởng, lá chanh cùng lòng đỏ trứng muối. Vị mặn ngọt hài hoà, xứng đáng có mặt trên mâm cỗ trông trăng.</p><span class="tag">50g · 150g</span></li>
     </ul>
     <p class="rv" style="margin-top:26px;font-size:15px;color:var(--mute);border-top:1px solid var(--line);padding-top:20px">
-      Mua lẻ từng chiếc: <strong style="color:var(--ink);font-weight:500">35.000đ</strong> loại 50g ·
+      Quý khách có thể mua lẻ từng chiếc: <strong style="color:var(--ink);font-weight:500">35.000đ</strong> loại 50g ·
       <strong style="color:var(--ink);font-weight:500">80.000đ</strong> loại 150g —
       <a href="#dat-hang" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px">tính tiền ở mục Đặt hàng</a>.
     </p>
@@ -786,12 +967,15 @@ footer a:hover{color:var(--ink)}
     </div>
     <div class="corp-grid">
       <div class="rv">
-        <p class="lead" style="color:#5A4636">Chúng tôi làm quà Trung Thu cho công ty, cơ quan và đối tác tại Đông Hà. Số hộp mỗi mẫu có hạn, đặt sớm để giữ suất giao trước rằm.</p>
+        <p class="lead" style="color:#5A4636">The Curator nhận thực hiện quà Trung Thu cho doanh nghiệp, cơ quan và đối tác tại Đông Hà. Số lượng hộp mỗi mẫu có hạn, kính mời quý đơn vị đặt sớm để chúng tôi giữ suất giao trước rằm.</p>
+        <button type="button" class="xp-btn" aria-expanded="false" style="margin-bottom:14px">
+          <span class="tx">Xem quyền lợi chi tiết</span><span class="ar">▾</span>
+        </button>
         <ul class="corp-list">
-          <li><span class="n">01</span><div><strong>Thiệp chúc in tên đơn vị</strong><span>Thiết kế miễn phí, kèm mỗi set, không tính thêm tiền.</span></div></li>
-          <li><span class="n">02</span><div><strong>Giao chia nhiều địa điểm</strong><span>Gửi danh sách, chúng tôi chia và giao từng nơi trong tỉnh.</span></div></li>
-          <li><span class="n">03</span><div><strong>Đặt cọc giữ suất</strong><span>Cọc 30% với đơn từ 10 set, 50% với đơn từ 50 set. Thanh toán đủ khi giao.</span></div></li>
-          <li><span class="n">04</span><div><strong>Giữ hàng theo lịch của mình</strong><span>Báo ngày giao mong muốn, chúng tôi xếp lịch trước rằm.</span></div></li>
+          <li><span class="n">01</span><div><strong>Thiệp chúc in tên đơn vị</strong><span>Thiết kế miễn phí, kèm theo mỗi set, không phát sinh chi phí.</span></div></li>
+          <li><span class="n">02</span><div><strong>Giao đến nhiều địa điểm</strong><span>Quý đơn vị gửi danh sách, chúng tôi phân chia và giao đến từng nơi trong tỉnh.</span></div></li>
+          <li><span class="n">03</span><div><strong>Đặt cọc giữ suất</strong><span>Đặt cọc 30% với đơn từ 10 set, 50% với đơn từ 50 set. Thanh toán phần còn lại khi nhận hàng.</span></div></li>
+          <li><span class="n">04</span><div><strong>Giao theo lịch của quý đơn vị</strong><span>Vui lòng báo ngày giao mong muốn, chúng tôi sắp xếp hoàn tất trước rằm.</span></div></li>
         </ul>
       </div>
       <div class="rv">
@@ -802,7 +986,7 @@ footer a:hover{color:var(--ink)}
           <div class="sum-line"><span>50 – 99 set</span><span>−15%</span></div>
           <div class="sum-line"><span>Từ 100 set</span><span>−20%</span></div>
           <p style="font-size:12.5px;color:var(--mute);margin:14px 0 0;line-height:1.55">
-            Áp dụng cho cả ba set. Mỗi đơn chỉ áp một mức, không cộng dồn. Số lượng tính trên tổng set của cùng một đơn.</p>
+            Áp dụng cho cả ba set. Mỗi đơn hàng hưởng một mức ưu đãi, không cộng dồn. Số lượng được tính trên tổng số set trong cùng một đơn.</p>
           <a class="btn btn-solid" style="margin-top:22px;width:100%;justify-content:center" href="#dat-hang">Nhận báo giá</a>
         </div>
       </div>
@@ -818,7 +1002,7 @@ footer a:hover{color:var(--ink)}
         <p class="eyebrow">Đặt trước</p>
         <h2 class="display">Đặt hàng</h2>
       </div>
-      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Chọn set quà, bánh lẻ, hoặc cả hai trong cùng một đơn. Điền thông tin rồi gửi qua Zalo — chúng tôi gọi lại xác nhận.</p>
+      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Quý khách có thể chọn set quà, bánh lẻ hoặc cả hai trong cùng một đơn. Sau khi gửi, chúng tôi sẽ liên hệ lại để xác nhận.</p>
     </div>
 
     <div class="order-grid">
@@ -872,7 +1056,7 @@ footer a:hover{color:var(--ink)}
                 <button type="button" data-d="1" aria-label="Thêm An Nhiên Sen Thu">+</button>
               </div>
             </div>
-            <p class="step-note">Đặt từ 10 set được giảm giá, mức giảm tự áp khi bạn chọn đủ số lượng.</p>
+            <p class="step-note">Đơn từ 10 set được hưởng ưu đãi, mức giảm tự động áp dụng khi quý khách chọn đủ số lượng.</p>
           </div>
 
           <div id="panelRt" role="tabpanel" aria-labelledby="tabRt" hidden>
@@ -1002,7 +1186,7 @@ footer a:hover{color:var(--ink)}
               </div>
             </div>
             </div>
-            <p class="step-note">Bánh lẻ bọc riêng từng chiếc, không áp ưu đãi số lượng.</p>
+            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc, không áp dụng ưu đãi theo số lượng.</p>
           </div>
         </section>
 
@@ -1041,19 +1225,19 @@ footer a:hover{color:var(--ink)}
           </div>
           <div class="field">
             <label for="note">Chọn vị &amp; lời nhắn</label>
-            <textarea id="note" placeholder="Ví dụ: set Mộc Nguyệt chọn 2 cốm, 1 trà xanh, 1 đậu đỏ. Thiệp ghi tên đơn vị: Công ty ABC."></textarea>
+            <textarea id="note" placeholder="Ví dụ: set Mộc Nguyệt xin chọn 2 cốm, 1 trà xanh, 1 đậu đỏ. Thiệp xin ghi: Công ty ABC kính tặng."></textarea>
           </div>
         </section>
       </form>
 
       <aside class="summary rv" id="summary" aria-live="polite">
         <div class="summary-hd">
-          <h4>Đơn của bạn</h4>
-          <p class="sub">Tạm tính, chưa gồm phí giao hàng.</p>
+          <h4>Đơn hàng của quý khách</h4>
+          <p class="sub">Tạm tính, chưa bao gồm phí giao hàng.</p>
         </div>
         <div class="summary-bd">
           <ul class="cart" id="cart"></ul>
-          <p class="cart-empty" id="cartEmpty">Chưa chọn món nào. Bấm dấu cộng ở bảng bên để thêm vào đơn.</p>
+          <p class="cart-empty" id="cartEmpty">Quý khách chưa chọn sản phẩm nào. Vui lòng bấm dấu cộng ở bảng bên để thêm vào đơn.</p>
 
           <div class="sum-line" id="lineSet" hidden><span>Tiền set</span><strong id="valSet">0đ</strong></div>
           <div class="sum-line" id="lineDisc" hidden><span id="labDisc">Ưu đãi</span><strong id="valDisc">0đ</strong></div>
@@ -1066,14 +1250,14 @@ footer a:hover{color:var(--ink)}
             <a class="btn" id="btnZalo" href="https://zalo.me/0846413314" target="_blank" rel="noopener">Nhắn Zalo</a>
             <a class="btn" id="btnCall" href="tel:0846413314">Gọi 0846 413 314</a>
           </div>
-          <p class="hint" id="hint">Bấm “Gửi đơn hàng” là đơn tới thẳng chúng tôi, không cần sao chép gì cả.</p>
+          <p class="hint" id="hint">Bấm “Gửi đơn hàng”, đơn sẽ được chuyển thẳng tới chúng tôi.</p>
 
           <div id="sentBox" hidden>
             <div class="sent">
               <div class="sent-ic">✓</div>
-              <h5>Đã nhận đơn của bạn</h5>
-              <p id="sentName">Chúng tôi sẽ gọi lại trong hôm nay để xác nhận.</p>
-              <p>Cần đổi hoặc bổ sung gì, nhắn Zalo giúp chúng tôi nhé.</p>
+              <h5>Đã tiếp nhận đơn hàng</h5>
+              <p id="sentName">Chúng tôi sẽ liên hệ lại để xác nhận đơn hàng.</p>
+              <p>Nếu cần thay đổi hoặc bổ sung, quý khách vui lòng nhắn Zalo cho chúng tôi.</p>
               <span class="code" id="sentCode">MÃ ĐƠN</span>
             </div>
             <div class="sum-actions" style="margin-top:20px">
@@ -1093,11 +1277,11 @@ footer a:hover{color:var(--ink)}
   <div class="wrap" style="max-width:900px">
     <p class="eyebrow rv" style="color:var(--mute);margin-bottom:26px">Trước khi đặt</p>
     <div class="rv">
-      <details open><summary>Bánh để được bao lâu?</summary><p>30 ngày kể từ ngày sản xuất, in rõ trên tem từng chiếc. Bánh làm theo đơn nên hạn luôn còn dài, không phải hàng để sẵn. Để nơi khô mát, tránh nắng. Đã cắt thì dùng trong ngày.</p></details>
-      <details><summary>Đặt trước bao nhiêu ngày?</summary><p>Đơn lẻ đặt trước 2 ngày. Đơn từ 10 set đặt trước 5 ngày để chúng tôi xếp lịch giao. Set bắt đầu giao từ 10/09 và ngừng nhận đơn sau 20/09 — sau mốc đó không kịp làm và giao trước rằm.</p></details>
-      <details><summary>Có giao đi tỉnh khác không?</summary><p>Có. Nội thành Đông Hà giao trong ngày, miễn phí từ 2 set. Đi tỉnh gửi nhà xe hoặc chuyển phát nhanh, phí tính theo thực tế.</p></details>
-      <details><summary>Thanh toán thế nào?</summary><p>Chuyển khoản hoặc tiền mặt tại quán. Đơn từ 10 set cọc 30%, từ 50 set cọc 50%, phần còn lại thanh toán đủ khi nhận hàng.</p></details>
-      <details><summary>Tự chọn vị được không?</summary><p>Được, ở cả ba set. Ghi số lượng từng vị vào ô lời nhắn khi đặt, không phụ thu. Riêng vị sầu riêng mùi khá rõ nên được bọc riêng trước khi xếp vào hộp.</p></details>
+      <details open><summary>Bánh để được bao lâu?</summary><p>30 ngày kể từ ngày sản xuất, in rõ trên tem từng chiếc. Bánh được làm theo đơn nên hạn sử dụng luôn còn dài. Xin bảo quản nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp; bánh đã cắt nên dùng trong ngày.</p></details>
+      <details><summary>Đặt trước bao nhiêu ngày?</summary><p>Đơn lẻ xin đặt trước 2 ngày. Đơn từ 10 set xin đặt trước 5 ngày để chúng tôi sắp xếp lịch giao. Set quà bắt đầu giao từ 10/09 và ngừng nhận đơn sau 20/09, do sau mốc này chúng tôi không kịp hoàn thiện và giao trước rằm.</p></details>
+      <details><summary>Có giao đi tỉnh khác không?</summary><p>Có. Nội thành Đông Hà giao trong ngày, miễn phí với đơn từ 2 set. Đi tỉnh khác, chúng tôi gửi nhà xe hoặc chuyển phát nhanh, cước phí tính theo thực tế.</p></details>
+      <details><summary>Thanh toán thế nào?</summary><p>Quý khách có thể chuyển khoản hoặc thanh toán tiền mặt tại quán. Đơn từ 10 set đặt cọc 30%, từ 50 set đặt cọc 50%, phần còn lại thanh toán khi nhận hàng.</p></details>
+      <details><summary>Tự chọn vị được không?</summary><p>Được, ở cả ba set. Quý khách vui lòng ghi số lượng từng vị vào ô lời nhắn khi đặt, chúng tôi không tính thêm phụ thu. Riêng vị sầu riêng có hương thơm đặc trưng nên được bọc riêng trước khi xếp vào hộp.</p></details>
     </div>
   </div>
 </section>
@@ -1107,7 +1291,7 @@ footer a:hover{color:var(--ink)}
     <div class="f-grid">
       <div>
         <p class="brand">The Curator Cafe<span>Fine Coffee &amp; Curios</span></p>
-        <p style="max-width:34ch;margin-top:16px">Quán cà phê nhỏ ở Nam Đông Hà, mỗi mùa trăng lại làm một mẻ bánh có hạn.</p>
+        <p style="max-width:34ch;margin-top:16px">Quán cà phê tại Nam Đông Hà. Mỗi mùa trăng, chúng tôi dành riêng một mẻ bánh thủ công có hạn để trao gửi tới quý khách.</p>
       </div>
       <div>
         <h6>Ghé quán</h6>
@@ -1116,7 +1300,7 @@ footer a:hover{color:var(--ink)}
       </div>
       <div>
         <h6>Đặt bánh</h6>
-        <p style="margin-bottom:4px">Gặp Huy</p>
+        <p style="margin-bottom:4px">Liên hệ đặt hàng</p>
         <a href="tel:0846413314" id="fPhone">0846 413 314</a>
         <a href="https://zalo.me/0846413314" id="fZalo">Nhắn Zalo</a>
         <a href="#dat-hang">Điền phiếu đặt hàng</a>
@@ -1124,7 +1308,7 @@ footer a:hover{color:var(--ink)}
     </div>
     <div class="f-bot">
       <span>© 2026 The Curator Cafe</span>
-      <span>Giá đã gồm hộp và túi giấy · Bánh làm theo đơn · Hạn dùng 30 ngày</span>
+      <span>Giá đã bao gồm hộp và túi giấy · Bánh làm theo đơn · Hạn dùng 30 ngày</span>
     </div>
   </div>
 </footer>
@@ -1135,6 +1319,38 @@ footer a:hover{color:var(--ink)}
     <div class="mb-vl" id="mbVal">350.000đ / set</div>
   </div>
   <a class="btn btn-solid" id="mbBtn" href="#dat-hang">Đặt hàng</a>
+</div>
+
+<div class="fsheet-bg" id="fsBg"></div>
+<div class="fsheet" id="fsheet" role="dialog" aria-modal="true" aria-labelledby="fsName">
+  <div class="grab"></div>
+  <div class="fsheet-hd">
+    <span class="dot" id="fsDot"></span>
+    <h5 id="fsName">Vị bánh</h5>
+    <button class="fsheet-x" id="fsX" type="button" aria-label="Đóng">×</button>
+  </div>
+  <p class="fsheet-p" id="fsDesc"></p>
+  <div class="fsheet-buy">
+    <button class="fbuy" id="fsBuy50" type="button">
+      <span class="sz">Bánh lẻ 50g</span>
+      <span class="pr" style="display:block">35.000đ</span>
+      <span class="add" style="display:block">+ Thêm vào đơn</span>
+    </button>
+    <button class="fbuy" id="fsBuy150" type="button">
+      <span class="sz">Bánh lẻ 150g</span>
+      <span class="pr" style="display:block">80.000đ</span>
+      <span class="add" style="display:block">+ Thêm vào đơn</span>
+    </button>
+  </div>
+  <p class="fsheet-note">Vị này cũng chọn được trong cả ba set quà — quý khách ghi ở ô lời nhắn khi đặt.</p>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Xem ảnh">
+  <button class="lb-x" id="lbX" type="button" aria-label="Đóng">×</button>
+  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Ảnh trước">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Ảnh sau">›</button>
+  <span class="lb-count" id="lbCount"></span>
 </div>
 
 <iframe name="gsink" id="gsink" style="display:none" title="gửi đơn" aria-hidden="true"></iframe>
@@ -1511,6 +1727,19 @@ $('#btnAgain').addEventListener('click', ()=>{
 
 render();
 
+/* nut "Chon set nay" o tung khoi gioi thieu */
+document.querySelectorAll('[data-add]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const k = btn.dataset.add;
+    cartSet[k] = (cartSet[k] || 0) + 1;
+    syncSteppers(); render();
+    btn.classList.add('added');
+    btn.textContent = "Đã thêm ✓  Xem đơn";
+    setTimeout(()=>{ $('#dat-hang').scrollIntoView({behavior:'smooth'}); }, 320);
+    setTimeout(()=>{ btn.classList.remove('added'); btn.textContent = "Chọn set này"; }, 3000);
+  });
+});
+
 /* thanh dat hang co dinh tren dien thoai */
 (function(){
   const mbar = $('#mbar'), sum = $('#summary');
@@ -1569,6 +1798,151 @@ render();
   box.classList.add('ready');
   start();
 })();
+
+/* menu an/hien tren dien thoai */
+(function(){
+  const burger = $('#burger'), drawer = $('#drawer'), bg = $('#drawerBg');
+  if(!burger || !drawer) return;
+  function setOpen(open){
+    burger.classList.toggle('on', open);
+    drawer.classList.toggle('on', open);
+    bg.classList.toggle('on', open);
+    burger.setAttribute('aria-expanded', open);
+    burger.setAttribute('aria-label', open ? 'Đóng danh mục' : 'Mở danh mục');
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  burger.addEventListener('click', ()=> setOpen(!drawer.classList.contains('on')));
+  bg.addEventListener('click', ()=> setOpen(false));
+  drawer.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> setOpen(false)));
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') setOpen(false); });
+})();
+
+/* xem anh phong to */
+(function(){
+  const lb = $('#lb'), lbImg = $('#lbImg'), lbCount = $('#lbCount');
+  if(!lb) return;
+  let group = [], idx = 0;
+
+  function open(list, i){
+    group = list; idx = i;
+    show();
+    lb.classList.add('on');
+    document.body.classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    lb.classList.remove('on');
+    document.body.classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+  function show(){
+    const im = group[idx];
+    lbImg.src = im.currentSrc || im.src;
+    lbImg.alt = im.alt || "";
+    lbCount.textContent = group.length > 1 ? (idx+1) + " / " + group.length : "";
+    $('#lbPrev').hidden = group.length < 2;
+    $('#lbNext').hidden = group.length < 2;
+  }
+  function step(d){ idx = (idx + d + group.length) % group.length; show(); }
+
+  document.querySelectorAll('.gallery').forEach(g=>{
+    const imgs = Array.from(g.querySelectorAll('img'));
+    imgs.forEach((im, i)=>{
+      im.addEventListener('click', ()=> open(imgs, i));
+    });
+  });
+  document.querySelectorAll('.set-hero img').forEach(im=>{
+    im.addEventListener('click', ()=> open([im], 0));
+  });
+
+  $('#lbX').addEventListener('click', close);
+  $('#lbPrev').addEventListener('click', ()=> step(-1));
+  $('#lbNext').addEventListener('click', ()=> step(1));
+  lb.addEventListener('click', e=>{ if(e.target === lb) close(); });
+  document.addEventListener('keydown', e=>{
+    if(!lb.classList.contains('on')) return;
+    if(e.key === 'Escape') close();
+    if(e.key === 'ArrowLeft') step(-1);
+    if(e.key === 'ArrowRight') step(1);
+  });
+  let x0 = null;
+  lb.addEventListener('touchstart', e=>{ x0 = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', e=>{
+    if(x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx) > 45 && group.length > 1) step(dx < 0 ? 1 : -1);
+    x0 = null;
+  }, {passive:true});
+})();
+
+
+/* bang thong tin vi banh */
+(function(){
+  const sheet = $('#fsheet'), bg = $('#fsBg');
+  if(!sheet) return;
+  const COLOR = { com:"#A8B84A", socola:"#4A2C20", meden:"#2E2A2A", saurieng:"#E0B14A",
+                  traxanh:"#7E9A3E", daudo:"#8E4038", thapcam:"#C8892F" };
+  let cur = null;
+
+  function openSheet(li){
+    cur = li.dataset.f;
+    $('#fsDot').style.background = COLOR[cur] || "#999";
+    $('#fsName').textContent = RT_NAME[cur] || li.querySelector('h5').textContent.trim();
+    const pEl = li.querySelector('p');
+    $('#fsDesc').textContent = pEl ? pEl.textContent : "";
+    sheet.classList.add('on'); bg.classList.add('on');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSheet(){
+    sheet.classList.remove('on'); bg.classList.remove('on');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.flav li[data-f]').forEach(li=>{
+    li.addEventListener('click', ()=> openSheet(li));
+    li.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openSheet(li); }
+    });
+  });
+  $('#fsX').addEventListener('click', closeSheet);
+  bg.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSheet(); });
+
+  function addRt(sz){
+    if(!cur) return;
+    const k = cur + "|" + sz;
+    cartRt[k] = Math.min(99, (cartRt[k] || 0) + 1);
+    syncSteppers(); render();
+    toast("Đã thêm " + RT_NAME[cur] + " " + sz + "g vào đơn");
+    closeSheet();
+  }
+  $('#fsBuy50').addEventListener('click', ()=> addRt("50"));
+  $('#fsBuy150').addEventListener('click', ()=> addRt("150"));
+
+  /* vuot xuong de dong (mobile) */
+  let y0 = null;
+  sheet.addEventListener('touchstart', e=>{ y0 = e.touches[0].clientY; }, {passive:true});
+  sheet.addEventListener('touchend', e=>{
+    if(y0 === null) return;
+    if(e.changedTouches[0].clientY - y0 > 70 && sheet.scrollTop <= 0) closeSheet();
+    y0 = null;
+  }, {passive:true});
+})();
+
+
+/* xem chi tiet / thu gon tren dien thoai */
+document.querySelectorAll('.xp-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const sec = btn.closest('section');
+    const open = sec.classList.toggle('xp');
+    btn.setAttribute('aria-expanded', open);
+    const isCorp = sec.classList.contains('corp');
+    btn.querySelector('.tx').textContent = open
+      ? 'Thu gọn'
+      : (isCorp ? 'Xem quyền lợi chi tiết' : 'Xem chi tiết hộp quà');
+    if(!open) sec.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+
 </script>
 </body>
 </html>
