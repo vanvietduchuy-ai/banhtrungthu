@@ -100,9 +100,10 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 
 .drawer{position:fixed;left:0;right:0;top:0;z-index:55;background:rgba(253,248,239,.985);
   backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
-  padding:78px 20px 22px;transform:translateY(-102%);transition:transform .4s cubic-bezier(.2,.8,.3,1);
+  padding:78px 20px 22px;transform:translateY(-102%);visibility:hidden;
+  transition:transform .4s cubic-bezier(.2,.8,.3,1),visibility 0s linear .4s;
   box-shadow:0 20px 40px -30px rgba(90,60,35,.5);max-height:100svh;overflow:auto}
-.drawer.on{transform:translateY(0)}
+.drawer.on{transform:translateY(0);visibility:visible;transition:transform .4s cubic-bezier(.2,.8,.3,1)}
 .drawer a{display:flex;align-items:center;justify-content:space-between;gap:14px;
   padding:15px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);
   font-family:var(--disp);font-size:21px;font-weight:500}
@@ -721,6 +722,8 @@ footer a:hover{color:var(--ink)}
     align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
     background:rgba(253,248,239,.97);border-top:1px solid var(--line);
     box-shadow:0 -8px 24px -14px rgba(90,60,35,.4);backdrop-filter:blur(10px)}
+  .mbar::after{content:"";position:absolute;top:100%;left:0;right:0;height:45vh;
+    background:#FDF8EF;pointer-events:none}
   .mbar .mb-txt{flex:1;min-width:0}
   .mbar .mb-lb{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
   .mbar .mb-vl{font-family:var(--disp);font-size:22px;font-weight:500;line-height:1.1;
