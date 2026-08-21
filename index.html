@@ -821,6 +821,7 @@ footer a:hover{color:var(--ink)}
       <div class="hero-actions rv">
         <a class="btn btn-solid" href="#bo-suu-tap">Xem ba set quà</a>
         <a class="btn btn-ghost" href="#dat-hang">Đặt trước</a>
+        <a class="btn btn-ghost" href="/cafe">Order cà phê</a>
       </div>
       <p class="hero-note rv">Rằm Trung Thu 25/09/2026 · Giao set từ 10/09, nhận đơn đến hết 20/09 · Ưu đãi doanh nghiệp từ 10 set</p>
     </div>
@@ -1712,6 +1713,28 @@ function orderText(){
   return L.join("\n");
 }
 
+/* luu & dien lai thong tin khach (chung voi trang ca phe) */
+const CUST_KEY = 'tcCust';
+function loadCust(){
+  try{
+    const c = JSON.parse(localStorage.getItem(CUST_KEY) || 'null');
+    if(!c) return;
+    if(c.n && !$('#name').value) $('#name').value = c.n;
+    if(c.p && !$('#phone').value) $('#phone').value = c.p;
+    if(c.a && !$('#addr').value) $('#addr').value = c.a;
+  }catch(e){}
+}
+function saveCust(){
+  try{
+    localStorage.setItem(CUST_KEY, JSON.stringify({
+      n: $('#name').value.trim(),
+      p: $('#phone').value.trim(),
+      a: $('#addr').value.trim()
+    }));
+  }catch(e){}
+}
+loadCust();
+
 function toast(msg){
   const t = $('#toast'); t.textContent = msg; t.classList.add('on');
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 2800);
@@ -1831,7 +1854,7 @@ $('#btnSend').addEventListener('click', function(){
   const code = makeCode();
   try{
     sendOrder(code);
-    copyOrder();   /* van sao chep san, phong khi khach muon nhan Zalo them */
+    copyOrder(); saveCust();   /* van sao chep san, phong khi khach muon nhan Zalo them */
     setTimeout(()=>{ showSent(code); }, 900);
   }catch(err){
     btn.disabled = false; btn.textContent = "Gửi đơn hàng";

@@ -30,25 +30,23 @@ body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(-
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .nav{position:sticky;top:0;z-index:60;background:rgba(253,248,239,.95);backdrop-filter:blur(9px);
   border-bottom:1px solid var(--line)}
-.nav-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;
-  max-width:1080px;margin:0 auto}
-.brand{text-decoration:none;color:var(--ink)}
-.brand b{font-family:var(--disp);font-weight:500;font-size:19px;letter-spacing:.14em;display:block;white-space:nowrap}
-.brand span{font-size:8.5px;letter-spacing:.3em;color:var(--mute)}
-.nav-back{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);
-  text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 16px;
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 20px;
+  max-width:1080px;margin:0 auto;min-height:48px}
+.brand{text-decoration:none;color:var(--ink);display:flex;align-items:baseline;gap:10px;min-width:0}
+.brand b{font-family:var(--disp);font-weight:500;font-size:16px;letter-spacing:.12em;white-space:nowrap}
+.brand span{font-size:7.5px;letter-spacing:.26em;color:var(--mute);white-space:nowrap}
+@media(max-width:560px){.brand span{display:none}}
+.nav-back{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);
+  text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 13px;
   white-space:nowrap;transition:.2s}
 .nav-back:hover{color:var(--ink);border-color:var(--ink)}
 
 .hero{padding-top:32px;padding-bottom:8px}
 .hero .eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px}
 .hero h1{font-family:var(--disp);font-weight:500;font-size:clamp(38px,6vw,54px);line-height:1.04}
-.hero .meta{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-size:12px;letter-spacing:.04em;color:var(--ink);background:#FFFDF8;
-  border:1px solid var(--line);border-radius:999px;padding:7px 14px}
-.chip b{font-weight:500}
 
-.cats{position:sticky;top:57px;z-index:50;background:rgba(253,248,239,.96);backdrop-filter:blur(8px);
+
+.cats{position:sticky;top:48px;z-index:50;background:rgba(253,248,239,.96);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);margin-top:20px}
 .cats-in{display:flex;gap:8px;overflow-x:auto;padding:11px 20px;max-width:1080px;margin:0 auto;
   scrollbar-width:none}
@@ -188,7 +186,7 @@ footer a{color:var(--ink)}
   .mbar .go{flex:0 0 auto;border-radius:999px;background:var(--gold);color:#fff;border:0;
     padding:13px 20px;font-family:var(--body);font-size:12px;letter-spacing:.14em;
     text-transform:uppercase;cursor:pointer;text-decoration:none}
-  .cats{top:56px}
+  .cats{top:48px}
   .mcat{scroll-margin-top:112px}
   .mi{padding:11px 11px 10px}
   .stp{height:38px}
@@ -225,12 +223,7 @@ footer a{color:var(--ink)}
     <input id="q" type="text" placeholder="Tìm món — ví dụ: bạc xỉu, matcha, croissant…" autocomplete="off">
     <button class="clr" id="qClr" type="button" aria-label="Xoá tìm kiếm">✕</button>
   </div>
-  <div class="meta">
-    <span class="chip"><b>6:00 – 22:00</b> mỗi ngày</span>
-    <span class="chip">Miễn ship <b>dưới 5km</b></span>
-    <span class="chip">Giao trong <b>bán kính 10km</b></span>
-    <span class="chip">Nhận tại quầy HG02-02 Vincom Royal Park</span>
-  </div>
+  
 </header>
 
 <div class="cats"><div class="cats-in" id="cats"></div></div>
@@ -304,7 +297,8 @@ footer a{color:var(--ink)}
 <div class="toast" id="toast"></div>
 
 <footer class="wrap">
-  <p>The Curator Cafe · HG02-02 Vincom Royal Park, Nam Đông Hà, Quảng Trị · <a href="tel:0846413314">0846 413 314</a></p>
+  <p>Mở cửa 6:00 – 22:00 · Giao trong bán kính 10km, miễn phí dưới 5km · Nhận tại quầy HG02-02</p>
+  <p>The Curator Cafe · Vincom Royal Park, Nam Đông Hà, Quảng Trị · <a href="tel:0846413314">0846 413 314</a></p>
   <p><a href="/">Đặt bánh trung thu Trung Thu 2026 →</a></p>
 </footer>
 
@@ -444,6 +438,28 @@ document.querySelectorAll('input[name=ship]').forEach(r=>{
   $('#time').value = p(h) + ':' + p(m);
 })();
 
+/* luu & dien lai thong tin khach */
+const CUST_KEY = 'tcCust';
+function loadCust(){
+  try{
+    const c = JSON.parse(localStorage.getItem(CUST_KEY) || 'null');
+    if(!c) return;
+    if(c.n && !$('#name').value) $('#name').value = c.n;
+    if(c.p && !$('#phone').value) $('#phone').value = c.p;
+    if(c.a && !$('#addr').value) $('#addr').value = c.a;
+  }catch(e){}
+}
+function saveCust(){
+  try{
+    localStorage.setItem(CUST_KEY, JSON.stringify({
+      n: $('#name').value.trim(),
+      p: $('#phone').value.trim(),
+      a: $('#addr').value.trim()
+    }));
+  }catch(e){}
+}
+loadCust();
+
 function toast(msg){
   const t = $('#toast'); t.textContent = msg; t.classList.add('on');
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 2800);
@@ -526,7 +542,7 @@ $('#btnSend').addEventListener('click', function(){
   const btn = this; btn.disabled = true; btn.textContent = 'Đang gửi…';
   const code = makeCode();
   try{
-    sendOrder(code); copyOrder(code);
+    sendOrder(code); copyOrder(code); saveCust();
     setTimeout(()=>{
       $('#actions').hidden = true; $('#hint').hidden = true;
       $('#sentBox').hidden = false;
