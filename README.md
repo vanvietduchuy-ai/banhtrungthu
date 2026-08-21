@@ -1,8 +1,9 @@
 # The Curator Cafe — Web Trung Thu 2026 + Order Cà Phê
 
 Hai trang tĩnh, `index.html` ở thư mục gốc: `/` trang bánh · `/cafe` order cà phê.
-Nút "☕ Order cà phê" đỏ sẫm chữ vàng nằm trên thanh tiêu đề trang chủ
-(hiện cả trên điện thoại). Sửa màu: tìm `.nav-cafe`.
+Đường sang trang cà phê: nút "☕ Order cà phê" đỏ sẫm trên thanh tiêu đề
+(cả mobile), mục trong menu ba gạch, link ở footer.
+Hero trang chủ: "Xem ba set quà" + "Đặt bánh trung thu".
 
 ## Đơn về đâu
 Bánh → Form `1FAIpQLSct_Jsf_F3h8vDh-gSHcdVMMwaQAWZp7O92imAM2G2zCF3IZg`
@@ -11,8 +12,8 @@ Bật thông báo email cho CẢ HAI. Đơn cà phê cần người trực 6h–
 
 ## Trang cà phê
 Ô tìm món (gõ không dấu) · menu thẻ 2 cột · 62 món · giờ nhận 06:00–21:45 ·
-tại quầy / giao ≤10km (miễn ≤5km) · tự lưu tên+SĐT+địa chỉ sau lần đặt đầu
-(dùng chung với trang bánh). Sửa menu: `const DATA` trong cafe.html.
+tại quầy / giao ≤10km (miễn ≤5km) · tự lưu tên+SĐT+địa chỉ sau lần đặt đầu.
+Sửa menu: `const DATA` trong cafe.html.
 
 ## Việc còn lại
 3 ảnh thật `that-1/2/3.jpg` (vuông ~1000px) bỏ vào img.
