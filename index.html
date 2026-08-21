@@ -115,7 +115,8 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .drawer-bg{position:fixed;inset:0;z-index:50;background:rgba(24,15,10,.35);
   opacity:0;visibility:hidden;transition:.3s}
 .drawer-bg.on{opacity:1;visibility:visible}
-body.drawer-open .mbar{opacity:0;pointer-events:none;transition:opacity .25s}
+.mbar{transition:opacity .2s ease .4s}
+body.drawer-open .mbar{opacity:0;pointer-events:none;transition:opacity .15s ease 0s}
 
 @media(max-width:860px){
   .nav-links a:not(.nav-cta){display:none}
@@ -139,6 +140,11 @@ body.drawer-open .mbar{opacity:0;pointer-events:none;transition:opacity .25s}
   font-size:.44em;letter-spacing:0;margin-top:14px;line-height:1.1}
 .hero p.lead{color:#5A4636;margin:26px 0 0}
 .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+@media(max-width:760px){
+  .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hero-actions .btn{justify-content:center;padding:14px 8px;font-size:10.5px;
+    letter-spacing:.09em;white-space:nowrap}
+}
 .hero-note{margin-top:26px;font-size:12.5px;letter-spacing:.05em;color:var(--mute);
   border-top:1px solid var(--line);padding-top:14px;max-width:460px}
 .hero-figure{position:relative}
@@ -710,6 +716,7 @@ footer a:hover{color:var(--ink)}
   .lead{font-size:16px}
 
   /* thanh dat hang co dinh duoi man hinh */
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
   .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;
     align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
     background:rgba(253,248,239,.97);border-top:1px solid var(--line);
