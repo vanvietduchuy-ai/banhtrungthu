@@ -84,6 +84,8 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .nav-cta{border:1px solid currentColor;border-radius:999px;padding:9px 20px;font-size:12px;
   letter-spacing:.16em;text-transform:uppercase;text-decoration:none;transition:.25s;
   white-space:nowrap;flex:0 0 auto}
+.nav-cafe{background:#7E2418;border-color:#7E2418;color:#EFC15C!important;font-weight:500}
+.nav-cafe:hover{background:#5F1B11;border-color:#5F1B11;color:#F6D98E!important}
 .nav-cta:hover{background:currentColor}
 .nav-cta:hover{color:var(--cream)}
 /* --- nut menu + bang dieu huong --- */
@@ -118,6 +120,7 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
   .nav-links a:not(.nav-cta){display:none}
   .burger{display:flex}
   .nav-links .nav-cta{display:none}
+  .nav-links .nav-cafe{display:inline-block;padding:8px 14px;font-size:10.5px;letter-spacing:.1em}
 }
 @media(min-width:861px){.drawer,.drawer-bg{display:none}}
 
@@ -760,6 +763,7 @@ footer a:hover{color:var(--ink)}
   .nav{padding:12px 16px}
   .nav-brand{font-size:17px}
   .nav-cta{padding:8px 15px;font-size:11px;letter-spacing:.12em}
+  .nav-links .nav-cafe{padding:7px 10px;font-size:9.5px;letter-spacing:.08em}
   .field select{font-size:14px;padding-right:42px}
   .step{padding:16px 13px 20px}
   .radios{gap:8px}
@@ -790,6 +794,7 @@ footer a:hover{color:var(--ink)}
     <a href="#vi-banh">Vị bánh</a>
     <a href="#doanh-nghiep">Quà doanh nghiệp</a>
     <a href="#ve-chung-toi">Về chúng tôi</a>
+    <a class="nav-cta nav-cafe" href="/cafe">☕ Order cà phê</a>
     <a class="nav-cta" href="#dat-hang">Đặt hàng</a>
     <button class="burger" id="burger" type="button" aria-label="Mở danh mục" aria-expanded="false" aria-controls="drawer">
       <span></span><span></span><span></span>
