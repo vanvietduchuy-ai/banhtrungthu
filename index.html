@@ -9,8 +9,8 @@
 <meta property="og:site_name" content="The Curator Cafe">
 <meta property="og:title" content="Trung Thu 2026 — Ba set quà bánh trung thu | The Curator Cafe">
 <meta property="og:description" content="Mộc Nguyệt Đoàn Viên 350.000đ · Minh Viên Nguyệt 380.000đ · An Nhiên Sen Thu 560.000đ. Bảy hương vị thủ công, bán lẻ từ 35.000đ. Đặt hàng: 0846 413 314.">
-<meta property="og:image" content="https://TEN-MIEN-CUA-ANH/img/share.jpg">
-<meta property="og:url" content="https://TEN-MIEN-CUA-ANH/">
+<meta property="og:image" content="https://www.thecuratorcafe.vn/img/share.jpg">
+<meta property="og:url" content="https://www.thecuratorcafe.vn/">
 <meta property="og:locale" content="vi_VN">
 <meta name="theme-color" content="#FDF8EF">
 <meta name="twitter:card" content="summary_large_image">
@@ -241,9 +241,14 @@ h3.display{font-size:clamp(28px,3.4vw,44px);margin:0;font-weight:500}
 .set-label .eyebrow{opacity:.75}
 .set h3.display{margin-bottom:6px}
 .set .kicker{font-family:var(--disp);font-style:italic;font-size:19px;opacity:.72;margin:0 0 16px}
-.set .lead{opacity:.84}
+.set .lead{opacity:.84;font-size:16px;line-height:1.66}
 .set-hero{position:relative}
-.set-hero{display:block}
+.set-hero{display:block;position:relative}
+.pcount{position:absolute;top:12px;left:12px;z-index:2;
+  background:rgba(24,15,10,.62);color:#FDF8EF;border-radius:999px;
+  padding:6px 13px;font-size:11.5px;letter-spacing:.08em;pointer-events:none;
+  backdrop-filter:blur(3px);display:flex;align-items:center;gap:6px}
+.pcount::before{content:"⧉";font-size:13px}
 .set-hero > img{width:100%;aspect-ratio:1;object-fit:cover;
   border:1px solid var(--line);border-radius:6px}
 .set-hero .gallery{margin-top:10px;grid-template-columns:repeat(4,1fr);gap:9px}
@@ -262,11 +267,11 @@ dl.spec{margin:22px 0 0}
 
 .tiers{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
 .tier{border:1px solid var(--line);border-radius:5px;background:#FDFAF3;
-  padding:18px 22px;min-width:180px;flex:1 1 180px}
+  padding:14px 18px;min-width:170px;flex:1 1 170px}
 .tier:first-child{background:var(--ink);border-color:var(--ink);color:#FDF8EF}
 .tier:first-child .t-name,.tier:first-child .t-note{color:rgba(253,248,239,.7)}
 .tier .t-name{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.65}
-.tier .t-price{font-family:var(--disp);font-size:30px;font-weight:500;margin-top:8px;line-height:1}
+.tier .t-price{font-family:var(--disp);font-size:27px;font-weight:500;margin-top:6px;line-height:1}
 .tier .t-note{font-size:12.5px;opacity:.68;margin-top:6px;line-height:1.5}
 
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;
@@ -508,10 +513,11 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
 .xp-btn .ar{transition:transform .3s;font-size:14px;line-height:1}
 @media(max-width:760px){
   .xp-btn{display:flex}
-  .set .lead,.set dl.spec,.set .gallery{display:none}
+  .set .lead,.set dl.spec{display:none}
   .set.xp .lead{display:block}
   .set.xp dl.spec{display:block}
-  .set.xp .gallery{display:grid}
+  .set-hero .gallery{margin-top:8px;grid-template-columns:repeat(4,1fr);gap:7px}
+  .set-hero .gallery::after{font-size:11px}
   .set.xp .xp-btn .ar{transform:rotate(180deg)}
   .corp .corp-list{display:none}
   .corp.xp .corp-list{display:block}
@@ -584,6 +590,63 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
   .sp-row img{width:56px;height:56px}
   .sp-stp{grid-column:1/-1}
   .sp-nm{font-size:18.5px}
+}
+
+/* ---------- ve chung toi: trang con dang lop phu ---------- */
+.about{position:fixed;inset:0;z-index:140;background:#FBF4E7;overflow:auto;
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .32s ease,transform .32s ease,visibility .32s;
+  padding-top:0!important;padding-bottom:60px!important}
+.about.on{opacity:1;visibility:visible;transform:none}
+.ab-top{position:sticky;top:0;z-index:5;background:rgba(251,244,231,.96);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 24px;margin-bottom:clamp(26px,4vw,44px)}
+.ab-top .t{font-family:var(--disp);font-size:19px;letter-spacing:.14em;text-transform:uppercase}
+.ab-close{display:flex;align-items:center;gap:9px;border:1px solid var(--line);
+  border-radius:999px;background:#FFFDF8;padding:10px 20px;cursor:pointer;
+  font-family:var(--body);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink);transition:.2s}
+.ab-close:hover{border-color:var(--ink)}
+body.about-open{overflow:hidden}
+body.about-open .nav,body.about-open .mbar{opacity:0;pointer-events:none}
+.ab-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(26px,3.6vw,54px);align-items:start}
+.ab-logo{background:var(--rose-deep);border-radius:8px;padding:36px 26px 32px;text-align:center;
+  margin-bottom:14px;color:#F2E7D3;display:flex;flex-direction:column;align-items:center;gap:6px}
+.al-arc{font-size:30px;line-height:.6;opacity:.55;letter-spacing:0}
+.al-name{font-family:var(--disp);font-size:34px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1.1}
+.al-sub{font-size:12px;letter-spacing:.62em;text-indent:.62em;opacity:.8}
+.al-line{width:56px;height:1px;background:rgba(242,231,211,.4);margin:6px 0}
+.al-tag{font-size:10px;letter-spacing:.3em;text-transform:uppercase;opacity:.6}
+.trust{margin:22px 0 0;padding:0;list-style:none}
+.trust li{display:flex;gap:13px;padding:13px 0;border-top:1px solid var(--line);
+  font-size:14.5px;line-height:1.6}
+.trust .tick{width:22px;height:22px;border-radius:50%;background:#1F6B4A;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex:0 0 22px;margin-top:2px}
+.trust b{font-weight:500}
+.socials{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.soc{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);
+  border-radius:999px;background:#FFFDF8;padding:11px 20px;text-decoration:none;
+  font-size:13.5px;color:var(--ink);letter-spacing:.04em;transition:.2s}
+.soc:hover{border-color:var(--ink);transform:translateY(-1px)}
+.soc svg{width:17px;height:17px;flex:0 0 17px}
+.ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.ph-slot{aspect-ratio:1;border-radius:6px;overflow:hidden;position:relative;
+  border:1px solid var(--line);background:#F3EADA}
+.ph-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-slot.empty img{display:none}
+.ph-slot.empty::after{content:attr(data-note);position:absolute;inset:0;display:flex;
+  align-items:center;justify-content:center;text-align:center;padding:10px;
+  font-size:11px;letter-spacing:.06em;color:var(--mute);
+  border:1px dashed rgba(42,29,22,.28);border-radius:6px;line-height:1.5}
+.ab-cap{font-size:12px;color:var(--mute);margin:10px 0 0;letter-spacing:.04em}
+@media(max-width:860px){
+  .ab-grid{grid-template-columns:1fr}
+  .ab-logo{padding:26px 18px 24px}
+  .al-name{font-size:26px}
+  .trust li{font-size:14px;padding:12px 0}
+  .soc{flex:1;justify-content:center}
 }
 
 /* ---------- faq + footer ---------- */
@@ -726,6 +789,7 @@ footer a:hover{color:var(--ink)}
     <a href="#bo-suu-tap">Bộ sưu tập</a>
     <a href="#vi-banh">Vị bánh</a>
     <a href="#doanh-nghiep">Quà doanh nghiệp</a>
+    <a href="#ve-chung-toi">Về chúng tôi</a>
     <a class="nav-cta" href="#dat-hang">Đặt hàng</a>
     <button class="burger" id="burger" type="button" aria-label="Mở danh mục" aria-expanded="false" aria-controls="drawer">
       <span></span><span></span><span></span>
@@ -741,6 +805,8 @@ footer a:hover{color:var(--ink)}
   <a href="#set-lotus">An Nhiên Sen Thu <small>560.000đ</small></a>
   <a href="#vi-banh">Bảy vị bánh <small>Lẻ từ 35.000đ</small></a>
   <a href="#doanh-nghiep">Quà doanh nghiệp <small>Từ 10 set</small></a>
+  <a href="#ve-chung-toi">Về chúng tôi <small>Quán thật, người thật</small></a>
+  <a href="#ve-chung-toi">Về chúng tôi <small>Quán thật · người thật</small></a>
   <a class="d-cta" href="#dat-hang">Đặt hàng ngay</a>
 </nav>
 
@@ -994,6 +1060,62 @@ footer a:hover{color:var(--ink)}
             Áp dụng cho cả ba set. Mỗi đơn hàng hưởng một mức ưu đãi, không cộng dồn. Số lượng được tính trên tổng số set trong cùng một đơn.</p>
           <a class="btn btn-solid" style="margin-top:22px;width:100%;justify-content:center" href="#dat-hang">Nhận báo giá</a>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VE CHUNG TOI ============ -->
+<section class="band about" id="ve-chung-toi" role="dialog" aria-modal="true" aria-label="Về chúng tôi">
+  <div class="ab-top">
+    <span class="t">Về chúng tôi</span>
+    <button class="ab-close" id="abClose" type="button">Đóng ✕</button>
+  </div>
+  <div class="wrap">
+    <div class="band-head rv">
+      <div>
+        <p class="eyebrow">Về chúng tôi</p>
+        <h2 class="display">The Curator Cafe</h2>
+      </div>
+      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Quán cà phê thật, địa chỉ thật, người thật nhận đơn — quý khách có thể ghé tận nơi xem bánh trước khi đặt.</p>
+    </div>
+
+    <div class="ab-grid">
+      <div class="rv">
+        <p class="lead" style="margin:0">The Curator là quán cà phê tại tầng trệt Vincom Royal Park, Nam Đông Hà. Mùa trăng năm nay, chúng tôi hợp tác cùng nghệ nhân làm bánh thủ công, tự tay tuyển chọn từng mẫu hộp — và chỉ nhận số đơn mà mình chăm chút được trọn vẹn.</p>
+        <ul class="trust">
+          <li><span class="tick">✓</span><span><b>Ghé quán xem bánh trước khi đặt</b> — HG02-02 Vincom Royal Park, Nam Đông Hà, Quảng Trị · mở cửa 7:00 – 22:30 mỗi ngày.</span></li>
+          <li><span class="tick">✓</span><span><b>Người thật nhận đơn</b> — anh Huy, chủ quán, trực tiếp xác nhận từng đơn qua số 0846 413 314.</span></li>
+          <li><span class="tick">✓</span><span><b>Bánh làm theo đơn</b> — không bán hàng tồn; ngày sản xuất và hạn dùng in trên tem từng chiếc.</span></li>
+          <li><span class="tick">✓</span><span><b>Đổi mới trong 24 giờ</b> — bánh giao không đúng vị đã chọn hoặc lỗi do vận chuyển, chúng tôi đổi chiếc mới.</span></li>
+        </ul>
+        <div class="socials">
+          <a class="soc" href="https://www.facebook.com/p/The-Curator-Cafe-61574329633608/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.95.93-1.95 1.89v2.26h3.32l-.53 3.49h-2.79V24C19.61 23.09 24 18.1 24 12.07z"/></svg>
+            Facebook · The Curator Cafe
+          </a>
+          <a class="soc" href="https://www.tiktok.com/@thecurator.cafe" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.9 2.9 0 1 1-2.31-2.84v-3.5a6.37 6.37 0 1 0 5.76 6.34V8.69a8.2 8.2 0 0 0 4.77 1.52V6.75a4.85 4.85 0 0 1-1-.06z"/></svg>
+            TikTok · @thecurator.cafe
+          </a>
+          
+        </div>
+      </div>
+
+      <div class="rv">
+        <div class="ab-logo" role="img" aria-label="The Curator Cafe — Fine Coffee &amp; Curios">
+          <span class="al-arc">◠</span>
+          <span class="al-name">The Curator</span>
+          <span class="al-sub">C A F E</span>
+          <span class="al-line"></span>
+          <span class="al-tag">Fine Coffee &amp; Curios · Insp. 1920s</span>
+        </div>
+        <div class="ph-grid">
+          <div class="ph-slot" data-note="Ảnh thật: không gian quán"><img src="img/that-1.jpg" alt="Không gian quán The Curator" loading="lazy" onerror="this.parentElement.classList.add('empty')"></div>
+          <div class="ph-slot" data-note="Ảnh thật: bánh cắt đôi lộ nhân"><img src="img/that-2.jpg" alt="Bánh trung thu cắt đôi lộ nhân" loading="lazy" onerror="this.parentElement.classList.add('empty')"></div>
+          <div class="ph-slot" data-note="Ảnh thật: gói hàng tại quầy"><img src="img/that-3.jpg" alt="Gói hàng tại quầy The Curator" loading="lazy" onerror="this.parentElement.classList.add('empty')"></div>
+        </div>
+        <p class="ab-cap">Ảnh chụp tại quán — cập nhật theo mẻ bánh mới nhất.</p>
       </div>
     </div>
   </div>
@@ -1850,14 +1972,24 @@ document.querySelectorAll('[data-add]').forEach(btn=>{
   }
   function step(d){ idx = (idx + d + group.length) % group.length; show(); }
 
-  document.querySelectorAll('.gallery').forEach(g=>{
-    const imgs = Array.from(g.querySelectorAll('img'));
-    imgs.forEach((im, i)=>{
-      im.addEventListener('click', ()=> open(imgs, i));
+  document.querySelectorAll('.set-hero').forEach(h=>{
+    const main = h.querySelector(':scope > img');
+    const thumbs = Array.from(h.querySelectorAll('.gallery img'));
+    const group = main ? [main].concat(thumbs) : thumbs;
+    group.forEach((im, i)=>{
+      im.addEventListener('click', ()=> open(group, i));
     });
+    if(main && group.length > 1){
+      const b = document.createElement('span');
+      b.className = 'pcount';
+      b.textContent = group.length + ' ảnh · bấm xem';
+      h.insertBefore(b, main);
+    }
   });
-  document.querySelectorAll('.set-hero > img').forEach(im=>{
-    im.addEventListener('click', ()=> open([im], 0));
+  document.querySelectorAll('.gallery').forEach(g=>{
+    if(g.closest('.set-hero')) return;
+    const imgs = Array.from(g.querySelectorAll('img'));
+    imgs.forEach((im, i)=> im.addEventListener('click', ()=> open(imgs, i)));
   });
 
   $('#lbX').addEventListener('click', close);
@@ -1947,6 +2079,32 @@ document.querySelectorAll('.xp-btn').forEach(btn=>{
     if(!open) sec.scrollIntoView({behavior:'smooth', block:'start'});
   });
 });
+
+
+/* trang con: Ve chung toi */
+(function(){
+  const ab = document.getElementById('ve-chung-toi'); if(!ab) return;
+  function openAb(){
+    ab.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
+    ab.classList.add('on');
+    document.body.classList.add('about-open');
+    ab.scrollTop = 0;
+  }
+  function closeAb(){
+    ab.classList.remove('on');
+    document.body.classList.remove('about-open');
+    if(location.hash === '#ve-chung-toi')
+      history.replaceState(null, '', location.pathname + location.search);
+  }
+  document.querySelectorAll('a[href="#ve-chung-toi"]').forEach(a=>{
+    a.addEventListener('click', e=>{ e.preventDefault(); openAb(); });
+  });
+  document.getElementById('abClose').addEventListener('click', closeAb);
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape' && ab.classList.contains('on')) closeAb();
+  });
+  if(location.hash === '#ve-chung-toi') openAb();
+})();
 
 </script>
 </body>
