@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Order Cà Phê — The Curator Cafe | Giao 6h–22h tại Đông Hà</title>
+<meta name="description" content="Order cà phê, matcha, trà, nước ép, bánh croissant của The Curator Cafe. Giao quanh Nam Đông Hà trong bán kính 10km, miễn phí dưới 5km. Mở cửa 6h–22h.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Curator Cafe">
+<meta property="og:title" content="Order Cà Phê — The Curator Cafe">
+<meta property="og:description" content="Cà phê phin, Liberica, matcha, trà trái cây, croissant mới nướng. Giao 6h–22h quanh Nam Đông Hà, miễn ship dưới 5km. Đặt online, nhận tại quầy hoặc giao tận nơi.">
+<meta property="og:image" content="https://www.thecuratorcafe.vn/img/share.jpg">
+<meta property="og:url" content="https://www.thecuratorcafe.vn/cafe">
+<meta property="og:locale" content="vi_VN">
+<meta name="theme-color" content="#FDF8EF">
+<link rel="icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2A1D16;--cream:#FDF8EF;--cream-2:#F7EFE0;--gold:#B8912F;--gold-soft:#8A6A1E;
+  --red:#9C3226;--mute:#7D6851;--line:rgba(42,29,22,.14);
+  --disp:'Cormorant Garamond',serif;--body:'Be Vietnam Pro',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(--ink);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:86px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.nav{position:sticky;top:0;z-index:60;background:rgba(253,248,239,.95);backdrop-filter:blur(9px);
+  border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;
+  max-width:1080px;margin:0 auto}
+.brand{text-decoration:none;color:var(--ink)}
+.brand b{font-family:var(--disp);font-weight:500;font-size:19px;letter-spacing:.14em;display:block;white-space:nowrap}
+.brand span{font-size:8.5px;letter-spacing:.3em;color:var(--mute)}
+.nav-back{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);
+  text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 16px;
+  white-space:nowrap;transition:.2s}
+.nav-back:hover{color:var(--ink);border-color:var(--ink)}
+
+.hero{padding:38px 0 10px}
+.hero .eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px}
+.hero h1{font-family:var(--disp);font-weight:500;font-size:clamp(38px,6vw,54px);line-height:1.04}
+.hero .meta{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:12px;letter-spacing:.04em;color:var(--ink);background:#FFFDF8;
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.chip b{font-weight:500}
+
+.cats{position:sticky;top:57px;z-index:50;background:rgba(253,248,239,.96);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);margin-top:20px}
+.cats-in{display:flex;gap:8px;overflow-x:auto;padding:11px 20px;max-width:1080px;margin:0 auto;
+  scrollbar-width:none}
+.cats-in::-webkit-scrollbar{display:none}
+.cat-btn{flex:0 0 auto;border:1px solid var(--line);border-radius:999px;background:#FFFDF8;
+  padding:8px 15px;font-family:var(--body);font-size:12.5px;letter-spacing:.03em;color:var(--mute);
+  cursor:pointer;white-space:nowrap;transition:.2s;text-decoration:none}
+.cat-btn.on,.cat-btn:hover{background:var(--ink);border-color:var(--ink);color:#FDF8EF}
+
+.layout{display:grid;grid-template-columns:1.25fr .75fr;gap:30px;align-items:start;padding-top:26px}
+.mcat{margin-bottom:34px;scroll-margin-top:118px}
+.mcat-hd{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  border-bottom:2px solid var(--ink);padding-bottom:9px;margin-bottom:4px}
+.mcat-hd h2{font-family:var(--disp);font-weight:500;font-size:27px;letter-spacing:.02em}
+.mcat-hd span{font-size:11.5px;color:var(--mute);letter-spacing:.05em;text-align:right}
+.mi{display:grid;grid-template-columns:1fr auto;gap:5px 16px;align-items:center;
+  padding:13px 2px;border-bottom:1px solid var(--line)}
+.mi-name{font-size:15.5px;font-weight:400;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.badge{font-size:8.5px;letter-spacing:.12em;border-radius:3px;padding:2.5px 6px;font-weight:500}
+.badge.b-best{background:var(--red);color:#fff}
+.badge.b-must{background:var(--gold);color:#fff}
+.badge.b-new{border:1px solid var(--red);color:var(--red)}
+.mi-desc{grid-column:1;font-size:12px;color:var(--mute);line-height:1.5}
+.mi-side{grid-row:1/3;grid-column:2;display:flex;align-items:center;gap:13px}
+.mi-price{font-size:15px;font-weight:500;white-space:nowrap}
+.stp{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;
+  background:#FDFAF3;height:38px;overflow:hidden}
+.stp button{width:34px;height:36px;border:0;background:transparent;cursor:pointer;
+  font-size:17px;color:var(--mute);font-family:var(--body)}
+.stp button:hover{background:rgba(42,29,22,.07);color:var(--ink)}
+.stp .n{min-width:26px;text-align:center;font-size:14.5px}
+.stp.has{border-color:var(--ink);background:#fff}
+.stp.has .n{font-weight:500}
+
+.side{position:sticky;top:118px}
+.sum{border:1px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden;
+  box-shadow:0 16px 34px -26px rgba(90,60,35,.5)}
+.sum-hd{background:var(--ink);color:#FDF8EF;padding:16px 22px}
+.sum-hd h3{font-family:var(--disp);font-size:22px;font-weight:500}
+.sum-hd p{font-size:11.5px;color:rgba(253,248,239,.66);margin-top:2px}
+.sum-bd{padding:18px 22px 22px}
+.cart{list-style:none;margin-bottom:4px}
+.cart li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;
+  border-bottom:1px dotted var(--line);font-size:14px}
+.cart .c-nm{flex:1;line-height:1.4}
+.cart .c-nm small{display:block;font-size:12px;color:var(--mute)}
+.cart .c-vl{font-weight:500;white-space:nowrap}
+.cart .c-x{border:0;background:none;color:var(--mute);cursor:pointer;font-size:16px;padding:2px 0 2px 4px}
+.cart .c-x:hover{color:var(--red)}
+.cart-empty{font-size:13.5px;color:var(--mute);padding:6px 0;line-height:1.6}
+.total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  border-top:2px solid var(--ink);margin-top:12px;padding-top:12px}
+.total .lb{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.total .vl{font-family:var(--disp);font-size:30px;font-weight:500}
+
+.field{margin-top:14px}
+.field label{display:block;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px}
+.req{color:var(--red);font-style:normal}
+.field input:not([type=radio]),.field textarea{width:100%;height:46px;border:1px solid var(--line);
+  background:#FDFAF3;padding:0 13px;font-family:var(--body);font-size:15px;font-weight:300;
+  color:var(--ink);border-radius:6px;-webkit-appearance:none;appearance:none}
+.field textarea{height:auto;padding:11px 13px}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--ink);background:#fff}
+.field .err{border-color:var(--red)!important;background:#FFF7F5!important}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.two .field{margin-top:14px}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.radios label{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:6px;
+  background:#FDFAF3;min-height:46px;padding:0 12px;font-size:13.5px;cursor:pointer;white-space:nowrap;
+  overflow:hidden;-webkit-tap-highlight-color:transparent}
+.radios label:has(input:checked){border-color:var(--ink);border-width:2px;padding:0 11px;background:#fff}
+.radios input[type=radio]{-webkit-appearance:none;appearance:none;width:16px;height:16px;
+  min-width:16px;border:1.5px solid var(--mute);border-radius:50%;background:#fff;cursor:pointer}
+.radios input[type=radio]:checked{border-color:var(--red);border-width:5px}
+.ship-note{font-size:12px;color:var(--mute);margin-top:9px;line-height:1.55}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;border-radius:999px;
+  padding:15px 20px;font-family:var(--body);font-size:12.5px;letter-spacing:.16em;
+  text-transform:uppercase;cursor:pointer;text-decoration:none;transition:.25s;margin-top:10px;
+  border:1px solid var(--ink);color:var(--ink);background:transparent}
+.btn-ink{background:var(--ink);color:#FDF8EF}
+.btn-ink:hover{background:#000}
+.btn[disabled]{opacity:.55;pointer-events:none}
+.hint{font-size:12px;color:var(--mute);margin-top:12px;line-height:1.6}
+
+.sent{text-align:center;padding:8px 0 2px}
+.sent-ic{width:50px;height:50px;border-radius:50%;background:#1F6B4A;color:#fff;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px}
+.sent h5{font-family:var(--disp);font-size:24px;font-weight:500;margin-bottom:6px}
+.sent p{font-size:13.5px;color:var(--mute);margin-bottom:5px;line-height:1.6}
+.sent .code{display:inline-block;margin-top:8px;padding:6px 15px;border:1px solid var(--line);
+  border-radius:999px;font-size:12px;letter-spacing:.1em;background:#FDFAF3}
+
+.mbar{display:none}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#FDF8EF;padding:12px 22px;border-radius:999px;font-size:13.5px;
+  opacity:0;visibility:hidden;transition:.3s;z-index:90;max-width:88vw;text-align:center}
+.toast.on{opacity:1;visibility:visible;transform:translateX(-50%)}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 10px;
+  font-size:12.5px;color:var(--mute);text-align:center;line-height:1.7}
+footer a{color:var(--ink)}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .side{position:relative;top:0}
+  body{padding-bottom:92px}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;align-items:center;gap:12px;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(253,248,239,.97);border-top:1px solid var(--line);
+    box-shadow:0 -8px 24px -14px rgba(90,60,35,.4);backdrop-filter:blur(10px);
+    transition:transform .35s cubic-bezier(.2,.8,.3,1)}
+  .mbar .t{flex:1;min-width:0}
+  .mbar .lb{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+  .mbar .vl{font-family:var(--disp);font-size:21px;font-weight:500;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .mbar .go{flex:0 0 auto;border-radius:999px;background:var(--gold);color:#fff;border:0;
+    padding:13px 20px;font-family:var(--body);font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;cursor:pointer;text-decoration:none}
+  .cats{top:56px}
+  .mcat{scroll-margin-top:112px}
+  .mi-side{gap:10px}
+  .stp{height:42px}
+  .stp button{width:40px;height:40px;font-size:18px}
+}
+@media(max-width:430px){
+  .brand b{font-size:16px;letter-spacing:.1em}
+  .brand span{font-size:7.5px}
+  .nav-back{padding:7px 12px;font-size:11px}
+  .radios label{font-size:12.5px;gap:7px;padding:0 9px}
+  .radios label:has(input:checked){padding:0 8px}
+}
+@media(max-width:400px){
+  .wrap,.nav-in,.cats-in{padding-left:15px;padding-right:15px}
+  .mi-price{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-in">
+  <a class="brand" href="/"><b>THE CURATOR</b><span>FINE COFFEE &amp; CURIOS</span></a>
+  <a class="nav-back" href="/">← Trang Trung Thu</a>
+</div></nav>
+
+<header class="hero wrap">
+  <p class="eyebrow">Order online · mang đi</p>
+  <h1>Order cà phê</h1>
+  <div class="meta">
+    <span class="chip"><b>6:00 – 22:00</b> mỗi ngày</span>
+    <span class="chip">Miễn ship <b>dưới 5km</b></span>
+    <span class="chip">Giao trong <b>bán kính 10km</b></span>
+    <span class="chip">Nhận tại quầy HG02-02 Vincom Royal Park</span>
+  </div>
+</header>
+
+<div class="cats"><div class="cats-in" id="cats"></div></div>
+
+<main class="wrap layout">
+  <div id="menu"></div>
+
+  <aside class="side" id="side">
+    <div class="sum" id="summary" aria-live="polite">
+      <div class="sum-hd"><h3>Đơn của quý khách</h3><p>Giá chưa gồm phí giao ngoài 5km.</p></div>
+      <div class="sum-bd">
+        <ul class="cart" id="cart"></ul>
+        <p class="cart-empty" id="cartEmpty">Chưa chọn món nào. Bấm dấu cộng ở menu để thêm.</p>
+        <div class="total"><span class="lb">Tổng cộng</span><span class="vl" id="grand">0đ</span></div>
+
+        <div class="two">
+          <div class="field"><label for="name">Tên người đặt <em class="req">*</em></label>
+            <input id="name" type="text" autocomplete="name" placeholder="Nguyễn Văn A"></div>
+          <div class="field"><label for="phone">Số điện thoại <em class="req">*</em></label>
+            <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx"></div>
+        </div>
+
+        <div class="field">
+          <label>Cách nhận</label>
+          <div class="radios">
+            <label><input type="radio" name="ship" value="Nhận tại quầy" checked><span>Tại quầy</span></label>
+            <label><input type="radio" name="ship" value="Giao tận nơi"><span>Giao tận nơi</span></label>
+          </div>
+          <p class="ship-note" id="shipNote" hidden>Dưới 5km miễn phí · 5–10km chúng tôi báo phí khi gọi xác nhận.</p>
+        </div>
+
+        <div class="two">
+          <div class="field"><label for="time">Giờ nhận</label>
+            <input id="time" type="time" min="06:00" max="21:45"></div>
+          <div class="field" id="addrField" hidden><label for="addr">Địa chỉ giao</label>
+            <input id="addr" type="text" placeholder="Số nhà, đường, phường"></div>
+        </div>
+
+        <div class="field"><label for="note">Ghi chú</label>
+          <textarea id="note" rows="2" placeholder="Ví dụ: latte ít ngọt, cappuccino nóng, thêm ống hút giấy."></textarea></div>
+
+        <div id="actions">
+          <button class="btn btn-ink" type="button" id="btnSend">Gửi đơn hàng</button>
+          <a class="btn" href="https://zalo.me/0846413314" target="_blank" rel="noopener" id="btnZalo">Nhắn Zalo</a>
+          <a class="btn" href="tel:0846413314">Gọi 0846 413 314</a>
+        </div>
+        <p class="hint" id="hint">Bấm “Gửi đơn hàng”, đơn chuyển thẳng tới quầy — chúng tôi gọi lại xác nhận trước khi pha.</p>
+
+        <div id="sentBox" hidden>
+          <div class="sent">
+            <div class="sent-ic">✓</div>
+            <h5>Đã nhận đơn</h5>
+            <p id="sentMsg">Chúng tôi gọi lại xác nhận ngay bây giờ.</p>
+            <span class="code" id="sentCode"></span>
+          </div>
+          <a class="btn btn-ink" href="https://zalo.me/0846413314" target="_blank" rel="noopener" style="margin-top:16px">Nhắn Zalo cho quán</a>
+          <button class="btn" type="button" id="btnAgain">Đặt đơn khác</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="mbar" id="mbar">
+  <div class="t"><div class="lb" id="mbLb">Từ</div><div class="vl" id="mbVal">24.000đ / món</div></div>
+  <a class="go" id="mbBtn" href="#summary">Xem đơn</a>
+</div>
+
+<iframe name="gsink" style="display:none" title="gửi đơn" aria-hidden="true"></iframe>
+<div class="toast" id="toast"></div>
+
+<footer class="wrap">
+  <p>The Curator Cafe · HG02-02 Vincom Royal Park, Nam Đông Hà, Quảng Trị · <a href="tel:0846413314">0846 413 314</a></p>
+  <p><a href="/">Đặt bánh trung thu Trung Thu 2026 →</a></p>
+</footer>
+
+<script>
+const DATA = [{"cat": "Cafe Phin", "sub": "Vietnamese Filter Coffee", "items": [{"id": "bacxiumuoi", "n": "Bạc xỉu muối", "p": 35000, "d": "Cafe phin · sữa đặc · sữa tươi · kem muối", "b": ""}, {"id": "bacxiuphin", "n": "Bạc xỉu phin", "p": 30000, "d": "Cafe phin · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedua", "n": "Cafe dừa", "p": 39000, "d": "Cafe phin · cốt dừa · sữa tươi · sữa đặc", "b": "best"}, {"id": "cafedenphin", "n": "Cafe đen phin", "p": 24000, "d": "Cafe phin", "b": ""}, {"id": "cafedensaigon", "n": "Cafe đen Sài Gòn", "p": 25000, "d": "Cafe phin · đường", "b": ""}, {"id": "cafemuoi", "n": "Cafe muối", "p": 32000, "d": "Cafe phin · sữa đặc · kem muối", "b": "best"}, {"id": "cafesuaphin", "n": "Cafe sữa phin", "p": 28000, "d": "Cafe phin · sữa đặc", "b": ""}, {"id": "cafesuasaigon", "n": "Cafe sữa Sài Gòn", "p": 30000, "d": "Cafe phin · sữa đặc", "b": ""}]}, {"cat": "House Espresso", "sub": "Espresso-based", "items": [{"id": "americano", "n": "Americano", "p": 29000, "d": "Espresso", "b": ""}, {"id": "americanococo", "n": "Americano Coco", "p": 45000, "d": "Espresso · nước dừa", "b": ""}, {"id": "bacxiumay", "n": "Bạc xỉu máy", "p": 32000, "d": "Espresso · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedensaigonphamay", "n": "Cafe đen Sài Gòn pha máy", "p": 25000, "d": "Espresso · syrup đường", "b": ""}, {"id": "cafesuamay", "n": "Cafe sữa máy", "p": 29000, "d": "Espresso · sữa đặc", "b": "best"}, {"id": "cafesuasaigonphamay", "n": "Cafe sữa Sài Gòn pha máy", "p": 30000, "d": "Espresso · sữa đặc", "b": ""}, {"id": "cappuccinodanong", "n": "Cappuccino đá / nóng", "p": 35000, "d": "Espresso · sữa tươi · foam", "b": ""}, {"id": "espresso", "n": "Espresso", "p": 25000, "d": "Double shot · không sữa", "b": "must"}, {"id": "lattedanong", "n": "Latte đá / nóng", "p": 35000, "d": "Espresso · sữa tươi", "b": ""}, {"id": "longblack", "n": "Long Black", "p": 32000, "d": "Espresso", "b": ""}]}, {"cat": "Liberica Espresso", "sub": "Liberica Single Origin · Hot", "items": [{"id": "americanoliberica", "n": "Americano Liberica", "p": 35000, "d": "Liberica", "b": ""}, {"id": "bacxiumayliberica", "n": "Bạc xỉu máy Liberica", "p": 39000, "d": "Liberica · sữa đặc · sữa tươi", "b": ""}, {"id": "cappuccinolibericadanong", "n": "Cappuccino Liberica đá / nóng", "p": 42000, "d": "Liberica · sữa tươi · foam", "b": ""}, {"id": "espressoliberica", "n": "Espresso Liberica", "p": 32000, "d": "Liberica · không sữa", "b": ""}, {"id": "lattelibericadanong", "n": "Latte Liberica đá / nóng", "p": 45000, "d": "Liberica · sữa tươi", "b": ""}, {"id": "longblackliberica", "n": "Long Black Liberica", "p": 38000, "d": "Liberica", "b": ""}]}, {"cat": "Liberica Cold Brew", "sub": "Slow-Brewed Specialty", "items": [{"id": "coldbrewblack", "n": "Cold Brew Black", "p": 35000, "d": "Liberica ủ lạnh", "b": "best"}, {"id": "coldbrewbuoi", "n": "Cold Brew Bưởi", "p": 45000, "d": "Cold brew · mứt bưởi hồng", "b": "must"}, {"id": "coldbrewcitrus", "n": "Cold Brew Citrus", "p": 39000, "d": "Cold brew · cam chanh tươi", "b": "must"}, {"id": "coldbrewdautam", "n": "Cold Brew Dâu Tằm", "p": 42000, "d": "Cold brew · mứt dâu tằm", "b": ""}, {"id": "coldbrewdua", "n": "Cold Brew Dứa", "p": 45000, "d": "Cold brew · mứt dứa", "b": "must"}, {"id": "coldbrewmilk", "n": "Cold Brew Milk", "p": 39000, "d": "Cold brew · sữa tươi", "b": ""}, {"id": "coldbrewoihong", "n": "Cold Brew Ổi Hồng", "p": 47000, "d": "Cold brew · mứt ổi hồng", "b": ""}, {"id": "coldbrewvai", "n": "Cold Brew Vải", "p": 45000, "d": "Cold brew · mứt vải", "b": ""}]}, {"cat": "Matcha", "sub": "Premium Japanese Tea", "items": [{"id": "cocomatcha", "n": "CoCo Matcha", "p": 59000, "d": "Matcha · nước dừa · kem béo · oatmilk", "b": ""}, {"id": "matchacoldwhisk", "n": "Matcha Cold Whisk", "p": 35000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchaicecream", "n": "Matcha Ice Cream", "p": 59000, "d": "Matcha · kem tươi · oatmilk", "b": "best,new"}, {"id": "matchalatte", "n": "Matcha Latte", "p": 32000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchameden", "n": "Matcha mè đen", "p": 39000, "d": "Matcha · mè đen rang · oatmilk · sữa đặc", "b": "must"}, {"id": "matchamuoi", "n": "Matcha muối", "p": 39000, "d": "Matcha · oatmilk · kem muối", "b": "must"}, {"id": "matchaoreo", "n": "Matcha Oreo", "p": 59000, "d": "Matcha · oreo · oatmilk · sữa đặc", "b": "must,new"}, {"id": "senxanh", "n": "Sen Xanh", "p": 47000, "d": "Trà lài · nước dừa · hạt sen · kem matcha", "b": "must"}]}, {"cat": "Nước Ép Tươi", "sub": "Fresh Juice — không thêm đường", "items": [{"id": "nuocepcam", "n": "Nước ép cam", "p": 39000, "d": "Cam tươi · ép", "b": ""}, {"id": "nuocepduahau", "n": "Nước ép dưa hấu", "p": 32000, "d": "Dưa hấu tươi · ép", "b": ""}, {"id": "nuocepoi", "n": "Nước ép ổi", "p": 35000, "d": "Ổi đỏ tươi · ép", "b": ""}, {"id": "nuocepthom", "n": "Nước ép thơm", "p": 35000, "d": "Thơm tươi · ép", "b": ""}]}, {"cat": "Trà", "sub": "Base · Trà lài", "items": [{"id": "traatiso", "n": "Trà atiso", "p": 32000, "d": "Trà lài · siro atiso đỏ", "b": "best"}, {"id": "trabuoi", "n": "Trà bưởi", "p": 31000, "d": "Trà lài · mứt bưởi hồng", "b": "best"}, {"id": "trabuoimatong", "n": "Trà bưởi mật ong", "p": 35000, "d": "Trà ô long · mứt bưởi · mật ong", "b": "best,new"}, {"id": "tradautam", "n": "Trà dâu tằm", "p": 32000, "d": "Trà lài · siro dâu tằm", "b": "best"}, {"id": "traduanhai", "n": "Trà dứa nhài", "p": 30000, "d": "Trà lài · mứt dứa", "b": ""}, {"id": "tranhaioihong", "n": "Trà nhài ổi hồng", "p": 29000, "d": "Trà lài · mứt ổi hồng", "b": ""}, {"id": "travai", "n": "Trà vải", "p": 29000, "d": "Trà lài · mứt vải", "b": "best"}]}, {"cat": "Bánh", "sub": "Pastries — Daily Fresh Bake", "items": [{"id": "croissanthanhnhan", "n": "Croissant Hạnh Nhân", "p": 45000, "d": "Almond croissant", "b": ""}, {"id": "croissantkemdau", "n": "Croissant Kem Dâu", "p": 45000, "d": "Strawberry cream", "b": ""}, {"id": "croissantkemsocola", "n": "Croissant Kem Socola", "p": 45000, "d": "Chocolate cream", "b": ""}, {"id": "croissantkimsa", "n": "Croissant Kim Sa", "p": 42000, "d": "Lava custard", "b": ""}, {"id": "croissantsignature", "n": "Croissant Signature", "p": 35000, "d": "Signature croissant", "b": ""}, {"id": "croissantsocola", "n": "Croissant Socola", "p": 39000, "d": "Chocolate croissant", "b": ""}, {"id": "croissantsothatdieu", "n": "Croissant Sốt Hạt Điều", "p": 42000, "d": "Cashew sauce", "b": ""}, {"id": "croissanttrungmuoi", "n": "Croissant Trứng Muối", "p": 45000, "d": "Salted egg yolk", "b": "best"}, {"id": "danmachtrungmuoi", "n": "Đan Mạch Trứng Muối", "p": 39000, "d": "Danish salted egg yolk", "b": ""}, {"id": "hanhnhandua", "n": "Hạnh Nhân Dừa", "p": 39000, "d": "Almond coconut pastry", "b": ""}]}, {"cat": "Khác", "sub": "Other Drinks", "items": [{"id": "cacaodanong", "n": "Cacao đá / nóng", "p": 35000, "d": "Cacao · sữa tươi · sữa đặc", "b": ""}]}];
+const GFORM = {
+  id: "1FAIpQLSfdi_XJormbVIv4YYC83kJTDfkvB-WXS0v6lSwJfK3d_ZR45Q",
+  f: { name:"entry.900486539", phone:"entry.727313384", detail:"entry.1930983760",
+       total:"entry.571430829", ship:"entry.1844021133", time:"entry.403705530",
+       addr:"entry.2142202899", note:"entry.563296771" }
+};
+const $ = s => document.querySelector(s);
+const vnd = n => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + "đ";
+const ITEMS = {}; DATA.forEach(g => g.items.forEach(i => ITEMS[i.id] = i));
+const cart = {};
+
+/* ----- dung menu ----- */
+const menuEl = $('#menu'), catsEl = $('#cats');
+DATA.forEach((g, gi)=>{
+  const cid = 'cat' + gi;
+  const a = document.createElement('a');
+  a.className = 'cat-btn' + (gi===0 ? ' on' : '');
+  a.href = '#' + cid; a.textContent = g.cat;
+  catsEl.appendChild(a);
+
+  const sec = document.createElement('section');
+  sec.className = 'mcat'; sec.id = cid;
+  const hd = document.createElement('div'); hd.className = 'mcat-hd';
+  const h2 = document.createElement('h2'); h2.textContent = g.cat;
+  const sub = document.createElement('span'); sub.textContent = g.sub;
+  hd.appendChild(h2); hd.appendChild(sub); sec.appendChild(hd);
+
+  g.items.forEach(it=>{
+    const row = document.createElement('div'); row.className = 'mi';
+    const nm = document.createElement('div'); nm.className = 'mi-name';
+    nm.appendChild(document.createTextNode(it.n));
+    (it.b||'').split(',').filter(Boolean).forEach(b=>{
+      const s = document.createElement('span');
+      s.className = 'badge b-' + b;
+      s.textContent = b==='best' ? 'BEST SELLER' : b==='must' ? 'MUST TRY' : 'NEW';
+      nm.appendChild(s);
+    });
+    const de = document.createElement('div'); de.className = 'mi-desc'; de.textContent = it.d;
+    const side = document.createElement('div'); side.className = 'mi-side';
+    const pr = document.createElement('span'); pr.className = 'mi-price'; pr.textContent = vnd(it.p);
+    const stp = document.createElement('div'); stp.className = 'stp'; stp.dataset.id = it.id;
+    const bm = document.createElement('button'); bm.type='button'; bm.textContent='−';
+    bm.setAttribute('aria-label','Bớt '+it.n);
+    const nn = document.createElement('span'); nn.className='n'; nn.textContent='0';
+    const bp = document.createElement('button'); bp.type='button'; bp.textContent='+';
+    bp.setAttribute('aria-label','Thêm '+it.n);
+    bm.addEventListener('click',()=>bump(it.id,-1));
+    bp.addEventListener('click',()=>bump(it.id,1));
+    stp.appendChild(bm); stp.appendChild(nn); stp.appendChild(bp);
+    side.appendChild(pr); side.appendChild(stp);
+    row.appendChild(nm); row.appendChild(de); row.appendChild(side);
+    sec.appendChild(row);
+  });
+  menuEl.appendChild(sec);
+});
+
+/* chip danh muc bat theo cuon */
+const secs = Array.from(document.querySelectorAll('.mcat'));
+const chips = Array.from(catsEl.children);
+if('IntersectionObserver' in window){
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(e.isIntersecting){
+        const i = secs.indexOf(e.target);
+        chips.forEach((c,k)=>c.classList.toggle('on', k===i));
+        chips[i].scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+      }
+    });
+  },{rootMargin:'-30% 0px -60% 0px'});
+  secs.forEach(s=>io.observe(s));
+}
+
+function bump(id, d){
+  cart[id] = Math.max(0, Math.min(30, (cart[id]||0) + d));
+  if(!cart[id]) delete cart[id];
+  sync(); render();
+}
+function sync(){
+  document.querySelectorAll('.stp[data-id]').forEach(el=>{
+    const n = cart[el.dataset.id] || 0;
+    el.querySelector('.n').textContent = n;
+    el.classList.toggle('has', n>0);
+  });
+}
+function calc(){
+  let total=0, count=0;
+  Object.keys(cart).forEach(k=>{ total += cart[k]*ITEMS[k].p; count += cart[k]; });
+  return {total, count};
+}
+function render(){
+  const c = calc(), list = $('#cart'); list.innerHTML = '';
+  Object.keys(cart).forEach(k=>{
+    const it = ITEMS[k], li = document.createElement('li');
+    const nm = document.createElement('div'); nm.className='c-nm';
+    nm.appendChild(document.createTextNode(it.n));
+    const sm = document.createElement('small'); sm.textContent = vnd(it.p) + ' × ' + cart[k];
+    nm.appendChild(sm);
+    const vl = document.createElement('span'); vl.className='c-vl'; vl.textContent = vnd(it.p*cart[k]);
+    const x = document.createElement('button'); x.type='button'; x.className='c-x'; x.textContent='×';
+    x.setAttribute('aria-label','Bỏ '+it.n);
+    x.addEventListener('click',()=>{ delete cart[k]; sync(); render(); });
+    li.appendChild(nm); li.appendChild(vl); li.appendChild(x);
+    list.appendChild(li);
+  });
+  $('#cartEmpty').hidden = c.count > 0;
+  $('#grand').textContent = vnd(c.total);
+  $('#mbVal').textContent = c.count ? vnd(c.total) : '24.000đ / món';
+  $('#mbLb').textContent = c.count ? 'Tổng cộng ('+c.count+' món)' : 'Từ';
+}
+
+/* giao tan noi */
+document.querySelectorAll('input[name=ship]').forEach(r=>{
+  r.addEventListener('change', ()=>{
+    const giao = document.querySelector('input[name=ship]:checked').value === 'Giao tận nơi';
+    $('#addrField').hidden = !giao;
+    $('#shipNote').hidden = !giao;
+  });
+});
+
+/* gio mac dinh: hien tai + 30 phut, kep trong 6:00-21:45 */
+(function(){
+  const d = new Date(Date.now() + 30*60000);
+  let h = d.getHours(), m = Math.ceil(d.getMinutes()/15)*15;
+  if(m === 60){ h++; m = 0; }
+  if(h < 6){ h = 6; m = 30; }
+  if(h > 21 || (h === 21 && m > 45)){ h = 21; m = 45; }
+  const p = x => String(x).padStart(2,'0');
+  $('#time').value = p(h) + ':' + p(m);
+})();
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 2800);
+}
+function validate(){
+  if(calc().count === 0){
+    toast('Chưa chọn món nào — bấm dấu cộng ở menu');
+    window.scrollTo({top:0, behavior:'smooth'});
+    return false;
+  }
+  const miss = [];
+  [['#name','tên'],['#phone','số điện thoại']].forEach(([sel,lb])=>{
+    const el = $(sel);
+    if(!el.value.trim()){ el.classList.add('err'); miss.push([el,lb]); }
+    else el.classList.remove('err');
+  });
+  if(miss.length){
+    toast('Vui lòng điền ' + miss.map(m=>m[1]).join(' và '));
+    miss[0][0].scrollIntoView({behavior:'smooth', block:'center'});
+    setTimeout(()=>miss[0][0].focus(), 350);
+    return false;
+  }
+  return true;
+}
+['#name','#phone'].forEach(s=>$(s).addEventListener('input',e=>e.target.classList.remove('err')));
+
+function makeCode(){
+  const n = new Date(), p = x => String(x).padStart(2,'0');
+  return 'CF' + p(n.getDate()) + p(n.getMonth()+1) + '-' + p(n.getHours()) + p(n.getMinutes())
+       + '-' + String(Math.floor(Math.random()*900)+100);
+}
+function orderText(code){
+  const c = calc(), L = [];
+  L.push('ORDER CÀ PHÊ — THE CURATOR CAFE');
+  L.push('Mã đơn: ' + code);
+  Object.keys(cart).forEach(k=>{
+    const it = ITEMS[k];
+    L.push('- ' + it.n + ' × ' + cart[k] + ' = ' + vnd(it.p*cart[k]));
+  });
+  L.push('TỔNG: ' + c.count + ' món — ' + vnd(c.total));
+  const ship = document.querySelector('input[name=ship]:checked').value;
+  L.push('Nhận: ' + ship + ' — ' + ($('#time').value || 'sớm nhất'));
+  if(ship === 'Giao tận nơi') L.push('Địa chỉ: ' + ($('#addr').value.trim() || '(chưa điền)'));
+  const note = $('#note').value.trim();
+  if(note) L.push('Ghi chú: ' + note);
+  return L.join('\n');
+}
+async function copyOrder(code){
+  try{ await navigator.clipboard.writeText(orderText(code)); return true; }
+  catch(e){ return false; }
+}
+function sendOrder(code){
+  const c = calc();
+  const ship = document.querySelector('input[name=ship]:checked').value;
+  const L = ['Mã đơn: ' + code];
+  Object.keys(cart).forEach(k=>{
+    L.push(ITEMS[k].n + ' x ' + cart[k] + ' = ' + vnd(ITEMS[k].p*cart[k]));
+  });
+  const data = {};
+  data[GFORM.f.name] = $('#name').value.trim();
+  data[GFORM.f.phone] = $('#phone').value.trim();
+  data[GFORM.f.detail] = L.join('\n');
+  data[GFORM.f.total] = c.count + ' món — ' + vnd(c.total);
+  data[GFORM.f.ship] = ship;
+  data[GFORM.f.time] = $('#time').value;
+  data[GFORM.f.addr] = ship === 'Giao tận nơi' ? $('#addr').value.trim() : '';
+  data[GFORM.f.note] = $('#note').value.trim();
+  const f = document.createElement('form');
+  f.action = 'https://docs.google.com/forms/d/e/' + GFORM.id + '/formResponse';
+  f.method = 'POST'; f.target = 'gsink'; f.style.display = 'none';
+  Object.keys(data).forEach(k=>{
+    const i = document.createElement('input');
+    i.type = 'hidden'; i.name = k; i.value = data[k]; f.appendChild(i);
+  });
+  document.body.appendChild(f); f.submit();
+  setTimeout(()=>f.remove(), 4000);
+}
+$('#btnSend').addEventListener('click', function(){
+  if(!validate()) return;
+  const btn = this; btn.disabled = true; btn.textContent = 'Đang gửi…';
+  const code = makeCode();
+  try{
+    sendOrder(code); copyOrder(code);
+    setTimeout(()=>{
+      $('#actions').hidden = true; $('#hint').hidden = true;
+      $('#sentBox').hidden = false;
+      $('#sentCode').textContent = 'Mã đơn ' + code;
+      const nm = $('#name').value.trim().split(/\s+/).pop();
+      $('#sentMsg').textContent = (nm ? 'Cảm ơn ' + nm + '! ' : '') + 'Chúng tôi gọi lại xác nhận ngay bây giờ.';
+      $('#summary').scrollIntoView({behavior:'smooth', block:'center'});
+    }, 900);
+  }catch(e){
+    btn.disabled = false; btn.textContent = 'Gửi đơn hàng';
+    toast('Gửi chưa được — bấm Nhắn Zalo giúp chúng tôi nhé');
+  }
+});
+$('#btnAgain').addEventListener('click', ()=>{
+  Object.keys(cart).forEach(k=>delete cart[k]);
+  $('#note').value = '';
+  sync(); render();
+  $('#actions').hidden = false; $('#hint').hidden = false; $('#sentBox').hidden = true;
+  const b = $('#btnSend'); b.disabled = false; b.textContent = 'Gửi đơn hàng';
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+$('#btnZalo').addEventListener('click', ()=>{ copyOrder(makeCode()); toast('Đã sao chép đơn — dán vào Zalo và gửi'); });
+
+/* thanh duoi an khi toi gio */
+(function(){
+  const mbar = $('#mbar'), sum = $('#summary');
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>{
+      es.forEach(e=>{ mbar.style.transform = e.isIntersecting ? 'translateY(130%)' : 'translateY(0)'; });
+    },{threshold:0}).observe(sum);
+  }
+})();
+render();
+</script>
+</body>
+</html>
