@@ -78,13 +78,17 @@ button{font-family:var(--body);cursor:pointer}
 
 <div class="wrap">
   <section class="setup" id="setup">
-    <h2>Thiết lập một lần</h2>
-    <p>Trang đọc đơn trực tiếp từ Google Sheet đã xuất bản — không cần mở Sheet, không cần đăng nhập.</p>
-    <ol>
-      <li>Mở Sheet đơn → <b>Tệp → Chia sẻ → Xuất bản lên web</b></li>
-      <li>Khung đầu chọn đúng trang tính chứa đơn (Form_Responses), khung sau chọn <b>Giá trị được phân tách bằng dấu phẩy (.csv)</b></li>
-      <li>Bấm <b>Xuất bản</b> → sao chép liên kết, dán vào ô dưới. Làm cho cả hai Sheet.</li>
-    </ol>
+    <h2>Vào ca trực</h2>
+    <p>Liên kết hai Sheet đã cài sẵn — chỉ cần bấm <b>Bắt đầu ca trực</b> và bật loa.
+    Bấm mỗi lần mở trang để mở khoá âm thanh của trình duyệt.</p>
+    <details style="margin-bottom:14px">
+      <summary style="cursor:pointer;font-size:12.5px;color:var(--mute)">Đổi Sheet khác (khi cần)</summary>
+      <ol style="margin:10px 0 4px 18px;font-size:13px;color:var(--mute)">
+        <li>Mở Sheet đơn → <b>Tệp → Chia sẻ → Xuất bản lên web</b></li>
+        <li>Chọn đúng trang tính chứa đơn, định dạng <b>.csv</b> → Xuất bản</li>
+        <li>Sao chép liên kết, dán đè vào ô dưới</li>
+      </ol>
+    </details>
     <div class="field"><label>Liên kết CSV — Sheet ĐẶT NƯỚC</label>
       <input id="urlNuoc" type="text" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-…/pub?output=csv"></div>
     <div class="field"><label>Liên kết CSV — Sheet BÁNH TRUNG THU (bỏ trống nếu chỉ theo dõi nước)</label>
@@ -107,8 +111,13 @@ button{font-family:var(--body);cursor:pointer}
 <script>
 const $ = s => document.querySelector(s);
 const KEY = 'tcCashier', DONE_KEY = 'tcCashierDone', SEEN_KEY = 'tcCashierSeen';
+const DEFAULT_CFG = {
+  nuoc: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzxUibFI4QlcuBjE9yInsqQa63voTWIpvRTxm_v2PBBacUh9Eqdnua9foAeXn1T7aGlaTUfEC4zxX/pub?gid=1811318929&single=true&output=csv",
+  banh: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-JPTuBnr3XbEurV6jocriF0eXatSLVLgeBSBY6zV1F0pvdkLp5JzJcxU4Cgx3En0Q3fZ7v-46OSAI/pub?gid=2037493515&single=true&output=csv"
+};
 let cfg = {}, seen = new Set(), done = new Set(), started = false, timer = null, audioCtx = null;
 try{ cfg = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){}
+if(!cfg.nuoc && !cfg.banh) cfg = {...DEFAULT_CFG};
 try{ done = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]')); }catch(e){}
 try{ seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); }catch(e){}
 if(cfg.nuoc) $('#urlNuoc').value = cfg.nuoc;
