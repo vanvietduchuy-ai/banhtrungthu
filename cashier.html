@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quầy đơn hàng — The Curator Cafe</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2A1D16;--cream:#FDF8EF;--gold:#B8912F;--red:#9C3226;--green:#1F6B4A;
+  --mute:#7D6851;--line:rgba(42,29,22,.14);--disp:'Cormorant Garamond',serif;--body:'Be Vietnam Pro',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 60px}
+header{position:sticky;top:0;z-index:10;background:rgba(253,248,239,.97);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-family:var(--disp);font-size:21px;font-weight:600;letter-spacing:.06em;flex:1;white-space:nowrap}
+.pill{border-radius:999px;padding:7px 14px;font-size:12px;letter-spacing:.06em;border:1px solid var(--line);background:#FFFDF8}
+.pill.live{background:var(--green);border-color:var(--green);color:#fff}
+.pill.wait{background:#B8912F;border-color:#B8912F;color:#fff}
+#count{font-weight:600}
+button{font-family:var(--body);cursor:pointer}
+.btn{border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:#FDF8EF;
+  padding:11px 20px;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;transition:.2s}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{opacity:.85}
+.setup{background:#FFFDF8;border:1px solid var(--line);border-radius:10px;padding:22px;margin-top:22px}
+.setup h2{font-family:var(--disp);font-size:24px;font-weight:600;margin-bottom:6px}
+.setup p{font-size:13.5px;color:var(--mute);margin-bottom:14px}
+.setup ol{margin:0 0 16px 18px;font-size:13.5px;color:var(--mute)}
+.setup ol li{margin-bottom:5px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.field input{width:100%;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--cream);
+  padding:0 12px;font-family:var(--body);font-size:13px;color:var(--ink)}
+.field input:focus{outline:none;border-color:var(--ink)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.orders{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+.card{background:#FFFDF8;border:1px solid var(--line);border-left:5px solid var(--gold);
+  border-radius:10px;padding:15px 16px;transition:.25s}
+.card.banh{border-left-color:var(--red)}
+.card.done{opacity:.45}
+.card.fresh{box-shadow:0 0 0 3px rgba(184,145,47,.35);animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.97)}60%{transform:scale(1.01)}100%{transform:scale(1)}}
+.c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.tag{font-size:9.5px;letter-spacing:.14em;border-radius:4px;padding:3px 8px;color:#fff;font-weight:500}
+.tag.nuoc{background:var(--gold)}.tag.banh{background:var(--red)}
+.c-name{font-weight:600;font-size:16px}
+.c-time{font-size:11.5px;color:var(--mute);margin-left:auto;white-space:nowrap}
+.c-detail{white-space:pre-wrap;font-size:13.5px;background:var(--cream);border:1px dashed var(--line);
+  border-radius:7px;padding:9px 12px;margin:8px 0;line-height:1.5}
+.c-meta{font-size:13px;color:var(--mute);line-height:1.6}
+.c-meta b{color:var(--ink);font-weight:500}
+.c-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+.c-act a,.c-act button{border-radius:999px;padding:9px 15px;font-size:11.5px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;border:1px solid var(--ink);color:var(--ink);background:transparent}
+.c-act .zl{background:#0068FF;border-color:#0068FF;color:#fff}
+.c-act .ok{background:var(--green);border-color:var(--green);color:#fff}
+.card.done .c-act .ok{background:transparent;color:var(--green)}
+.empty{text-align:center;color:var(--mute);padding:44px 10px;font-size:14px;line-height:1.7}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#FDF8EF;
+  padding:11px 22px;border-radius:999px;font-size:13px;opacity:0;visibility:hidden;transition:.3s;z-index:50}
+.toast.on{opacity:1;visibility:visible}
+.foot{margin-top:26px;font-size:11.5px;color:var(--mute);text-align:center;line-height:1.7}
+.foot button{border:0;background:none;color:var(--mute);text-decoration:underline;font-size:11.5px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Quầy đơn hàng</h1>
+  <span class="pill" id="stt">Chưa theo dõi</span>
+  <span class="pill" id="countPill" hidden><span id="count">0</span> đơn chưa xác nhận</span>
+</header>
+
+<div class="wrap">
+  <section class="setup" id="setup">
+    <h2>Thiết lập một lần</h2>
+    <p>Trang đọc đơn trực tiếp từ Google Sheet đã xuất bản — không cần mở Sheet, không cần đăng nhập.</p>
+    <ol>
+      <li>Mở Sheet đơn → <b>Tệp → Chia sẻ → Xuất bản lên web</b></li>
+      <li>Khung đầu chọn đúng trang tính chứa đơn (Form_Responses), khung sau chọn <b>Giá trị được phân tách bằng dấu phẩy (.csv)</b></li>
+      <li>Bấm <b>Xuất bản</b> → sao chép liên kết, dán vào ô dưới. Làm cho cả hai Sheet.</li>
+    </ol>
+    <div class="field"><label>Liên kết CSV — Sheet ĐẶT NƯỚC</label>
+      <input id="urlNuoc" type="text" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-…/pub?output=csv"></div>
+    <div class="field"><label>Liên kết CSV — Sheet BÁNH TRUNG THU (bỏ trống nếu chỉ theo dõi nước)</label>
+      <input id="urlBanh" type="text" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-…/pub?output=csv"></div>
+    <div class="bar">
+      <button class="btn" id="btnStart">🔔 Bắt đầu ca trực</button>
+      <button class="btn ghost" id="btnTest">Thử chuông</button>
+    </div>
+  </section>
+
+  <div class="orders" id="orders"></div>
+  <p class="empty" id="empty" hidden>Đang theo dõi… Chưa có đơn nào.<br>Đơn mới sẽ tự hiện kèm chuông báo — cứ để tab này mở.</p>
+
+  <p class="foot">Tự làm mới mỗi 25 giây · giữ tab mở và bật loa ·
+    <button id="btnReset">Đổi liên kết Sheet</button></p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const KEY = 'tcCashier', DONE_KEY = 'tcCashierDone', SEEN_KEY = 'tcCashierSeen';
+let cfg = {}, seen = new Set(), done = new Set(), started = false, timer = null, audioCtx = null;
+try{ cfg = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){}
+try{ done = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]')); }catch(e){}
+try{ seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); }catch(e){}
+if(cfg.nuoc) $('#urlNuoc').value = cfg.nuoc;
+if(cfg.banh) $('#urlBanh').value = cfg.banh;
+
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3000); }
+
+/* ---------- am thanh ---------- */
+function ding(){
+  if(!audioCtx) return;
+  const now = audioCtx.currentTime;
+  [[880,0],[1174.7,.18],[880,.5],[1174.7,.68]].forEach(([f,t])=>{
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(.0001, now+t);
+    g.gain.exponentialRampToValueAtTime(.4, now+t+.02);
+    g.gain.exponentialRampToValueAtTime(.0001, now+t+.45);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(now+t); o.stop(now+t+.5);
+  });
+}
+function speak(msg){
+  try{
+    const u = new SpeechSynthesisUtterance(msg);
+    u.lang='vi-VN'; u.rate=.95;
+    const v = speechSynthesis.getVoices().find(v=>v.lang && v.lang.startsWith('vi'));
+    if(v) u.voice=v;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+function alarm(loai){
+  ding();
+  setTimeout(()=>speak('Có đơn hàng mới' + (loai ? ' — ' + loai : '')), 900);
+}
+
+/* ---------- doc CSV (xu ly xuong dong trong o) ---------- */
+function parseCSV(text){
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){
+      if(ch==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q=false; }
+      else cell+=ch;
+    }else{
+      if(ch==='"') q=true;
+      else if(ch===','){ row.push(cell); cell=''; }
+      else if(ch==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+      else if(ch!=='\r') cell+=ch;
+    }
+  }
+  if(cell!=='' || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+
+function keyOf(r){ return (r[0]||'')+'|'+(r[2]||''); }
+
+function msgFor(o){
+  const L=['THE CURATOR CAFE xin xác nhận đơn:', o.detail,
+    'Tổng cộng: '+o.total,
+    'Nhận hàng: '+o.ship+' — '+(o.loai==='nuoc'?'lúc ':'ngày ')+o.time];
+  if(o.addr) L.push('Địa chỉ giao: '+o.addr);
+  L.push('Cảm ơn quý khách '+o.name+'. '+(o.loai==='nuoc'?'Đồ uống đang được chuẩn bị, cần':'Cần')+' hỗ trợ xin gọi 0846 413 314.');
+  return L.join('\n');
+}
+function phoneClean(p){ return (p||'').replace(/[^0-9+]/g,'').replace(/^\+?84/,'0'); }
+
+let orders = [];
+async function fetchOne(url, loai){
+  const r = await fetch(url + (url.includes('?')?'&':'?') + 'cb=' + Date.now(), {cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const rows = parseCSV(await r.text());
+  const out=[];
+  for(let i=1;i<rows.length;i++){
+    const c=rows[i]; if(!c[0] || !(c[1]||c[2])) continue;
+    out.push({ loai, k:loai+'|'+keyOf(c), ts:c[0], name:c[1]||'', phone:c[2]||'',
+      detail:c[3]||'', total:c[4]||'', ship:c[5]||'', time:c[6]||'', addr:c[7]||'', note:c[8]||'' });
+  }
+  return out;
+}
+
+async function poll(first){
+  const jobs=[];
+  if(cfg.nuoc) jobs.push(fetchOne(cfg.nuoc,'nuoc').catch(e=>{toast('Không đọc được Sheet nước'); return [];}));
+  if(cfg.banh) jobs.push(fetchOne(cfg.banh,'banh').catch(e=>{toast('Không đọc được Sheet bánh'); return [];}));
+  const all = (await Promise.all(jobs)).flat();
+  all.sort((a,b)=> new Date(b.ts.split('/').reverse().join('-')) - new Date(a.ts.split('/').reverse().join('-')) || (a.ts<b.ts?1:-1));
+  let fresh=[];
+  all.forEach(o=>{ if(!seen.has(o.k)){ seen.add(o.k); if(!first) fresh.push(o); } });
+  localStorage.setItem(SEEN_KEY, JSON.stringify([...seen].slice(-600)));
+  orders = all;
+  render(fresh.map(f=>f.k));
+  if(fresh.length){
+    const loai = fresh.every(f=>f.loai==='nuoc') ? 'đơn nước'
+               : fresh.every(f=>f.loai==='banh') ? 'đơn bánh trung thu' : '';
+    alarm(loai);
+    document.title = '(' + fresh.length + ' mới) Quầy đơn hàng';
+    setTimeout(()=>document.title='Quầy đơn hàng', 30000);
+  }
+}
+
+function render(freshKeys){
+  const box=$('#orders'); box.innerHTML='';
+  const pending = orders.filter(o=>!done.has(o.k)).length;
+  $('#count').textContent = pending;
+  $('#countPill').hidden = false;
+  $('#empty').hidden = orders.length > 0;
+  orders.slice(0,80).forEach(o=>{
+    const card=document.createElement('div');
+    card.className='card '+o.loai+(done.has(o.k)?' done':'')+((freshKeys||[]).includes(o.k)?' fresh':'');
+    const top=document.createElement('div'); top.className='c-top';
+    const tag=document.createElement('span'); tag.className='tag '+o.loai;
+    tag.textContent = o.loai==='nuoc'?'NƯỚC':'BÁNH';
+    const nm=document.createElement('span'); nm.className='c-name'; nm.textContent=o.name;
+    const tm=document.createElement('span'); tm.className='c-time'; tm.textContent=o.ts;
+    top.append(tag,nm,tm);
+    const dt=document.createElement('div'); dt.className='c-detail'; dt.textContent=o.detail;
+    const meta=document.createElement('div'); meta.className='c-meta';
+    meta.innerHTML = '<b>'+o.total+'</b> · '+o.ship+' · '+(o.loai==='nuoc'?'lúc ':'ngày ')+o.time
+      + (o.addr ? '<br>Địa chỉ: <b>'+o.addr.replace(/</g,'&lt;')+'</b>' : '')
+      + (o.note ? '<br>Ghi chú: '+o.note.replace(/</g,'&lt;') : '')
+      + '<br>SĐT: <b>'+o.phone+'</b>';
+    const act=document.createElement('div'); act.className='c-act';
+    const zl=document.createElement('a'); zl.className='zl'; zl.textContent='💬 Zalo';
+    zl.href='https://zalo.me/'+phoneClean(o.phone); zl.target='_blank'; zl.rel='noopener';
+    zl.addEventListener('click', ()=>{ navigator.clipboard && navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận — dán vào Zalo'); });
+    const cp=document.createElement('button'); cp.textContent='📋 Chép tin';
+    cp.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận'); }catch(e){ toast('Không chép được'); } });
+    const tel=document.createElement('a'); tel.textContent='📞 Gọi'; tel.href='tel:'+phoneClean(o.phone);
+    const ok=document.createElement('button'); ok.className='ok';
+    ok.textContent = done.has(o.k) ? '↩ Chưa xong' : '✓ Đã xác nhận';
+    ok.addEventListener('click', ()=>{
+      done.has(o.k) ? done.delete(o.k) : done.add(o.k);
+      localStorage.setItem(DONE_KEY, JSON.stringify([...done].slice(-600)));
+      render();
+    });
+    act.append(zl,cp,tel,ok);
+    card.append(top,dt,meta,act);
+    box.appendChild(card);
+  });
+}
+
+$('#btnStart').addEventListener('click', async ()=>{
+  cfg = { nuoc: $('#urlNuoc').value.trim(), banh: $('#urlBanh').value.trim() };
+  if(!cfg.nuoc && !cfg.banh){ toast('Dán ít nhất một liên kết CSV'); return; }
+  localStorage.setItem(KEY, JSON.stringify(cfg));
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  audioCtx.resume(); speechSynthesis.getVoices();
+  $('#setup').hidden = true;
+  $('#stt').textContent = '● Đang theo dõi'; $('#stt').classList.add('live');
+  started = true;
+  toast('Đang tải đơn…');
+  await poll(true);
+  toast('Sẵn sàng — đơn mới sẽ reo chuông');
+  clearInterval(timer); timer = setInterval(()=>poll(false), 25000);
+});
+$('#btnTest').addEventListener('click', ()=>{
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  audioCtx.resume(); alarm('thử chuông');
+});
+$('#btnReset').addEventListener('click', ()=>{
+  clearInterval(timer); started=false;
+  $('#setup').hidden=false; $('#stt').textContent='Chưa theo dõi'; $('#stt').classList.remove('live');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+if(cfg.nuoc || cfg.banh){ /* co cau hinh san — van cho bam nut de mo khoa am thanh */ }
+</script>
+</body>
+</html>
