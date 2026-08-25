@@ -145,11 +145,9 @@ function alarm(msg){
   setTimeout(()=>speak(msg || 'Có đơn hàng mới'), 1100);
 }
 function alarmMsg(fresh){
-  if(fresh.length > 1) return 'Có ' + fresh.length + ' đơn hàng mới, kiểm tra màn hình quầy';
-  const o = fresh[0];
-  const loai = o.loai === 'nuoc' ? 'đơn nước' : 'đơn bánh trung thu';
-  const soMon = (o.total || '').split('—')[0].trim();
-  return 'Có ' + loai + ' mới' + (o.name ? ' của khách ' + o.name : '') + (soMon ? ', ' + soMon : '');
+  if(fresh.length > 1)
+    return 'Xin chào The Curator! Bạn có ' + fresh.length + ' đơn hàng mới';
+  return 'Xin chào The Curator! Bạn có một đơn hàng mới';
 }
 
 /* ---------- doc CSV (xu ly xuong dong trong o) ---------- */
@@ -299,7 +297,7 @@ $('#btnStart').addEventListener('click', async ()=>{
 });
 $('#btnTest').addEventListener('click', ()=>{
   if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  audioCtx.resume(); alarm('Có đơn nước mới của khách Nguyễn Văn A, 2 món — đây là chuông thử');
+  audioCtx.resume(); alarm('Xin chào The Curator! Bạn có một đơn hàng mới');
 });
 $('#btnReset').addEventListener('click', ()=>{
   clearInterval(timer); started=false;
