@@ -98,7 +98,7 @@ button{font-family:var(--body);cursor:pointer}
   <div class="orders" id="orders"></div>
   <p class="empty" id="empty" hidden>Đang theo dõi… Chưa có đơn nào.<br>Đơn mới sẽ tự hiện kèm chuông báo — cứ để tab này mở.</p>
 
-  <p class="foot">Tự làm mới mỗi 25 giây · giữ tab mở và bật loa ·
+  <p class="foot">Tự làm mới mỗi 10 giây · giữ tab mở và bật loa ·
     <button id="btnReset">Đổi liên kết Sheet</button></p>
 </div>
 
@@ -121,14 +121,14 @@ function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on');
 function ding(){
   if(!audioCtx) return;
   const now = audioCtx.currentTime;
-  [[880,0],[1174.7,.18],[880,.5],[1174.7,.68]].forEach(([f,t])=>{
+  [[659.3,0],[880,.14],[1318.5,.28],[659.3,.62],[880,.76],[1318.5,.9]].forEach(([f,t])=>{
     const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type='sine'; o.frequency.value=f;
+    o.type='triangle'; o.frequency.value=f;
     g.gain.setValueAtTime(.0001, now+t);
-    g.gain.exponentialRampToValueAtTime(.4, now+t+.02);
-    g.gain.exponentialRampToValueAtTime(.0001, now+t+.45);
+    g.gain.exponentialRampToValueAtTime(.5, now+t+.015);
+    g.gain.exponentialRampToValueAtTime(.0001, now+t+.34);
     o.connect(g); g.connect(audioCtx.destination);
-    o.start(now+t); o.stop(now+t+.5);
+    o.start(now+t); o.stop(now+t+.4);
   });
 }
 function speak(msg){
@@ -140,9 +140,16 @@ function speak(msg){
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   }catch(e){}
 }
-function alarm(loai){
+function alarm(msg){
   ding();
-  setTimeout(()=>speak('Có đơn hàng mới' + (loai ? ' — ' + loai : '')), 900);
+  setTimeout(()=>speak(msg || 'Có đơn hàng mới'), 1100);
+}
+function alarmMsg(fresh){
+  if(fresh.length > 1) return 'Có ' + fresh.length + ' đơn hàng mới, kiểm tra màn hình quầy';
+  const o = fresh[0];
+  const loai = o.loai === 'nuoc' ? 'đơn nước' : 'đơn bánh trung thu';
+  const soMon = (o.total || '').split('—')[0].trim();
+  return 'Có ' + loai + ' mới' + (o.name ? ' của khách ' + o.name : '') + (soMon ? ', ' + soMon : '');
 }
 
 /* ---------- doc CSV (xu ly xuong dong trong o) ---------- */
@@ -164,7 +171,29 @@ function parseCSV(text){
   return rows;
 }
 
-function keyOf(r){ return (r[0]||'')+'|'+(r[2]||''); }
+/* tim cot theo TEN tieu de — Sheet xao tron cot van doc dung */
+function norm(t){ return (t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d'); }
+function mapCols(header){
+  const H = header.map(norm);
+  function find(keys, fallback){
+    for(const k of keys){
+      const i = H.findIndex(h => h.includes(k));
+      if(i > -1) return i;
+    }
+    return fallback;
+  }
+  return {
+    ts:     find(['thoi gian','timestamp'], 0),
+    name:   find(['ten nguoi','ho ten','ten'], 1),
+    phone:  find(['dien thoai','sdt','phone'], 2),
+    detail: find(['chi tiet'], 3),
+    total:  find(['tong'], 4),
+    ship:   find(['cach nhan','nhan hang'], 5),
+    time:   find(['gio nhan','ngay nhan'], 6),
+    addr:   find(['dia chi'], 7),
+    note:   find(['ghi chu'], 8)
+  };
+}
 
 function msgFor(o){
   const L=['THE CURATOR CAFE xin xác nhận đơn:', o.detail,
@@ -181,11 +210,16 @@ async function fetchOne(url, loai){
   const r = await fetch(url + (url.includes('?')?'&':'?') + 'cb=' + Date.now(), {cache:'no-store'});
   if(!r.ok) throw new Error('HTTP '+r.status);
   const rows = parseCSV(await r.text());
+  if(rows.length < 1) return [];
+  const M = mapCols(rows[0]);
   const out=[];
   for(let i=1;i<rows.length;i++){
-    const c=rows[i]; if(!c[0] || !(c[1]||c[2])) continue;
-    out.push({ loai, k:loai+'|'+keyOf(c), ts:c[0], name:c[1]||'', phone:c[2]||'',
-      detail:c[3]||'', total:c[4]||'', ship:c[5]||'', time:c[6]||'', addr:c[7]||'', note:c[8]||'' });
+    const c=rows[i];
+    const ts=c[M.ts]||'', name=c[M.name]||'', phone=c[M.phone]||'';
+    if(!ts || !(name||phone)) continue;
+    out.push({ loai, k:loai+'|'+ts+'|'+phone, ts, name, phone,
+      detail:c[M.detail]||'', total:c[M.total]||'', ship:c[M.ship]||'',
+      time:c[M.time]||'', addr:c[M.addr]||'', note:c[M.note]||'' });
   }
   return out;
 }
@@ -202,9 +236,7 @@ async function poll(first){
   orders = all;
   render(fresh.map(f=>f.k));
   if(fresh.length){
-    const loai = fresh.every(f=>f.loai==='nuoc') ? 'đơn nước'
-               : fresh.every(f=>f.loai==='banh') ? 'đơn bánh trung thu' : '';
-    alarm(loai);
+    alarm(alarmMsg(fresh));
     document.title = '(' + fresh.length + ' mới) Quầy đơn hàng';
     setTimeout(()=>document.title='Quầy đơn hàng', 30000);
   }
@@ -263,11 +295,11 @@ $('#btnStart').addEventListener('click', async ()=>{
   toast('Đang tải đơn…');
   await poll(true);
   toast('Sẵn sàng — đơn mới sẽ reo chuông');
-  clearInterval(timer); timer = setInterval(()=>poll(false), 25000);
+  clearInterval(timer); timer = setInterval(()=>poll(false), 10000);
 });
 $('#btnTest').addEventListener('click', ()=>{
   if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  audioCtx.resume(); alarm('thử chuông');
+  audioCtx.resume(); alarm('Có đơn nước mới của khách Nguyễn Văn A, 2 món — đây là chuông thử');
 });
 $('#btnReset').addEventListener('click', ()=>{
   clearInterval(timer); started=false;
