@@ -106,11 +106,65 @@ button{font-family:var(--body);cursor:pointer}
     <button id="btnReset">Đổi liên kết Sheet</button></p>
 </div>
 
+<iframe name="gsink" style="display:none" title="đồng bộ" aria-hidden="true"></iframe>
 <div class="toast" id="toast"></div>
 
 <script>
 const $ = s => document.querySelector(s);
 const KEY = 'tcCashier', DONE_KEY = 'tcCashierDone', SEEN_KEY = 'tcCashierSeen';
+/* Dong bo trang thai "Da xac nhan" giua cac may qua mot Google Form + Sheet.
+   Dien 4 gia tri nay la bat; de trong thi trang thai chi luu tren tung may. */
+const SYNC = {
+  form: "1FAIpQLSc9SFh3XX5L4t13DU4FJOmrQZRYMnq5ghVpoNfr3qapikRi1Q",
+  key:  "entry.1552684514",
+  act:  "entry.1118011995",
+  csv:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjOZYVPHx1X84M8gAUBa88jMasKcoySTK0mtoLBYx80WVuOz9rWxvvLxBNwk6BtntCP7EeRzkV4A4K/pub?gid=571892799&single=true&output=csv"
+};
+function syncReady(){ return SYNC.form && SYNC.key && SYNC.act && SYNC.csv; }
+let remoteDone = new Set(), pending = {};
+try{ pending = JSON.parse(localStorage.getItem('tcCashierPend') || '{}'); }catch(e){}
+function savePending(){ localStorage.setItem('tcCashierPend', JSON.stringify(pending)); }
+function pushSync(k, action){
+  if(!syncReady()) return;
+  pending[k] = { a: action, t: Date.now() }; savePending();
+  const f = document.createElement('form');
+  f.action = 'https://docs.google.com/forms/d/e/' + SYNC.form + '/formResponse';
+  f.method = 'POST'; f.target = 'gsink'; f.style.display = 'none';
+  [[SYNC.key, k], [SYNC.act, action]].forEach(([n, v])=>{
+    const i = document.createElement('input');
+    i.type = 'hidden'; i.name = n; i.value = v; f.appendChild(i);
+  });
+  document.body.appendChild(f); f.submit();
+  setTimeout(()=>f.remove(), 4000);
+}
+async function fetchSync(){
+  if(!syncReady()) return;
+  try{
+    const r = await fetch(SYNC.csv + (SYNC.csv.includes('?')?'&':'?') + 'cb=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    const rows = parseCSV(await r.text());
+    const last = {};
+    for(let i=1;i<rows.length;i++){
+      const k = (rows[i][1]||'').trim(), a = (rows[i][2]||'').trim().toLowerCase();
+      if(k) last[k] = a;
+    }
+    remoteDone = new Set(Object.keys(last).filter(k => last[k] === 'done'));
+    Object.keys(pending).forEach(k=>{
+      const want = pending[k].a === 'done';
+      if(remoteDone.has(k) === want || Date.now() - pending[k].t > 5*60000){
+        delete pending[k];
+      }
+    });
+    savePending();
+  }catch(e){}
+}
+function isDone(k){
+  const p = pending[k];
+  if(p && Date.now() - p.t < 5*60000) return p.a === 'done';
+  if(syncReady()) return remoteDone.has(k);
+  return done.has(k);
+}
+
 const DEFAULT_CFG = {
   nuoc: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNzxUibFI4QlcuBjE9yInsqQa63voTWIpvRTxm_v2PBBacUh9Eqdnua9foAeXn1T7aGlaTUfEC4zxX/pub?gid=1811318929&single=true&output=csv",
   banh: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT-JPTuBnr3XbEurV6jocriF0eXatSLVLgeBSBY6zV1F0pvdkLp5JzJcxU4Cgx3En0Q3fZ7v-46OSAI/pub?gid=2037493515&single=true&output=csv"
@@ -178,6 +232,15 @@ function parseCSV(text){
   return rows;
 }
 
+/* doc "27/08/2026 7:00:31" (kieu VN) hoac "8/27/2026" (kieu My) thanh thoi gian */
+function tsVal(sTs){
+  const m = /(\d{1,2})\/(\d{1,2})\/(\d{4})[ T]*(\d{1,2})?:?(\d{2})?:?(\d{2})?/.exec(sTs || '');
+  if(!m) return 0;
+  let d = +m[1], mo = +m[2];
+  if(d <= 12 && mo > 12){ const t = d; d = mo; mo = t; }
+  return new Date(+m[3], mo - 1, d, +(m[4]||0), +(m[5]||0), +(m[6]||0)).getTime();
+}
+
 /* tim cot theo TEN tieu de — Sheet xao tron cot van doc dung */
 function norm(t){ return (t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d'); }
 function mapCols(header){
@@ -235,8 +298,9 @@ async function poll(first){
   const jobs=[];
   if(cfg.nuoc) jobs.push(fetchOne(cfg.nuoc,'nuoc').catch(e=>{toast('Không đọc được Sheet nước'); return [];}));
   if(cfg.banh) jobs.push(fetchOne(cfg.banh,'banh').catch(e=>{toast('Không đọc được Sheet bánh'); return [];}));
+  jobs.push(fetchSync().then(()=>[]));
   const all = (await Promise.all(jobs)).flat();
-  all.sort((a,b)=> new Date(b.ts.split('/').reverse().join('-')) - new Date(a.ts.split('/').reverse().join('-')) || (a.ts<b.ts?1:-1));
+  all.sort((a,b)=> tsVal(b.ts) - tsVal(a.ts));
   let fresh=[];
   all.forEach(o=>{ if(!seen.has(o.k)){ seen.add(o.k); if(!first) fresh.push(o); } });
   localStorage.setItem(SEEN_KEY, JSON.stringify([...seen].slice(-600)));
@@ -251,13 +315,13 @@ async function poll(first){
 
 function render(freshKeys){
   const box=$('#orders'); box.innerHTML='';
-  const pending = orders.filter(o=>!done.has(o.k)).length;
-  $('#count').textContent = pending;
+  const chuaXong = orders.filter(o=>!isDone(o.k)).length;
+  $('#count').textContent = chuaXong;
   $('#countPill').hidden = false;
   $('#empty').hidden = orders.length > 0;
   orders.slice(0,80).forEach(o=>{
     const card=document.createElement('div');
-    card.className='card '+o.loai+(done.has(o.k)?' done':'')+((freshKeys||[]).includes(o.k)?' fresh':'');
+    card.className='card '+o.loai+(isDone(o.k)?' done':'')+((freshKeys||[]).includes(o.k)?' fresh':'');
     const top=document.createElement('div'); top.className='c-top';
     const tag=document.createElement('span'); tag.className='tag '+o.loai;
     tag.textContent = o.loai==='nuoc'?'NƯỚC':'BÁNH';
@@ -278,10 +342,12 @@ function render(freshKeys){
     cp.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận'); }catch(e){ toast('Không chép được'); } });
     const tel=document.createElement('a'); tel.textContent='📞 Gọi'; tel.href='tel:'+phoneClean(o.phone);
     const ok=document.createElement('button'); ok.className='ok';
-    ok.textContent = done.has(o.k) ? '↩ Chưa xong' : '✓ Đã xác nhận';
+    ok.textContent = isDone(o.k) ? '↩ Chưa xong' : '✓ Đã xác nhận';
     ok.addEventListener('click', ()=>{
-      done.has(o.k) ? done.delete(o.k) : done.add(o.k);
+      const moi = !isDone(o.k);
+      moi ? done.add(o.k) : done.delete(o.k);
       localStorage.setItem(DONE_KEY, JSON.stringify([...done].slice(-600)));
+      pushSync(o.k, moi ? 'done' : 'undo');
       render();
     });
     act.append(zl,cp,tel,ok);
