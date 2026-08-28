@@ -796,6 +796,10 @@ footer a:hover{color:var(--ink)}
 </style>
 </head>
 <body>
+<script>const IMGS={"1":"img/d1.webp","2":"img/d2.webp","3":"img/d3.webp","4":"img/d4.webp","5":"img/d5.webp","6":"img/d6.webp","7":"img/d7.webp","8":"img/d8.webp","9":"img/d9.webp","10":"img/d10.webp","11":"img/d11.webp","12":"img/d12.webp"};
+function paintImgs(){document.querySelectorAll("[data-i]").forEach(function(el){if(!el.src)el.src=IMGS[el.dataset.i];});}
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",paintImgs);}else{paintImgs();}
+</script>
 <a class="skip" href="#dat-hang">Bỏ qua, tới phần đặt hàng</a>
 
 <nav class="nav" id="nav">
@@ -842,11 +846,11 @@ footer a:hover{color:var(--ink)}
     <figure class="hero-figure rv" style="margin:0">
       <span class="disc"></span>
       <div class="slides" id="slides" aria-live="polite">
-        <img class="on" fetchpriority="high" src="img/d3.webp" alt="Hộp MOON mở nắp, bánh nhiều màu xếp trong khay" data-cap="Set 01 · Mộc Nguyệt Đoàn Viên">
-        <img src="img/d5.webp" alt="Hộp FULL MOON lót vàng ánh kim, sáu hộp bánh lẻ" data-cap="Set 02 · Minh Viên Nguyệt">
-        <img src="img/d10.webp" alt="Hộp LOTUS xanh rêu khảm trai, quai tre" data-cap="Set 03 · An Nhiên Sen Thu">
-        <img src="img/d2.webp" alt="Bánh dẻo nhiều màu bày trên khay gỗ" data-cap="Sáu vị cho cả mùa">
-        <img src="img/d12.webp" alt="Cận cảnh mặt hộp khảm trai hình sen và chuồn chuồn" data-cap="Tranh sen khảm trai">
+        <img class="on" data-i="3" alt="Hộp MOON mở nắp, bánh nhiều màu xếp trong khay" data-cap="Set 01 · Mộc Nguyệt Đoàn Viên">
+        <img data-i="5" alt="Hộp FULL MOON lót vàng ánh kim, sáu hộp bánh lẻ" data-cap="Set 02 · Minh Viên Nguyệt">
+        <img data-i="10" alt="Hộp LOTUS xanh rêu khảm trai, quai tre" data-cap="Set 03 · An Nhiên Sen Thu">
+        <img data-i="2" alt="Bánh dẻo nhiều màu bày trên khay gỗ" data-cap="Sáu vị cho cả mùa">
+        <img data-i="12" alt="Cận cảnh mặt hộp khảm trai hình sen và chuồn chuồn" data-cap="Tranh sen khảm trai">
         <div class="slide-cap" id="slideCap">Set 01 · Mộc Nguyệt Đoàn Viên</div>
       </div>
       <div class="dots" id="dots" role="tablist" aria-label="Chọn ảnh"></div>
@@ -866,7 +870,7 @@ footer a:hover{color:var(--ink)}
     </div>
     <div class="trio">
       <a class="trio-card rv" href="#set-moon">
-        <div class="ph"><img src="img/d1.webp" alt="Hộp MOON màu son và giỏ tre đan"></div>
+        <div class="ph"><img data-i="1" alt="Hộp MOON màu son và giỏ tre đan"></div>
         <div class="trio-body">
           <div class="trio-meta"><span class="phase p1" style="color:var(--mute)"></span><span class="lbl">Set 01 · Moon</span></div>
         <h4>Mộc Nguyệt Đoàn Viên</h4>
@@ -875,7 +879,7 @@ footer a:hover{color:var(--ink)}
       </div>
       </a>
       <a class="trio-card rv" href="#set-full">
-        <div class="ph"><img src="img/d5.webp" alt="Hộp FULL MOON màu kem lót vàng, quai da và tua rua lụa"></div>
+        <div class="ph"><img data-i="5" alt="Hộp FULL MOON màu kem lót vàng, quai da và tua rua lụa"></div>
         <div class="trio-body">
           <div class="trio-meta"><span class="phase p2" style="color:var(--mute)"></span><span class="lbl">Set 02 · Full Moon</span></div>
         <h4>Minh Viên Nguyệt</h4>
@@ -884,7 +888,7 @@ footer a:hover{color:var(--ink)}
       </div>
       </a>
       <a class="trio-card rv" href="#set-lotus">
-        <div class="ph"><img src="img/d10.webp" alt="Hộp LOTUS xanh rêu mặt tranh sen khảm trai, quai tre"></div>
+        <div class="ph"><img data-i="10" alt="Hộp LOTUS xanh rêu mặt tranh sen khảm trai, quai tre"></div>
         <div class="trio-body">
           <div class="trio-meta"><span class="phase p3" style="color:var(--mute)"></span><span class="lbl">Set 03 · Lotus</span></div>
         <h4>An Nhiên Sen Thu</h4>
@@ -923,10 +927,10 @@ footer a:hover{color:var(--ink)}
       </div>
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
-        <img src="img/d1.webp" alt="Giỏ tre và hộp son MOON đặt cạnh nhau">
+        <img data-i="1" alt="Giỏ tre và hộp son MOON đặt cạnh nhau">
         <div class="gallery g2 rv">
-      <img src="img/d3.webp" alt="Hai khay bánh MOON tám vị bày trong hộp son" loading="lazy">
-      <img src="img/d1.webp" alt="Hộp MOON 4 bánh mở nắp bên cạnh giỏ tre" loading="lazy">
+      <img data-i="3" alt="Hai khay bánh MOON tám vị bày trong hộp son" loading="lazy">
+      <img data-i="1" alt="Hộp MOON 4 bánh mở nắp bên cạnh giỏ tre" loading="lazy">
     </div>
       </figure>
     </div>
@@ -961,14 +965,14 @@ footer a:hover{color:var(--ink)}
       </div>
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
-        <img src="img/d5.webp" alt="Hộp FULL MOON mở ra, sáu hộp bánh lẻ xếp trên nền vàng ánh kim">
+        <img data-i="5" alt="Hộp FULL MOON mở ra, sáu hộp bánh lẻ xếp trên nền vàng ánh kim">
         <div class="gallery rv">
-      <img src="img/d4.webp" alt="Hai tay mở nắp hộp FULL MOON dưới ánh đèn lồng" loading="lazy">
-      <img src="img/d8.webp" alt="Hộp FULL MOON và nắp có bốn ô cửa, tua rua vàng" loading="lazy">
-      <img src="img/d7.webp" alt="Hộp FULL MOON được cầm bằng quai da, bánh bày trên khay gỗ" loading="lazy">
-      <img src="img/d11.webp" alt="Toàn cảnh hộp FULL MOON bày trên bàn gỗ cùng ấm trà" loading="lazy">
-      <img src="img/d6.webp" alt="Bánh đầu lân, bánh dẻo trà xanh và bánh nướng nhìn từ trên xuống" loading="lazy">
-      <img src="img/d5.webp" alt="Hộp FULL MOON nhìn nghiêng cùng hộp bánh lẻ" loading="lazy">
+      <img data-i="4" alt="Hai tay mở nắp hộp FULL MOON dưới ánh đèn lồng" loading="lazy">
+      <img data-i="8" alt="Hộp FULL MOON và nắp có bốn ô cửa, tua rua vàng" loading="lazy">
+      <img data-i="7" alt="Hộp FULL MOON được cầm bằng quai da, bánh bày trên khay gỗ" loading="lazy">
+      <img data-i="11" alt="Toàn cảnh hộp FULL MOON bày trên bàn gỗ cùng ấm trà" loading="lazy">
+      <img data-i="6" alt="Bánh đầu lân, bánh dẻo trà xanh và bánh nướng nhìn từ trên xuống" loading="lazy">
+      <img data-i="5" alt="Hộp FULL MOON nhìn nghiêng cùng hộp bánh lẻ" loading="lazy">
     </div>
       </figure>
     </div>
@@ -1003,12 +1007,12 @@ footer a:hover{color:var(--ink)}
       </div>
       <figure class="set-hero rv" style="margin:0">
         <span class="halo"></span>
-        <img src="img/d10.webp" alt="Hộp LOTUS xanh rêu quai tre bên cạnh bốn chiếc bánh trên khay gỗ">
+        <img data-i="10" alt="Hộp LOTUS xanh rêu quai tre bên cạnh bốn chiếc bánh trên khay gỗ">
         <div class="gallery rv">
-      <img src="img/d9.webp" alt="Hộp LOTUS mở ra, bánh đặt trên lá sen ép, hộp trà ở giữa" loading="lazy">
-      <img src="img/d12.webp" alt="Cận cảnh mặt hộp khảm trai hình hoa sen và chuồn chuồn" loading="lazy">
-      <img src="img/d2.webp" alt="Bốn chiếc bánh dẻo nhiều màu bày trước hộp LOTUS" loading="lazy">
-      <img src="img/d10.webp" alt="Hộp LOTUS cùng túi giấy xanh rêu bên khung cửa gỗ" loading="lazy">
+      <img data-i="9" alt="Hộp LOTUS mở ra, bánh đặt trên lá sen ép, hộp trà ở giữa" loading="lazy">
+      <img data-i="12" alt="Cận cảnh mặt hộp khảm trai hình hoa sen và chuồn chuồn" loading="lazy">
+      <img data-i="2" alt="Bốn chiếc bánh dẻo nhiều màu bày trước hộp LOTUS" loading="lazy">
+      <img data-i="10" alt="Hộp LOTUS cùng túi giấy xanh rêu bên khung cửa gỗ" loading="lazy">
     </div>
       </figure>
     </div>
@@ -1161,7 +1165,7 @@ footer a:hover{color:var(--ink)}
 
           <div id="panelSet" role="tabpanel" aria-labelledby="tabSet">
             <div class="sp-row">
-              <img src="img/d1.webp" alt="">
+              <img data-i="1" alt="">
               <div class="sp-info">
                 <div class="sp-nm">Mộc Nguyệt Đoàn Viên</div>
                 <div class="sp-sp">Hộp MOON · 4 bánh × 50g</div>
@@ -1174,7 +1178,7 @@ footer a:hover{color:var(--ink)}
               </div>
             </div>
             <div class="sp-row">
-              <img src="img/d5.webp" alt="">
+              <img data-i="5" alt="">
               <div class="sp-info">
                 <div class="sp-nm">Minh Viên Nguyệt</div>
                 <div class="sp-sp">Hộp FULL MOON · 6 bánh × 50g</div>
@@ -1187,7 +1191,7 @@ footer a:hover{color:var(--ink)}
               </div>
             </div>
             <div class="sp-row">
-              <img src="img/d10.webp" alt="">
+              <img data-i="10" alt="">
               <div class="sp-info">
                 <div class="sp-nm">An Nhiên Sen Thu</div>
                 <div class="sp-sp">Hộp LOTUS · 4 bánh × 150g</div>

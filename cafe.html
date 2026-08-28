@@ -92,6 +92,46 @@ body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(-
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .mi-side{display:flex;align-items:center;justify-content:space-between;gap:8px;
   border-top:1px dashed var(--line);padding-top:9px;margin-top:2px}
+.addbtn{display:flex;align-items:center;gap:7px;border:1px solid var(--ink);border-radius:6px;
+  background:var(--ink);color:#FDF8EF;padding:0 14px;height:36px;font-family:var(--body);
+  font-size:12px;letter-spacing:.06em;cursor:pointer;flex:0 0 auto}
+.addbtn:hover{background:#000}
+.addbtn .ct{background:#EFC15C;color:var(--ink);border-radius:999px;min-width:19px;height:19px;
+  display:none;align-items:center;justify-content:center;font-size:11px;font-weight:600;padding:0 5px}
+.addbtn.has .ct{display:inline-flex}
+.mi-note{font-size:10px;color:var(--mute);letter-spacing:.03em;margin-top:3px}
+
+/* --- bang chon loai hat --- */
+.hs-bg{position:fixed;inset:0;z-index:130;background:rgba(24,15,10,.5);
+  opacity:0;visibility:hidden;transition:.3s}
+.hs-bg.on{opacity:1;visibility:visible}
+.hsheet{position:fixed;left:0;right:0;bottom:0;z-index:131;background:#FFFDF8;
+  border-radius:14px 14px 0 0;padding:14px 20px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(105%);transition:transform .35s cubic-bezier(.2,.8,.3,1);
+  box-shadow:0 -20px 60px -20px rgba(24,15,10,.45)}
+.hsheet.on{transform:translateY(0)}
+.hsheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.hs-hd{display:flex;align-items:flex-start;gap:10px;margin-bottom:4px}
+.hs-hd .t{flex:1}
+.hs-hd .t small{display:block;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:3px}
+.hs-hd .t b{font-family:var(--disp);font-size:24px;font-weight:600;line-height:1.15}
+.hs-x{border:0;background:none;font-size:23px;color:var(--mute);cursor:pointer;padding:4px;line-height:1}
+.hs-opts{display:grid;gap:9px;margin-top:13px}
+.hopt{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:1px solid var(--line);border-radius:8px;background:#FDFAF3;padding:14px 16px;
+  cursor:pointer;font-family:var(--body);text-align:left;transition:.15s}
+.hopt:hover{border-color:var(--ink);background:#fff}
+.hopt .hn{font-size:14.5px;font-weight:500}
+.hopt .hn small{display:block;font-size:11px;color:var(--mute);font-weight:300;margin-top:2px}
+.hopt .hp{font-family:var(--disp);font-size:20px;font-weight:600;white-space:nowrap}
+@media(min-width:901px){
+  .hsheet{left:50%;right:auto;bottom:auto;top:50%;width:min(420px,92vw);
+    transform:translate(-50%,-46%) scale(.96);opacity:0;border-radius:10px;
+    padding:20px 22px 24px;visibility:hidden;transition:.28s}
+  .hsheet.on{transform:translate(-50%,-50%) scale(1);opacity:1;visibility:visible}
+  .hsheet .grab{display:none}
+}
 .mi-price{font-size:14px;font-weight:500;white-space:nowrap}
 .stp{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;
   background:#FDFAF3;height:36px;overflow:hidden;flex:0 0 auto}
@@ -295,6 +335,25 @@ footer a{color:var(--ink)}
   <a class="go" id="mbBtn" href="#summary">Xem đơn</a>
 </div>
 
+<div class="hs-bg" id="hsBg"></div>
+<div class="hsheet" id="hsheet" role="dialog" aria-modal="true" aria-label="Chọn loại hạt">
+  <div class="grab"></div>
+  <div class="hs-hd">
+    <div class="t"><small>Chọn loại hạt</small><b id="hsName">Món</b></div>
+    <button class="hs-x" id="hsX" type="button" aria-label="Đóng">×</button>
+  </div>
+  <div class="hs-opts">
+    <button class="hopt" id="hsHouse" type="button">
+      <span class="hn">Blend Arabica &amp; Robusta<small>Hạt pha máy của quán</small></span>
+      <span class="hp" id="hsP0">0đ</span>
+    </button>
+    <button class="hopt" id="hsLib" type="button">
+      <span class="hn">Liberica<small>Single origin · phụ thu 8.000đ</small></span>
+      <span class="hp" id="hsP1">0đ</span>
+    </button>
+  </div>
+</div>
+
 <iframe name="gsink" style="display:none" title="gửi đơn" aria-hidden="true"></iframe>
 <div class="toast" id="toast"></div>
 
@@ -305,7 +364,7 @@ footer a{color:var(--ink)}
 </footer>
 
 <script>
-const DATA = [{"cat": "Cafe Phin", "sub": "Vietnamese Filter Coffee", "items": [{"id": "bacxiumuoi", "n": "Bạc xỉu muối", "p": 35000, "d": "Cafe phin · sữa đặc · sữa tươi · kem muối", "b": ""}, {"id": "bacxiuphin", "n": "Bạc xỉu phin", "p": 30000, "d": "Cafe phin · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedua", "n": "Cafe dừa", "p": 39000, "d": "Cafe phin · cốt dừa · sữa tươi · sữa đặc", "b": "best"}, {"id": "cafedenphin", "n": "Cafe đen phin", "p": 24000, "d": "Cafe phin", "b": ""}, {"id": "cafedensaigon", "n": "Cafe đen Sài Gòn", "p": 25000, "d": "Cafe phin · đường", "b": ""}, {"id": "cafemuoi", "n": "Cafe muối", "p": 32000, "d": "Cafe phin · sữa đặc · kem muối", "b": "best"}, {"id": "cafesuaphin", "n": "Cafe sữa phin", "p": 28000, "d": "Cafe phin · sữa đặc", "b": ""}, {"id": "cafesuasaigon", "n": "Cafe sữa Sài Gòn", "p": 30000, "d": "Cafe phin · sữa đặc", "b": ""}]}, {"cat": "House Espresso", "sub": "Espresso-based", "items": [{"id": "americano", "n": "Americano", "p": 29000, "d": "Espresso", "b": ""}, {"id": "americanococo", "n": "Americano Coco", "p": 45000, "d": "Espresso · nước dừa", "b": ""}, {"id": "bacxiumay", "n": "Bạc xỉu máy", "p": 32000, "d": "Espresso · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedensaigonphamay", "n": "Cafe đen Sài Gòn pha máy", "p": 25000, "d": "Espresso · syrup đường", "b": ""}, {"id": "cafesuamay", "n": "Cafe sữa máy", "p": 29000, "d": "Espresso · sữa đặc", "b": "best"}, {"id": "cafesuasaigonphamay", "n": "Cafe sữa Sài Gòn pha máy", "p": 30000, "d": "Espresso · sữa đặc", "b": ""}, {"id": "cappuccinodanong", "n": "Cappuccino đá / nóng", "p": 35000, "d": "Espresso · sữa tươi · foam", "b": ""}, {"id": "espresso", "n": "Espresso", "p": 25000, "d": "Double shot · không sữa", "b": "must"}, {"id": "lattedanong", "n": "Latte đá / nóng", "p": 35000, "d": "Espresso · sữa tươi", "b": ""}, {"id": "longblack", "n": "Long Black", "p": 32000, "d": "Espresso", "b": ""}]}, {"cat": "Liberica Espresso", "sub": "Liberica Single Origin · Hot", "items": [{"id": "americanoliberica", "n": "Americano Liberica", "p": 35000, "d": "Liberica", "b": ""}, {"id": "bacxiumayliberica", "n": "Bạc xỉu máy Liberica", "p": 39000, "d": "Liberica · sữa đặc · sữa tươi", "b": ""}, {"id": "cappuccinolibericadanong", "n": "Cappuccino Liberica đá / nóng", "p": 42000, "d": "Liberica · sữa tươi · foam", "b": ""}, {"id": "espressoliberica", "n": "Espresso Liberica", "p": 32000, "d": "Liberica · không sữa", "b": ""}, {"id": "lattelibericadanong", "n": "Latte Liberica đá / nóng", "p": 45000, "d": "Liberica · sữa tươi", "b": ""}, {"id": "longblackliberica", "n": "Long Black Liberica", "p": 38000, "d": "Liberica", "b": ""}]}, {"cat": "Liberica Cold Brew", "sub": "Slow-Brewed Specialty", "items": [{"id": "coldbrewblack", "n": "Cold Brew Black", "p": 35000, "d": "Liberica ủ lạnh", "b": "best"}, {"id": "coldbrewbuoi", "n": "Cold Brew Bưởi", "p": 45000, "d": "Cold brew · mứt bưởi hồng", "b": "must"}, {"id": "coldbrewcitrus", "n": "Cold Brew Citrus", "p": 39000, "d": "Cold brew · cam chanh tươi", "b": "must"}, {"id": "coldbrewdautam", "n": "Cold Brew Dâu Tằm", "p": 42000, "d": "Cold brew · mứt dâu tằm", "b": ""}, {"id": "coldbrewdua", "n": "Cold Brew Dứa", "p": 45000, "d": "Cold brew · mứt dứa", "b": "must"}, {"id": "coldbrewmilk", "n": "Cold Brew Milk", "p": 39000, "d": "Cold brew · sữa tươi", "b": ""}, {"id": "coldbrewoihong", "n": "Cold Brew Ổi Hồng", "p": 47000, "d": "Cold brew · mứt ổi hồng", "b": ""}, {"id": "coldbrewvai", "n": "Cold Brew Vải", "p": 45000, "d": "Cold brew · mứt vải", "b": ""}]}, {"cat": "Matcha", "sub": "Premium Japanese Tea", "items": [{"id": "cocomatcha", "n": "CoCo Matcha", "p": 59000, "d": "Matcha · nước dừa · kem béo · oatmilk", "b": ""}, {"id": "matchacoldwhisk", "n": "Matcha Cold Whisk", "p": 35000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchaicecream", "n": "Matcha Ice Cream", "p": 59000, "d": "Matcha · kem tươi · oatmilk", "b": "best,new"}, {"id": "matchalatte", "n": "Matcha Latte", "p": 32000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchameden", "n": "Matcha mè đen", "p": 39000, "d": "Matcha · mè đen rang · oatmilk · sữa đặc", "b": "must"}, {"id": "matchamuoi", "n": "Matcha muối", "p": 39000, "d": "Matcha · oatmilk · kem muối", "b": "must"}, {"id": "matchaoreo", "n": "Matcha Oreo", "p": 59000, "d": "Matcha · oreo · oatmilk · sữa đặc", "b": "must,new"}, {"id": "senxanh", "n": "Sen Xanh", "p": 47000, "d": "Trà lài · nước dừa · hạt sen · kem matcha", "b": "must"}]}, {"cat": "Nước Ép Tươi", "sub": "Fresh Juice — không thêm đường", "items": [{"id": "nuocepcam", "n": "Nước ép cam", "p": 39000, "d": "Cam tươi · ép", "b": ""}, {"id": "nuocepduahau", "n": "Nước ép dưa hấu", "p": 32000, "d": "Dưa hấu tươi · ép", "b": ""}, {"id": "nuocepoi", "n": "Nước ép ổi", "p": 35000, "d": "Ổi đỏ tươi · ép", "b": ""}, {"id": "nuocepthom", "n": "Nước ép thơm", "p": 35000, "d": "Thơm tươi · ép", "b": ""}]}, {"cat": "Trà", "sub": "Base · Trà lài", "items": [{"id": "traatiso", "n": "Trà atiso", "p": 32000, "d": "Trà lài · siro atiso đỏ", "b": "best"}, {"id": "trabuoi", "n": "Trà bưởi", "p": 31000, "d": "Trà lài · mứt bưởi hồng", "b": "best"}, {"id": "trabuoimatong", "n": "Trà bưởi mật ong", "p": 35000, "d": "Trà ô long · mứt bưởi · mật ong", "b": "best,new"}, {"id": "tradautam", "n": "Trà dâu tằm", "p": 32000, "d": "Trà lài · siro dâu tằm", "b": "best"}, {"id": "traduanhai", "n": "Trà dứa nhài", "p": 30000, "d": "Trà lài · mứt dứa", "b": ""}, {"id": "tranhaioihong", "n": "Trà nhài ổi hồng", "p": 29000, "d": "Trà lài · mứt ổi hồng", "b": ""}, {"id": "travai", "n": "Trà vải", "p": 29000, "d": "Trà lài · mứt vải", "b": "best"}]}, {"cat": "Bánh", "sub": "Pastries — Daily Fresh Bake", "items": [{"id": "croissanthanhnhan", "n": "Croissant Hạnh Nhân", "p": 45000, "d": "Almond croissant", "b": ""}, {"id": "croissantkemdau", "n": "Croissant Kem Dâu", "p": 45000, "d": "Strawberry cream", "b": ""}, {"id": "croissantkemsocola", "n": "Croissant Kem Socola", "p": 45000, "d": "Chocolate cream", "b": ""}, {"id": "croissantkimsa", "n": "Croissant Kim Sa", "p": 42000, "d": "Lava custard", "b": ""}, {"id": "croissantsignature", "n": "Croissant Signature", "p": 35000, "d": "Signature croissant", "b": ""}, {"id": "croissantsocola", "n": "Croissant Socola", "p": 39000, "d": "Chocolate croissant", "b": ""}, {"id": "croissantsothatdieu", "n": "Croissant Sốt Hạt Điều", "p": 42000, "d": "Cashew sauce", "b": ""}, {"id": "croissanttrungmuoi", "n": "Croissant Trứng Muối", "p": 45000, "d": "Salted egg yolk", "b": "best"}, {"id": "danmachtrungmuoi", "n": "Đan Mạch Trứng Muối", "p": 39000, "d": "Danish salted egg yolk", "b": ""}, {"id": "hanhnhandua", "n": "Hạnh Nhân Dừa", "p": 39000, "d": "Almond coconut pastry", "b": ""}]}, {"cat": "Khác", "sub": "Other Drinks", "items": [{"id": "cacaodanong", "n": "Cacao đá / nóng", "p": 35000, "d": "Cacao · sữa tươi · sữa đặc", "b": ""}]}];
+const DATA = [{"cat": "Cafe Phin", "sub": "Vietnamese Filter Coffee", "items": [{"id": "bacxiumuoi", "n": "Bạc xỉu muối", "p": 35000, "d": "Cafe phin · sữa đặc · sữa tươi · kem muối", "b": ""}, {"id": "bacxiuphin", "n": "Bạc xỉu phin", "p": 30000, "d": "Cafe phin · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedua", "n": "Cafe dừa", "p": 39000, "d": "Cafe phin · cốt dừa · sữa tươi · sữa đặc", "b": "must"}, {"id": "cafedenphin", "n": "Cafe đen phin", "p": 24000, "d": "Cafe phin", "b": ""}, {"id": "cafedensaigon", "n": "Cafe đen Sài Gòn", "p": 25000, "d": "Cafe phin · đường", "b": ""}, {"id": "cafemuoi", "n": "Cafe muối", "p": 32000, "d": "Cafe phin · sữa đặc · kem muối", "b": "best"}, {"id": "cafesuaphin", "n": "Cafe sữa phin", "p": 28000, "d": "Cafe phin · sữa đặc", "b": ""}, {"id": "cafesuasaigon", "n": "Cafe sữa Sài Gòn", "p": 30000, "d": "Cafe phin · sữa đặc", "b": ""}]}, {"cat": "Espresso", "sub": "Espresso-based · Đổi hạt Liberica +8k", "items": [{"id": "americano", "n": "Americano", "p": 29000, "d": "Espresso", "b": ""}, {"id": "americanococo", "n": "Americano Coco", "p": 45000, "d": "Espresso · nước dừa", "b": ""}, {"id": "bacxiumay", "n": "Bạc xỉu máy", "p": 32000, "d": "Espresso · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedensaigonphamay", "n": "Cafe đen Sài Gòn pha máy", "p": 25000, "d": "Espresso · syrup đường", "b": ""}, {"id": "cafesuamay", "n": "Cafe sữa máy", "p": 29000, "d": "Espresso · sữa đặc", "b": "best"}, {"id": "cafesuasaigonphamay", "n": "Cafe sữa Sài Gòn pha máy", "p": 30000, "d": "Espresso · sữa đặc", "b": ""}, {"id": "cappuccinodanong", "n": "Cappuccino đá / nóng", "p": 35000, "d": "Espresso · sữa tươi · foam", "b": ""}, {"id": "espresso", "n": "Espresso", "p": 25000, "d": "Double shot · không sữa", "b": "must"}, {"id": "lattedanong", "n": "Latte đá / nóng", "p": 35000, "d": "Espresso · sữa tươi", "b": ""}, {"id": "longblack", "n": "Long Black", "p": 32000, "d": "Espresso", "b": ""}]}, {"cat": "Liberica Cold Brew", "sub": "Slow-Brewed Specialty", "items": [{"id": "coldbrewblack", "n": "Cold Brew Black", "p": 35000, "d": "Liberica ủ lạnh", "b": "best"}, {"id": "coldbrewbuoi", "n": "Cold Brew Bưởi", "p": 45000, "d": "Cold brew · mứt bưởi hồng", "b": "must"}, {"id": "coldbrewcam", "n": "Cold Brew Cam", "p": 39000, "d": "Cold brew · cam tươi", "b": "must"}, {"id": "coldbrewdua", "n": "Cold Brew Dừa", "p": 45000, "d": "Cold brew Liberica · cốt dừa", "b": "new"}, {"id": "coldbrewvai", "n": "Cold Brew Vải", "p": 45000, "d": "Cold brew · mứt vải", "b": ""}]}, {"cat": "Matcha", "sub": "Premium Japanese Tea", "items": [{"id": "cocomatcha", "n": "CoCo Matcha", "p": 59000, "d": "Matcha · nước dừa · kem béo · oatmilk", "b": ""}, {"id": "matchacoldwhisk", "n": "Matcha Cold Whisk", "p": 35000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchadaudo", "n": "Matcha đậu đỏ", "p": 52000, "d": "Matcha · oatmilk · sữa đặc · kem muối · đậu đỏ ngâm đường", "b": "new"}, {"id": "matchaicecream", "n": "Matcha Ice Cream", "p": 59000, "d": "Matcha · kem tươi · oatmilk", "b": "must,new"}, {"id": "matchalatte", "n": "Matcha Latte", "p": 32000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchameden", "n": "Matcha mè đen", "p": 39000, "d": "Matcha · mè đen rang · oatmilk · sữa đặc", "b": "must"}, {"id": "matchamuoi", "n": "Matcha muối", "p": 39000, "d": "Matcha · oatmilk · kem muối", "b": "best"}, {"id": "matchaoreo", "n": "Matcha Oreo", "p": 59000, "d": "Matcha · oreo · oatmilk · sữa đặc", "b": "must,new"}, {"id": "senxanh", "n": "Sen Xanh", "p": 47000, "d": "Trà lài · nước dừa · hạt sen · kem matcha", "b": "must"}]}, {"cat": "Trà", "sub": "Base · Trà lài", "items": [{"id": "traatiso", "n": "Trà atiso", "p": 32000, "d": "Trà lài · siro atiso đỏ", "b": "best"}, {"id": "trabuoi", "n": "Trà bưởi", "p": 31000, "d": "Trà lài · mứt bưởi hồng", "b": "best"}, {"id": "trabuoimatong", "n": "Trà bưởi mật ong", "p": 35000, "d": "Trà ô long · mứt bưởi · mật ong", "b": "must,new"}, {"id": "tradautam", "n": "Trà dâu tằm", "p": 32000, "d": "Trà lài · siro dâu tằm", "b": "best"}, {"id": "traduanhai", "n": "Trà dứa nhài", "p": 30000, "d": "Trà lài · mứt dứa", "b": ""}, {"id": "tranhaioihong", "n": "Trà nhài ổi hồng", "p": 29000, "d": "Trà lài · mứt ổi hồng", "b": ""}, {"id": "travai", "n": "Trà vải", "p": 29000, "d": "Trà lài · mứt vải", "b": "best"}]}, {"cat": "Đồ Uống Nóng", "sub": "Served Hot", "items": [{"id": "cacaomuoinong", "n": "Cacao Muối Nóng", "p": 42000, "d": "Cacao · cốt cafe · sữa đặc · sữa tươi · kem muối", "b": "new"}, {"id": "gingerlatte", "n": "Ginger Latte", "p": 45000, "d": "Espresso · gừng · sữa nóng", "b": "new"}, {"id": "hotcoconutlatte", "n": "Hot Coconut Latte", "p": 45000, "d": "Espresso · cốt dừa · sữa nóng", "b": "new"}, {"id": "hothoneylatte", "n": "Hot Honey Latte", "p": 42000, "d": "Espresso · mật ong · sữa nóng", "b": "new"}, {"id": "matchalattenong", "n": "Matcha Latte Nóng", "p": 35000, "d": "Matcha · sữa nóng · sữa đặc", "b": "new"}, {"id": "tragung", "n": "Trà Gừng", "p": 39000, "d": "Gừng tươi · mật ong", "b": "new"}]}, {"cat": "Nước Ép Tươi", "sub": "Fresh Juice — không thêm đường", "items": [{"id": "nuocepcam", "n": "Nước ép cam", "p": 39000, "d": "Cam tươi · ép", "b": ""}, {"id": "nuocepduahau", "n": "Nước ép dưa hấu", "p": 32000, "d": "Dưa hấu tươi · ép", "b": ""}, {"id": "nuocepoi", "n": "Nước ép ổi", "p": 35000, "d": "Ổi đỏ tươi · ép", "b": ""}, {"id": "nuocepthom", "n": "Nước ép thơm", "p": 35000, "d": "Thơm tươi · ép", "b": ""}]}, {"cat": "Bánh", "sub": "Pastries — Daily Fresh Bake", "items": [{"id": "croissanthanhnhan", "n": "Croissant Hạnh Nhân", "p": 45000, "d": "Almond croissant", "b": ""}, {"id": "croissantkemdau", "n": "Croissant Kem Dâu", "p": 45000, "d": "Strawberry cream", "b": ""}, {"id": "croissantkemsocola", "n": "Croissant Kem Socola", "p": 45000, "d": "Chocolate cream", "b": ""}, {"id": "croissantkimsa", "n": "Croissant Kim Sa", "p": 42000, "d": "Lava custard", "b": ""}, {"id": "croissantsignature", "n": "Croissant Signature", "p": 35000, "d": "Signature croissant", "b": ""}, {"id": "croissantsocola", "n": "Croissant Socola", "p": 39000, "d": "Chocolate croissant", "b": ""}, {"id": "croissantsothatdieu", "n": "Croissant Sốt Hạt Điều", "p": 42000, "d": "Cashew sauce", "b": ""}, {"id": "croissanttrungmuoi", "n": "Croissant Trứng Muối", "p": 45000, "d": "Salted egg yolk", "b": "best"}, {"id": "danmachtrungmuoi", "n": "Đan Mạch Trứng Muối", "p": 39000, "d": "Danish salted egg yolk", "b": ""}, {"id": "hanhnhandua", "n": "Hạnh Nhân Dừa", "p": 39000, "d": "Almond coconut pastry", "b": ""}]}, {"cat": "Khác", "sub": "Other Drinks", "items": [{"id": "cacaodanong", "n": "Cacao đá / nóng", "p": 35000, "d": "Cacao · sữa tươi · sữa đặc", "b": ""}, {"id": "cacaomuoi", "n": "Cacao muối", "p": 42000, "d": "Cacao · cốt cafe · sữa đặc · sữa tươi · kem muối", "b": "new"}]}];
 const GFORM = {
   id: "1FAIpQLSfdi_XJormbVIv4YYC83kJTDfkvB-WXS0v6lSwJfK3d_ZR45Q",
   f: { name:"entry.900486539", phone:"entry.727313384", detail:"entry.1930983760",
@@ -315,6 +374,10 @@ const GFORM = {
 const $ = s => document.querySelector(s);
 const vnd = n => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + "đ";
 const ITEMS = {}; DATA.forEach(g => g.items.forEach(i => ITEMS[i.id] = i));
+const LIB_UP = 8000;
+DATA.filter(g => g.cat === 'Espresso').forEach(g => g.items.forEach(i => {
+  ITEMS[i.id + '~lib'] = { id: i.id + '~lib', n: i.n + ' — hạt Liberica', p: i.p + LIB_UP, d: i.d, b: '' };
+}));
 const cart = {};
 
 /* ----- dung menu ----- */
@@ -347,19 +410,37 @@ DATA.forEach((g, gi)=>{
       nm.appendChild(s);
     });
     const de = document.createElement('div'); de.className = 'mi-desc'; de.textContent = it.d;
-    const side = document.createElement('div'); side.className = 'mi-side';
-    const pr = document.createElement('span'); pr.className = 'mi-price'; pr.textContent = vnd(it.p);
-    const stp = document.createElement('div'); stp.className = 'stp'; stp.dataset.id = it.id;
-    const bm = document.createElement('button'); bm.type='button'; bm.textContent='−';
-    bm.setAttribute('aria-label','Bớt '+it.n);
-    const nn = document.createElement('span'); nn.className='n'; nn.textContent='0';
-    const bp = document.createElement('button'); bp.type='button'; bp.textContent='+';
-    bp.setAttribute('aria-label','Thêm '+it.n);
-    bm.addEventListener('click',()=>bump(it.id,-1));
-    bp.addEventListener('click',()=>bump(it.id,1));
-    stp.appendChild(bm); stp.appendChild(nn); stp.appendChild(bp);
-    side.appendChild(pr); side.appendChild(stp);
-    row.appendChild(nm); row.appendChild(de); row.appendChild(side);
+    function mkStp(id, label){
+      const stp = document.createElement('div'); stp.className = 'stp'; stp.dataset.id = id;
+      const bm = document.createElement('button'); bm.type='button'; bm.textContent='−';
+      bm.setAttribute('aria-label','Bớt '+label);
+      const nn = document.createElement('span'); nn.className='n'; nn.textContent='0';
+      const bp = document.createElement('button'); bp.type='button'; bp.textContent='+';
+      bp.setAttribute('aria-label','Thêm '+label);
+      bm.addEventListener('click',()=>bump(id,-1));
+      bp.addEventListener('click',()=>bump(id,1));
+      stp.appendChild(bm); stp.appendChild(nn); stp.appendChild(bp);
+      return stp;
+    }
+    row.appendChild(nm); row.appendChild(de);
+    if(g.cat === 'Espresso'){
+      const side = document.createElement('div'); side.className = 'mi-side';
+      const pw = document.createElement('div');
+      const pr = document.createElement('span'); pr.className = 'mi-price'; pr.textContent = vnd(it.p);
+      const nt = document.createElement('div'); nt.className = 'mi-note'; nt.textContent = 'Liberica +8k';
+      pw.appendChild(pr); pw.appendChild(nt);
+      const add = document.createElement('button'); add.type = 'button';
+      add.className = 'addbtn'; add.dataset.esp = it.id;
+      add.innerHTML = '+ Chọn <span class="ct">0</span>';
+      add.addEventListener('click', ()=> openHat(it));
+      side.appendChild(pw); side.appendChild(add);
+      row.appendChild(side);
+    }else{
+      const side = document.createElement('div'); side.className = 'mi-side';
+      const pr = document.createElement('span'); pr.className = 'mi-price'; pr.textContent = vnd(it.p);
+      side.appendChild(pr); side.appendChild(mkStp(it.id, it.n));
+      row.appendChild(side);
+    }
     grid.appendChild(row);
   });
   sec.appendChild(grid);
@@ -393,7 +474,48 @@ function sync(){
     el.querySelector('.n').textContent = n;
     el.classList.toggle('has', n>0);
   });
+  document.querySelectorAll('.addbtn[data-esp]').forEach(el=>{
+    const id = el.dataset.esp;
+    const n = (cart[id] || 0) + (cart[id + '~lib'] || 0);
+    el.querySelector('.ct').textContent = n;
+    el.classList.toggle('has', n > 0);
+  });
 }
+
+/* bang chon loai hat */
+let hsItem = null;
+function openHat(it){
+  hsItem = it;
+  $('#hsName').textContent = it.n;
+  $('#hsP0').textContent = vnd(it.p);
+  $('#hsP1').textContent = vnd(it.p + LIB_UP);
+  $('#hsheet').classList.add('on'); $('#hsBg').classList.add('on');
+}
+function closeHat(){
+  $('#hsheet').classList.remove('on'); $('#hsBg').classList.remove('on');
+}
+function pickHat(lib){
+  if(!hsItem) return;
+  const id = lib ? hsItem.id + '~lib' : hsItem.id;
+  cart[id] = Math.min(30, (cart[id] || 0) + 1);
+  sync(); render();
+  toast('Đã thêm ' + hsItem.n + (lib ? ' (Liberica)' : ' (Blend)'));
+  closeHat();
+}
+document.addEventListener('DOMContentLoaded', ()=>{});
+$('#hsX').addEventListener('click', closeHat);
+$('#hsBg').addEventListener('click', closeHat);
+$('#hsHouse').addEventListener('click', ()=> pickHat(false));
+$('#hsLib').addEventListener('click', ()=> pickHat(true));
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeHat(); });
+(function(){
+  let y0 = null; const sh = $('#hsheet');
+  sh.addEventListener('touchstart', e=>{ y0 = e.touches[0].clientY; }, {passive:true});
+  sh.addEventListener('touchend', e=>{
+    if(y0 !== null && e.changedTouches[0].clientY - y0 > 60) closeHat();
+    y0 = null;
+  }, {passive:true});
+})();
 function calc(){
   let total=0, count=0;
   Object.keys(cart).forEach(k=>{ total += cart[k]*ITEMS[k].p; count += cart[k]; });
