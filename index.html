@@ -401,6 +401,9 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
 .lan-box input[type=radio]{-webkit-appearance:none;appearance:none;width:15px;height:15px;
   border:1.5px solid var(--mute);border-radius:50%;background:#fff;cursor:pointer}
 .lan-box input[type=radio]:checked{border-color:var(--red);border-width:5px}
+.lan-photo{margin:18px 0 12px}
+.lan-photo img{width:100%;max-width:430px;aspect-ratio:1;object-fit:cover;display:block;
+  border:1px solid var(--line);border-radius:8px}
 @media(min-width:861px){
   .fsheet{left:50%;right:auto;bottom:auto;top:50%;width:min(480px,92vw);
     transform:translate(-50%,-46%) scale(.96);opacity:0;border-radius:10px;
@@ -1368,7 +1371,10 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
               </div>
             </div>
             </div>
-            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh 150g hoặc 4 bánh 50g — tặng 1 hộp lân sư tử, chọn màu đỏ hoặc xanh.</p>
+            <figure class="lan-photo">
+              <img src="img/lan.webp" alt="Hai hộp lân sư tử đỏ và xanh cùng bánh trung thu cắt đôi lộ nhân trứng muối" loading="lazy">
+            </figure>
+            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh 150g hoặc 4 bánh 50g — tặng 1 hộp lân sư tử như hình, chọn màu đỏ hoặc xanh.</p>
           </div>
         </section>
 
