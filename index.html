@@ -386,12 +386,23 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
 .combo-note{font-size:12px;color:var(--mute);margin:12px 0 0;line-height:1.55}
 @media(max-width:760px){.combo-grid{grid-template-columns:1fr}}
 .cs-opts{display:grid;gap:9px;margin-top:6px}
-.cs-opt{display:block;border:1px solid var(--line);border-radius:8px;background:#FDFAF3;
-  padding:13px 15px;cursor:pointer;font-family:var(--body);text-align:left;transition:.15s;width:100%}
-.cs-opt:hover{border-color:var(--ink);background:#fff}
-.cs-opt b{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--gold-soft);font-weight:600;margin-bottom:4px}
-.cs-opt span{font-size:14px;line-height:1.5}
+.cs-row{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:8px;
+  background:#FDFAF3;padding:12px 14px}
+.cs-row.has{border-color:var(--ink);background:#fff}
+.cs-info{flex:1;min-width:0}
+.cs-info b{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-soft);font-weight:600;margin-bottom:3px}
+.cs-info span{font-size:13.5px;line-height:1.45;display:block}
+.cs-stp{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;
+  background:#fff;height:42px;overflow:hidden;flex:0 0 auto}
+.cs-stp button{width:36px;height:40px;border:0;background:transparent;cursor:pointer;
+  font-size:18px;color:var(--mute);font-family:var(--body)}
+.cs-stp button:hover{background:rgba(42,29,22,.07);color:var(--ink)}
+.cs-stp input{width:52px;height:40px;border:0;text-align:center;font-family:var(--body);
+  font-size:16px;font-weight:500;color:var(--ink);background:transparent;-moz-appearance:textfield}
+.cs-stp input::-webkit-outer-spin-button,.cs-stp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.cs-stp input:focus{outline:none;background:#FBF4E2}
+.cs-hint{font-size:12px;color:var(--mute);margin:12px 0 0;line-height:1.5}
 .lan-box{border:1px solid var(--gold);border-radius:7px;background:#FBF4E2;padding:13px 15px;margin-top:14px}
 .lan-box .t{font-size:13px;font-weight:500;margin-bottom:4px}
 .lan-sub{font-size:12px;color:var(--mute);margin:0;line-height:1.5}
@@ -1375,7 +1386,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
             <figure class="lan-photo">
               <img src="img/lan.webp" alt="Hai hộp lân sư tử đỏ và xanh cùng bánh trung thu cắt đôi lộ nhân trứng muối" loading="lazy">
             </figure>
-            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh 150g hoặc 4 bánh 50g — tặng 1 hộp lân sư tử như hình, màu đỏ hoặc xanh ngẫu nhiên.</p>
+            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh lẻ 150g — tặng 1 hộp lân sư tử như hình, màu đỏ hoặc xanh ngẫu nhiên.</p>
           </div>
         </section>
 
@@ -1524,10 +1535,33 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
   </div>
   <p class="fsheet-p" id="csSub" style="margin-bottom:12px">4 bánh xếp theo combo — giá set không đổi.</p>
   <div class="cs-opts">
-    <button class="cs-opt" type="button" data-combo="1"><b>Combo 1</b><span>thập cẩm · đậu đỏ · mè đen · cốm</span></button>
-    <button class="cs-opt" type="button" data-combo="2"><b>Combo 2</b><span>trà xanh · sầu riêng · sô cô la · cốm</span></button>
-    <button class="cs-opt" type="button" data-combo="3"><b>Combo 3</b><span>đậu đỏ · trà xanh · mè đen · sô cô la</span></button>
+    <div class="cs-row" data-combo="1">
+      <div class="cs-info"><b>Combo 1</b><span>thập cẩm · đậu đỏ · mè đen · cốm</span></div>
+      <div class="cs-stp">
+        <button type="button" data-d="-1" aria-label="Bớt combo 1">−</button>
+        <input type="number" inputmode="numeric" min="0" max="999" value="0" aria-label="Số set combo 1">
+        <button type="button" data-d="1" aria-label="Thêm combo 1">+</button>
+      </div>
+    </div>
+    <div class="cs-row" data-combo="2">
+      <div class="cs-info"><b>Combo 2</b><span>trà xanh · sầu riêng · sô cô la · cốm</span></div>
+      <div class="cs-stp">
+        <button type="button" data-d="-1" aria-label="Bớt combo 2">−</button>
+        <input type="number" inputmode="numeric" min="0" max="999" value="0" aria-label="Số set combo 2">
+        <button type="button" data-d="1" aria-label="Thêm combo 2">+</button>
+      </div>
+    </div>
+    <div class="cs-row" data-combo="3">
+      <div class="cs-info"><b>Combo 3</b><span>đậu đỏ · trà xanh · mè đen · sô cô la</span></div>
+      <div class="cs-stp">
+        <button type="button" data-d="-1" aria-label="Bớt combo 3">−</button>
+        <input type="number" inputmode="numeric" min="0" max="999" value="0" aria-label="Số set combo 3">
+        <button type="button" data-d="1" aria-label="Thêm combo 3">+</button>
+      </div>
+    </div>
   </div>
+  <p class="cs-hint">Gõ thẳng số lượng vào ô — tiện cho đơn nhiều set. Đơn từ 10 set tự áp ưu đãi.</p>
+  <button class="btn btn-solid" id="csDone" type="button" style="width:100%;margin-top:14px;justify-content:center">Xong</button>
 </div>
 
 <div class="fsheet-bg" id="fsBg"></div>
@@ -1649,7 +1683,7 @@ function calc(){
     rtTotal += n * RT_PRICE[sz];
     if(sz === "50") rt50 += n; else rt150 += n;
   });
-  const lanQty = Math.floor(rt150 / 2) + Math.floor(rt50 / 4);
+  const lanQty = Math.floor(rt150 / 2);   /* chi tinh banh 150g */
   const tier = tierFor(setQty);
   const discount = tier ? setGross * tier.off : 0;
   return { setQty, setGross, discount, tier, rtTotal, lanQty, grand: setGross - discount + rtTotal };
@@ -1907,15 +1941,18 @@ function makeCode(){
 function detailLines(code){
   const c = calc();
   const L = ["Mã đơn: " + code];
-  Object.keys(SETS).forEach(k=>{
+  Object.keys(cartSet).forEach(k=>{
     const n = cartSet[k]; if(!n) return;
-    L.push(SETS[k].name + " (hộp " + SETS[k].box + ", " + SETS[k].spec + ") x " + n + " set = " + vnd(n * SETS[k].price));
+    const b = baseOf(k), cb = comboOf(k);
+    L.push(SETS[b].name + (cb ? " — Combo " + cb + " (" + COMBOS[cb] + ")" : " (trọn 6 vị)")
+      + ", hộp " + SETS[b].box + ", " + SETS[b].spec + " x " + n + " set = " + vnd(n * SETS[b].price));
   });
   Object.keys(cartRt).forEach(k=>{
     const n = cartRt[k]; if(!n) return;
     const [f, sz] = k.split("|");
     L.push("Bánh lẻ " + RT_NAME[f] + " " + sz + "g x " + n + " = " + vnd(n * RT_PRICE[sz]));
   });
+  if(c.lanQty > 0) L.push("QUÀ TẶNG Song Lân Hợp Nguyệt: " + c.lanQty + " hộp lân sư tử (màu đỏ hoặc xanh ngẫu nhiên)");
   if(c.discount > 0) L.push("Ưu đãi " + c.setQty + " set (-" + Math.round(c.tier.off*100) + "%): -" + vnd(c.discount));
   return L.join("\n");
 }
@@ -2251,35 +2288,57 @@ document.querySelectorAll('.xp-btn').forEach(btn=>{
 
 /* ===== sheet chon combo cho set 4 banh ===== */
 let csState = null;
+function csRefresh(){
+  if(!csState) return;
+  document.querySelectorAll('.cs-row').forEach(r=>{
+    const n = cartSet[csState.base + '|' + r.dataset.combo] || 0;
+    r.querySelector('input').value = n;
+    r.classList.toggle('has', n > 0);
+  });
+}
+function csSet(combo, n){
+  if(!csState) return;
+  const key = csState.base + '|' + combo;
+  n = Math.max(0, Math.min(999, n || 0));
+  if(n) cartSet[key] = n; else delete cartSet[key];
+  syncSteppers(); render(); csRefresh();
+}
 function openCombo(base, opts){
   csState = Object.assign({base:base}, opts || {});
   document.getElementById('csName').textContent = 'Chọn combo — ' + SETS[base].name;
   document.getElementById('csSub').textContent = SETS[base].spec + ' · giá ' +
-    new Intl.NumberFormat('vi-VN').format(SETS[base].price) + 'đ không đổi.';
+    new Intl.NumberFormat('vi-VN').format(SETS[base].price) + 'đ/set không đổi.';
+  csRefresh();
   document.getElementById('csheet').classList.add('on');
   document.getElementById('csBg').classList.add('on');
 }
 function closeCombo(){
+  const st = csState;
   document.getElementById('csheet').classList.remove('on');
   document.getElementById('csBg').classList.remove('on');
-}
-document.querySelectorAll('.cs-opt').forEach(b=>{
-  b.addEventListener('click', function(){
-    if(!csState) return;
-    const key = csState.base + '|' + this.dataset.combo;
-    cartSet[key] = Math.min(999, (cartSet[key] || 0) + 1);
-    lastAdd[csState.base] = key;
-    syncSteppers(); render();
-    const btn = csState.btn;
-    if(btn){
-      btn.classList.add('added');
-      btn.textContent = "Đã thêm ✓  Xem đơn";
-      setTimeout(()=>{ document.getElementById('dat-hang').scrollIntoView({behavior:'smooth'}); }, 320);
-      setTimeout(()=>{ btn.classList.remove('added'); btn.textContent = "Chọn set này"; }, 3000);
+  if(st && st.btn){
+    let tong = 0;
+    Object.keys(cartSet).forEach(k=>{ if(baseOf(k) === st.base) tong += cartSet[k]; });
+    if(tong > 0){
+      st.btn.classList.add('added');
+      st.btn.textContent = "Đã thêm ✓  Xem đơn";
+      setTimeout(()=>{ document.getElementById('dat-hang').scrollIntoView({behavior:'smooth'}); }, 250);
+      setTimeout(()=>{ st.btn.classList.remove('added'); st.btn.textContent = "Chọn set này"; }, 3000);
     }
-    closeCombo();
+  }
+  csState = null;
+}
+document.querySelectorAll('.cs-row').forEach(rw=>{
+  const combo = rw.dataset.combo, inp = rw.querySelector('input');
+  rw.querySelectorAll('button[data-d]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      csSet(combo, (parseInt(inp.value, 10) || 0) + parseInt(b.dataset.d, 10));
+    });
   });
+  inp.addEventListener('input', ()=> csSet(combo, parseInt(inp.value, 10) || 0));
+  inp.addEventListener('focus', ()=> inp.select());
 });
+document.getElementById('csDone').addEventListener('click', closeCombo);
 document.getElementById('csX').addEventListener('click', closeCombo);
 document.getElementById('csBg').addEventListener('click', closeCombo);
 document.addEventListener('keydown', function(e){
