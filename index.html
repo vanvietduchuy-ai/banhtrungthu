@@ -393,7 +393,8 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
   color:var(--gold-soft);font-weight:600;margin-bottom:4px}
 .cs-opt span{font-size:14px;line-height:1.5}
 .lan-box{border:1px solid var(--gold);border-radius:7px;background:#FBF4E2;padding:13px 15px;margin-top:14px}
-.lan-box .t{font-size:13px;font-weight:500;margin-bottom:8px}
+.lan-box .t{font-size:13px;font-weight:500;margin-bottom:4px}
+.lan-sub{font-size:12px;color:var(--mute);margin:0;line-height:1.5}
 .lan-box .radios{display:flex;gap:9px}
 .lan-box label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:6px;
   background:#fff;padding:8px 13px;font-size:13px;cursor:pointer}
@@ -1374,7 +1375,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
             <figure class="lan-photo">
               <img src="img/lan.webp" alt="Hai hộp lân sư tử đỏ và xanh cùng bánh trung thu cắt đôi lộ nhân trứng muối" loading="lazy">
             </figure>
-            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh 150g hoặc 4 bánh 50g — tặng 1 hộp lân sư tử như hình, chọn màu đỏ hoặc xanh.</p>
+            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh 150g hoặc 4 bánh 50g — tặng 1 hộp lân sư tử như hình, màu đỏ hoặc xanh ngẫu nhiên.</p>
           </div>
         </section>
 
@@ -1432,10 +1433,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
           <div class="sum-line" id="lineRt" hidden><span>Tiền bánh lẻ</span><strong id="valRt">0đ</strong></div>
           <div class="lan-box" id="lanBox" hidden>
             <div class="t">🎁 Song Lân Hợp Nguyệt — tặng <b id="lanN">1</b> hộp lân sư tử</div>
-            <div class="radios">
-              <label><input type="radio" name="lan" value="đỏ" checked><span>Hộp đỏ</span></label>
-              <label><input type="radio" name="lan" value="xanh"><span>Hộp xanh</span></label>
-            </div>
+            <p class="lan-sub">Màu đỏ hoặc xanh giao ngẫu nhiên theo đợt hàng — không chọn trước.</p>
           </div>
 
           <div class="sum-total"><span class="lb">Tổng cộng</span><span class="vl" id="grand">0đ</span></div>
@@ -1815,8 +1813,7 @@ function orderText(){
   }
   L.push("");
   if(c.lanQty > 0){
-    const mau = (document.querySelector('input[name="lan"]:checked') || {value:"đỏ"}).value;
-    L.push("🎁 Quà tặng Song Lân Hợp Nguyệt: " + c.lanQty + " hộp lân sư tử — màu " + mau);
+    L.push("🎁 Quà tặng Song Lân Hợp Nguyệt: " + c.lanQty + " hộp lân sư tử (màu đỏ hoặc xanh ngẫu nhiên)");
   }
   if(c.discount > 0) L.push("Ưu đãi " + c.setQty + " set (−" + Math.round(c.tier.off*100) + "%): −" + vnd(c.discount));
   L.push("TỔNG CỘNG: " + vnd(c.grand));
@@ -2296,9 +2293,7 @@ document.addEventListener('keydown', function(e){
     y0 = null;
   }, {passive:true});
 })();
-document.querySelectorAll('input[name="lan"]').forEach(r=>{
-  r.addEventListener('change', render);
-});
+
 
 </script>
 </body>
