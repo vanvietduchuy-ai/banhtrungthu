@@ -376,6 +376,31 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
 .fbuy .pr{font-family:var(--disp);font-size:23px;font-weight:500;margin-top:4px}
 .fbuy .add{font-size:12px;color:var(--gold-soft);margin-top:6px;letter-spacing:.04em}
 .fsheet-note{font-size:12.5px;color:var(--mute);margin:14px 0 0;line-height:1.55}
+.combo-strip{margin-top:30px;border:1px solid var(--line);border-radius:8px;background:#FFFDF8;padding:20px 22px}
+.combo-strip h4{font-family:var(--disp);font-size:21px;font-weight:500;margin:0 0 12px}
+.combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.combo-c{border:1px dashed var(--line);border-radius:6px;background:#FDFAF3;padding:12px 14px}
+.combo-c b{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-soft);font-weight:600;margin-bottom:5px}
+.combo-c span{font-size:13.5px;line-height:1.5}
+.combo-note{font-size:12px;color:var(--mute);margin:12px 0 0;line-height:1.55}
+@media(max-width:760px){.combo-grid{grid-template-columns:1fr}}
+.cs-opts{display:grid;gap:9px;margin-top:6px}
+.cs-opt{display:block;border:1px solid var(--line);border-radius:8px;background:#FDFAF3;
+  padding:13px 15px;cursor:pointer;font-family:var(--body);text-align:left;transition:.15s;width:100%}
+.cs-opt:hover{border-color:var(--ink);background:#fff}
+.cs-opt b{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-soft);font-weight:600;margin-bottom:4px}
+.cs-opt span{font-size:14px;line-height:1.5}
+.lan-box{border:1px solid var(--gold);border-radius:7px;background:#FBF4E2;padding:13px 15px;margin-top:14px}
+.lan-box .t{font-size:13px;font-weight:500;margin-bottom:8px}
+.lan-box .radios{display:flex;gap:9px}
+.lan-box label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:6px;
+  background:#fff;padding:8px 13px;font-size:13px;cursor:pointer}
+.lan-box label:has(input:checked){border-color:var(--ink);border-width:2px;padding:7px 12px}
+.lan-box input[type=radio]{-webkit-appearance:none;appearance:none;width:15px;height:15px;
+  border:1.5px solid var(--mute);border-radius:50%;background:#fff;cursor:pointer}
+.lan-box input[type=radio]:checked{border-color:var(--red);border-width:5px}
 @media(min-width:861px){
   .fsheet{left:50%;right:auto;bottom:auto;top:50%;width:min(480px,92vw);
     transform:translate(-50%,-46%) scale(.96);opacity:0;border-radius:10px;
@@ -912,7 +937,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 50g mỗi chiếc</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Giấy mỹ thuật màu son · tuỳ chọn giỏ tre quai da</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị · không phụ thu</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Chọn 1 trong 3 combo vị · không phụ thu</dd></div>
           <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày · in trên từng chiếc</dd></div>
           <div class="spec-row"><dt>Hợp để</dt><dd>Biếu người thân, tặng nhân viên, dâng gia tiên</dd></div>
         </dl>
@@ -950,7 +975,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>6 bánh × 50g · sáu hộp giấy riêng</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng nắp gập, lót vàng ánh kim, quai da, tua rua lụa</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 6 trong 7 vị · mỗi bánh một vị</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Trọn 6 vị, mỗi bánh một vị: cốm · sô cô la · mè đen · sầu riêng · trà xanh · đậu đỏ</dd></div>
           <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày · in trên từng chiếc</dd></div>
           <div class="spec-row"><dt>Hợp để</dt><dd>Biếu cấp trên, tri ân khách hàng</dd></div>
         </dl>
@@ -992,7 +1017,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
         <dl class="spec rv">
           <div class="spec-row"><dt>Quy cách</dt><dd>4 bánh · 150g mỗi chiếc</dd></div>
           <div class="spec-row"><dt>Hộp</dt><dd>Hộp cứng phủ vải, khảm trai, quai tre · kèm túi xách</dd></div>
-          <div class="spec-row"><dt>Chọn vị</dt><dd>Tự chọn 4 trong 7 vị · không phụ thu</dd></div>
+          <div class="spec-row"><dt>Chọn vị</dt><dd>Chọn 1 trong 3 combo vị · không phụ thu</dd></div>
           <div class="spec-row"><dt>Hạn dùng</dt><dd>30 ngày · in trên từng chiếc</dd></div>
           <div class="spec-row"><dt>Hợp để</dt><dd>Tặng đối tác, cưới hỏi, tri ân trọng thể</dd></div>
         </dl>
@@ -1028,7 +1053,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
         <p class="eyebrow">Bảy vị</p>
         <h2 class="display">Vị bánh</h2>
       </div>
-      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Bảy hương vị cho trọn mùa trăng. Set nào quý khách cũng được tự chọn vị — ghi lại khi đặt, hoặc để chúng tôi sắp xếp một hộp hài hoà.</p>
+      <p class="lead" style="font-size:15px;max-width:40ch;margin:0">Bảy hương vị cho trọn mùa trăng. Set 6 bánh gói trọn sáu vị; set 4 bánh quý khách chọn một trong ba combo bên dưới. Bánh lẻ chọn vị bất kỳ.</p>
     </div>
     <ul class="flav rv" style="margin:0;padding:0">
       <li data-f="com" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#A8B84A"></span>Cốm</h5><p>Cốm non thơm hương lúa mới. Vị ngọt thanh nhất trong bảy vị, hợp với mọi lứa tuổi.</p><span class="tag">50g · 150g</span></li>
@@ -1040,7 +1065,17 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
       <li data-f="thapcam" tabindex="0" role="button" aria-haspopup="dialog"><h5><span class="dot" style="background:#C8892F"></span>Thập cẩm trứng muối</h5><p>Mứt bí, hạt dưa, lạp xưởng, lá chanh cùng lòng đỏ trứng muối. Vị mặn ngọt hài hoà, xứng đáng có mặt trên mâm cỗ trông trăng.</p><span class="tag">50g · 150g</span></li>
     </ul>
     <p class="rv" style="margin-top:26px;font-size:15px;color:var(--mute);border-top:1px solid var(--line);padding-top:20px">
-      Quý khách có thể mua lẻ từng chiếc: <strong style="color:var(--ink);font-weight:500">35.000đ</strong> loại 50g ·
+      </p>
+      <div class="combo-strip rv">
+        <h4>Ba combo cho set 4 bánh</h4>
+        <div class="combo-grid">
+          <div class="combo-c"><b>Combo 1</b><span>thập cẩm · đậu đỏ · mè đen · cốm</span></div>
+          <div class="combo-c"><b>Combo 2</b><span>trà xanh · sầu riêng · sô cô la · cốm</span></div>
+          <div class="combo-c"><b>Combo 3</b><span>đậu đỏ · trà xanh · mè đen · sô cô la</span></div>
+        </div>
+        <p class="combo-note">Áp dụng cho Mộc Nguyệt Đoàn Viên và An Nhiên Sen Thu — chọn combo ngay khi thêm set vào đơn, giá không đổi.</p>
+      </div>
+      <p class="lead" style="margin-top:26px;font-size:14.5px">Quý khách có thể mua lẻ từng chiếc: <strong style="color:var(--ink);font-weight:500">35.000đ</strong> loại 50g ·
       <strong style="color:var(--ink);font-weight:500">80.000đ</strong> loại 150g —
       <a href="#dat-hang" style="color:var(--ink);text-decoration:underline;text-underline-offset:3px">tính tiền ở mục Đặt hàng</a>.
     </p>
@@ -1333,7 +1368,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
               </div>
             </div>
             </div>
-            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc, không áp dụng ưu đãi theo số lượng.</p>
+            <p class="step-note">Bánh lẻ được bọc riêng từng chiếc. 🎁 <b>Song Lân Hợp Nguyệt:</b> mua 2 bánh 150g hoặc 4 bánh 50g — tặng 1 hộp lân sư tử, chọn màu đỏ hoặc xanh.</p>
           </div>
         </section>
 
@@ -1372,7 +1407,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
           </div>
           <div class="field">
             <label for="note">Chọn vị &amp; lời nhắn</label>
-            <textarea id="note" placeholder="Ví dụ: set Mộc Nguyệt xin chọn 2 cốm, 1 trà xanh, 1 đậu đỏ. Thiệp xin ghi: Công ty ABC kính tặng."></textarea>
+            <textarea id="note" placeholder="Ví dụ: giao trước 11h. Thiệp xin ghi: Công ty ABC kính tặng."></textarea>
           </div>
         </section>
       </form>
@@ -1389,6 +1424,13 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
           <div class="sum-line" id="lineSet" hidden><span>Tiền set</span><strong id="valSet">0đ</strong></div>
           <div class="sum-line" id="lineDisc" hidden><span id="labDisc">Ưu đãi</span><strong id="valDisc">0đ</strong></div>
           <div class="sum-line" id="lineRt" hidden><span>Tiền bánh lẻ</span><strong id="valRt">0đ</strong></div>
+          <div class="lan-box" id="lanBox" hidden>
+            <div class="t">🎁 Song Lân Hợp Nguyệt — tặng <b id="lanN">1</b> hộp lân sư tử</div>
+            <div class="radios">
+              <label><input type="radio" name="lan" value="đỏ" checked><span>Hộp đỏ</span></label>
+              <label><input type="radio" name="lan" value="xanh"><span>Hộp xanh</span></label>
+            </div>
+          </div>
 
           <div class="sum-total"><span class="lb">Tổng cộng</span><span class="vl" id="grand">0đ</span></div>
 
@@ -1428,7 +1470,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
       <details><summary>Đặt trước bao nhiêu ngày?</summary><p>Đơn lẻ xin đặt trước 2 ngày. Đơn từ 10 set xin đặt trước 5 ngày để chúng tôi sắp xếp lịch giao. Set quà bắt đầu giao từ 10/09 và ngừng nhận đơn sau 20/09, do sau mốc này chúng tôi không kịp hoàn thiện và giao trước rằm.</p></details>
       <details><summary>Có giao đi tỉnh khác không?</summary><p>Có. Nội thành Đông Hà giao trong ngày, miễn phí với đơn từ 2 set. Đi tỉnh khác, chúng tôi gửi nhà xe hoặc chuyển phát nhanh, cước phí tính theo thực tế.</p></details>
       <details><summary>Thanh toán thế nào?</summary><p>Quý khách có thể chuyển khoản hoặc thanh toán tiền mặt tại quán. Đơn từ 10 set đặt cọc 30%, từ 50 set đặt cọc 50%, phần còn lại thanh toán khi nhận hàng.</p></details>
-      <details><summary>Tự chọn vị được không?</summary><p>Được, ở cả ba set. Quý khách vui lòng ghi số lượng từng vị vào ô lời nhắn khi đặt, chúng tôi không tính thêm phụ thu. Riêng vị sầu riêng có hương thơm đặc trưng nên được bọc riêng trước khi xếp vào hộp.</p></details>
+      <details><summary>Chọn vị thế nào?</summary><p>Set Minh Viên Nguyệt gói trọn sáu vị, mỗi bánh một vị. Hai set 4 bánh (Mộc Nguyệt Đoàn Viên, An Nhiên Sen Thu) quý khách chọn 1 trong 3 combo ngay khi thêm vào đơn — giá không đổi. Bánh lẻ chọn vị bất kỳ. Riêng vị sầu riêng luôn được bọc riêng trước khi xếp vào hộp.</p></details>
     </div>
   </div>
 </section>
@@ -1469,6 +1511,21 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
   <a class="btn btn-solid" id="mbBtn" href="#dat-hang">Đặt hàng</a>
 </div>
 
+<div class="fsheet-bg" id="csBg"></div>
+<div class="fsheet" id="csheet" role="dialog" aria-modal="true" aria-labelledby="csName">
+  <div class="grab"></div>
+  <div class="fsheet-hd">
+    <h5 id="csName" style="font-size:23px">Chọn combo vị</h5>
+    <button class="fsheet-x" id="csX" type="button" aria-label="Đóng">×</button>
+  </div>
+  <p class="fsheet-p" id="csSub" style="margin-bottom:12px">4 bánh xếp theo combo — giá set không đổi.</p>
+  <div class="cs-opts">
+    <button class="cs-opt" type="button" data-combo="1"><b>Combo 1</b><span>thập cẩm · đậu đỏ · mè đen · cốm</span></button>
+    <button class="cs-opt" type="button" data-combo="2"><b>Combo 2</b><span>trà xanh · sầu riêng · sô cô la · cốm</span></button>
+    <button class="cs-opt" type="button" data-combo="3"><b>Combo 3</b><span>đậu đỏ · trà xanh · mè đen · sô cô la</span></button>
+  </div>
+</div>
+
 <div class="fsheet-bg" id="fsBg"></div>
 <div class="fsheet" id="fsheet" role="dialog" aria-modal="true" aria-labelledby="fsName">
   <div class="grab"></div>
@@ -1490,7 +1547,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
       <span class="add" style="display:block">+ Thêm vào đơn</span>
     </button>
   </div>
-  <p class="fsheet-note">Vị này cũng chọn được trong cả ba set quà — quý khách ghi ở ô lời nhắn khi đặt.</p>
+  <p class="fsheet-note">Bánh lẻ chọn vị tự do. Trong set quà, vị đi theo combo có sẵn — xem “Ba combo cho set 4 bánh”.</p>
 </div>
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Xem ảnh">
@@ -1562,7 +1619,15 @@ $('#fPhone').href = telHref; $('#fPhone').textContent = SHOP.phone;
 $('#fZalo').href = zaloHref;
 
 /* ================= GIO HANG ================= */
-const cartSet = {};   /* moon: 2 */
+const COMBOS = {
+  1: "thập cẩm · đậu đỏ · mè đen · cốm",
+  2: "trà xanh · sầu riêng · sô cô la · cốm",
+  3: "đậu đỏ · trà xanh · mè đen · sô cô la"
+};
+const baseOf = k => k.split('|')[0];
+const comboOf = k => k.split('|')[1] || null;
+const lastAdd = {};   /* moon: "moon|2" */
+const cartSet = {};   /* "full": 1, "moon|2": 1 */
 const cartRt  = {};   /* "com|50": 3 */
 
 function tierFor(q){ return TIERS.find(t=>q>=t.min) || null; }
@@ -1571,20 +1636,26 @@ function calc(){
   let setQty = 0, setGross = 0, rtTotal = 0;
   Object.keys(cartSet).forEach(k=>{
     const n = cartSet[k]; if(!n) return;
-    setQty += n; setGross += n * SETS[k].price;
+    setQty += n; setGross += n * SETS[baseOf(k)].price;
   });
+  let rt50 = 0, rt150 = 0;
   Object.keys(cartRt).forEach(k=>{
     const n = cartRt[k]; if(!n) return;
-    rtTotal += n * RT_PRICE[k.split("|")[1]];
+    const sz = k.split("|")[1];
+    rtTotal += n * RT_PRICE[sz];
+    if(sz === "50") rt50 += n; else rt150 += n;
   });
+  const lanQty = Math.floor(rt150 / 2) + Math.floor(rt50 / 4);
   const tier = tierFor(setQty);
   const discount = tier ? setGross * tier.off : 0;
-  return { setQty, setGross, discount, tier, rtTotal, grand: setGross - discount + rtTotal };
+  return { setQty, setGross, discount, tier, rtTotal, lanQty, grand: setGross - discount + rtTotal };
 }
 
 function syncSteppers(){
   document.querySelectorAll('.stp[data-set]').forEach(el=>{
-    const n = cartSet[el.dataset.set] || 0;
+    const base = el.dataset.set;
+    let n = 0;
+    Object.keys(cartSet).forEach(k=>{ if(baseOf(k) === base) n += cartSet[k]; });
     el.querySelector('.n').textContent = n;
     el.classList.toggle('has', n > 0);
   });
@@ -1613,10 +1684,13 @@ function render(){
   const c = calc();
   const list = $('#cart'); list.innerHTML = "";
 
-  Object.keys(SETS).forEach(k=>{
+  Object.keys(cartSet).forEach(k=>{
     const n = cartSet[k]; if(!n) return;
-    list.appendChild(row(SETS[k].name, SETS[k].spec + " × " + n + " set",
-      vnd(n * SETS[k].price), ()=>{ delete cartSet[k]; syncSteppers(); render(); }));
+    const b = baseOf(k), cb = comboOf(k);
+    const title = SETS[b].name + (cb ? " — Combo " + cb : "");
+    const sub = (cb ? COMBOS[cb] + " · " : "") + SETS[b].spec + " × " + n + " set";
+    list.appendChild(row(title, sub,
+      vnd(n * SETS[b].price), ()=>{ delete cartSet[k]; syncSteppers(); render(); }));
   });
   Object.keys(cartRt).forEach(k=>{
     const n = cartRt[k]; if(!n) return;
@@ -1637,6 +1711,8 @@ function render(){
   }
   $('#lineRt').hidden = c.rtTotal === 0;
   $('#valRt').textContent = vnd(c.rtTotal);
+  $('#lanBox').hidden = c.lanQty < 1;
+  $('#lanN').textContent = c.lanQty;
   $('#grand').textContent = vnd(c.grand);
 
   const mv = $('#mbVal');
@@ -1663,9 +1739,21 @@ document.addEventListener('click', function(e){
   const stp = btn.closest('.stp');
   const d = parseInt(btn.dataset.d, 10);
   if(stp.dataset.set){
-    const k = stp.dataset.set;
-    cartSet[k] = Math.max(0, Math.min(999, (cartSet[k] || 0) + d));
-    if(!cartSet[k]) delete cartSet[k];
+    const base = stp.dataset.set;
+    if(base === 'full'){
+      cartSet.full = Math.max(0, Math.min(999, (cartSet.full || 0) + d));
+      if(!cartSet.full) delete cartSet.full;
+    }else if(d > 0){
+      openCombo(base, {scroll:false});
+      return;
+    }else{
+      let k = lastAdd[base];
+      if(!k || !cartSet[k]) k = Object.keys(cartSet).find(x => baseOf(x) === base && cartSet[x]);
+      if(k){
+        cartSet[k] -= 1;
+        if(!cartSet[k]) delete cartSet[k];
+      }
+    }
   }else{
     const k = stp.dataset.f + "|" + stp.dataset.sz;
     cartRt[k] = Math.max(0, Math.min(99, (cartRt[k] || 0) + d));
@@ -1705,9 +1793,11 @@ function orderText(){
   const L = [];
   L.push("ĐẶT BÁNH TRUNG THU — THE CURATOR CAFE");
   L.push("");
-  Object.keys(SETS).forEach(k=>{
+  Object.keys(cartSet).forEach(k=>{
     const n = cartSet[k]; if(!n) return;
-    L.push("• " + SETS[k].name + " (hộp " + SETS[k].box + ", " + SETS[k].spec + ") × " + n + " set = " + vnd(n * SETS[k].price));
+    const b = baseOf(k), cb = comboOf(k);
+    L.push("• " + SETS[b].name + (cb ? " — Combo " + cb + " (" + COMBOS[cb] + ")" : " (trọn 6 vị)")
+      + " · hộp " + SETS[b].box + ", " + SETS[b].spec + " × " + n + " set = " + vnd(n * SETS[b].price));
   });
   const rtKeys = Object.keys(cartRt).filter(k=>cartRt[k]);
   if(rtKeys.length){
@@ -1718,6 +1808,10 @@ function orderText(){
     });
   }
   L.push("");
+  if(c.lanQty > 0){
+    const mau = (document.querySelector('input[name="lan"]:checked') || {value:"đỏ"}).value;
+    L.push("🎁 Quà tặng Song Lân Hợp Nguyệt: " + c.lanQty + " hộp lân sư tử — màu " + mau);
+  }
   if(c.discount > 0) L.push("Ưu đãi " + c.setQty + " set (−" + Math.round(c.tier.off*100) + "%): −" + vnd(c.discount));
   L.push("TỔNG CỘNG: " + vnd(c.grand));
   L.push("");
@@ -1901,6 +1995,7 @@ render();
 document.querySelectorAll('[data-add]').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     const k = btn.dataset.add;
+    if(k !== 'full'){ openCombo(k, {scroll:true, btn:btn}); return; }
     cartSet[k] = (cartSet[k] || 0) + 1;
     syncSteppers(); render();
     btn.classList.add('added');
@@ -2149,6 +2244,55 @@ document.querySelectorAll('.xp-btn').forEach(btn=>{
   });
   if(location.hash === '#ve-chung-toi') openAb();
 })();
+
+
+/* ===== sheet chon combo cho set 4 banh ===== */
+let csState = null;
+function openCombo(base, opts){
+  csState = Object.assign({base:base}, opts || {});
+  document.getElementById('csName').textContent = 'Chọn combo — ' + SETS[base].name;
+  document.getElementById('csSub').textContent = SETS[base].spec + ' · giá ' +
+    new Intl.NumberFormat('vi-VN').format(SETS[base].price) + 'đ không đổi.';
+  document.getElementById('csheet').classList.add('on');
+  document.getElementById('csBg').classList.add('on');
+}
+function closeCombo(){
+  document.getElementById('csheet').classList.remove('on');
+  document.getElementById('csBg').classList.remove('on');
+}
+document.querySelectorAll('.cs-opt').forEach(b=>{
+  b.addEventListener('click', function(){
+    if(!csState) return;
+    const key = csState.base + '|' + this.dataset.combo;
+    cartSet[key] = Math.min(999, (cartSet[key] || 0) + 1);
+    lastAdd[csState.base] = key;
+    syncSteppers(); render();
+    const btn = csState.btn;
+    if(btn){
+      btn.classList.add('added');
+      btn.textContent = "Đã thêm ✓  Xem đơn";
+      setTimeout(()=>{ document.getElementById('dat-hang').scrollIntoView({behavior:'smooth'}); }, 320);
+      setTimeout(()=>{ btn.classList.remove('added'); btn.textContent = "Chọn set này"; }, 3000);
+    }
+    closeCombo();
+  });
+});
+document.getElementById('csX').addEventListener('click', closeCombo);
+document.getElementById('csBg').addEventListener('click', closeCombo);
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeCombo();
+});
+(function(){
+  let y0 = null; const sh = document.getElementById('csheet');
+  sh.addEventListener('touchstart', e=>{ y0 = e.touches[0].clientY; }, {passive:true});
+  sh.addEventListener('touchend', e=>{
+    if(y0 !== null && e.changedTouches[0].clientY - y0 > 60) closeCombo();
+    y0 = null;
+  }, {passive:true});
+})();
+document.querySelectorAll('input[name="lan"]').forEach(r=>{
+  r.addEventListener('change', render);
+});
 
 </script>
 </body>
