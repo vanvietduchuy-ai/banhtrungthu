@@ -38,6 +38,7 @@
   --wrap:1180px;
 }
 *{box-sizing:border-box}
+button,input,select,textarea,a,.stp,.cs-stp{touch-action:manipulation}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
 section[id],header[id],#summary{scroll-margin-top:76px}
@@ -625,6 +626,11 @@ body.lb-open .nav,body.lb-open .mbar{opacity:0;pointer-events:none;transition:op
   font-size:17px;color:var(--mute);font-family:var(--body);border-radius:4px;padding:0}
 .stp button:hover{background:rgba(42,29,22,.07);color:var(--ink)}
 .stp .n{flex:1;text-align:center;font-size:16px;min-width:0}
+.stp input.n{border:0;background:transparent;font-family:var(--body);font-weight:500;
+  color:var(--ink);-moz-appearance:textfield;padding:0;height:100%}
+.stp input.n::-webkit-outer-spin-button,.stp input.n::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stp input.n:focus{outline:none;background:rgba(184,145,47,.12)}
+.stp input.n[readonly]{cursor:pointer}
 .stp.has .n{font-weight:500}
 .stp.has{border-color:var(--ink);background:#fff}
 @media(max-width:640px){
@@ -891,6 +897,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
         <img data-i="10" alt="Hộp LOTUS xanh rêu khảm trai, quai tre" data-cap="Set 03 · An Nhiên Sen Thu">
         <img data-i="2" alt="Bánh dẻo nhiều màu bày trên khay gỗ" data-cap="Sáu vị cho cả mùa">
         <img data-i="12" alt="Cận cảnh mặt hộp khảm trai hình sen và chuồn chuồn" data-cap="Tranh sen khảm trai">
+        <img data-i="lan" alt="Hai hộp lân sư tử đỏ và xanh cùng bánh cắt đôi lộ nhân trứng muối" data-cap="Quà tặng Song Lân Hợp Nguyệt">
         <div class="slide-cap" id="slideCap">Set 01 · Mộc Nguyệt Đoàn Viên</div>
       </div>
       <div class="dots" id="dots" role="tablist" aria-label="Chọn ảnh"></div>
@@ -1223,7 +1230,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
               </div>
               <div class="stp sp-stp" data-set="moon">
                 <button type="button" data-d="-1" aria-label="Bớt Mộc Nguyệt Đoàn Viên">−</button>
-                <span class="n">0</span>
+                <input class="n" type="text" inputmode="none" readonly value="0" aria-label="Số set Mộc Nguyệt — bấm để chọn combo" title="Bấm để chọn combo và số lượng">
                 <button type="button" data-d="1" aria-label="Thêm Mộc Nguyệt Đoàn Viên">+</button>
               </div>
             </div>
@@ -1236,7 +1243,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
               </div>
               <div class="stp sp-stp" data-set="full">
                 <button type="button" data-d="-1" aria-label="Bớt Minh Viên Nguyệt">−</button>
-                <span class="n">0</span>
+                <input class="n" type="number" inputmode="numeric" min="0" max="999" value="0" aria-label="Số set Minh Viên Nguyệt — gõ trực tiếp được">
                 <button type="button" data-d="1" aria-label="Thêm Minh Viên Nguyệt">+</button>
               </div>
             </div>
@@ -1249,7 +1256,7 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
               </div>
               <div class="stp sp-stp" data-set="lotus">
                 <button type="button" data-d="-1" aria-label="Bớt An Nhiên Sen Thu">−</button>
-                <span class="n">0</span>
+                <input class="n" type="text" inputmode="none" readonly value="0" aria-label="Số set An Nhiên — bấm để chọn combo" title="Bấm để chọn combo và số lượng">
                 <button type="button" data-d="1" aria-label="Thêm An Nhiên Sen Thu">+</button>
               </div>
             </div>
@@ -1694,7 +1701,9 @@ function syncSteppers(){
     const base = el.dataset.set;
     let n = 0;
     Object.keys(cartSet).forEach(k=>{ if(baseOf(k) === base) n += cartSet[k]; });
-    el.querySelector('.n').textContent = n;
+    const nEl = el.querySelector('.n');
+    if(nEl.tagName === 'INPUT'){ if(document.activeElement !== nEl) nEl.value = n; }
+    else nEl.textContent = n;
     el.classList.toggle('has', n > 0);
   });
   document.querySelectorAll('.stp[data-f]').forEach(el=>{
@@ -2339,6 +2348,25 @@ document.querySelectorAll('.cs-row').forEach(rw=>{
   inp.addEventListener('focus', ()=> inp.select());
 });
 document.getElementById('csDone').addEventListener('click', closeCombo);
+
+/* o so o buoc Chon banh */
+document.querySelectorAll('.stp[data-set] input.n').forEach(inp=>{
+  const base = inp.closest('.stp').dataset.set;
+  if(base === 'full'){
+    inp.addEventListener('focus', ()=> inp.select());
+    inp.addEventListener('input', ()=>{
+      const n = Math.max(0, Math.min(999, parseInt(inp.value, 10) || 0));
+      if(n) cartSet.full = n; else delete cartSet.full;
+      syncSteppers(); render();
+    });
+    inp.addEventListener('blur', ()=> syncSteppers());
+  }else{
+    inp.addEventListener('click', ()=> openCombo(base, {scroll:false}));
+  }
+});
+
+/* ===== anh hop lan tren slideshow dau trang ===== */
+IMGS["lan"] = "img/lan.webp";
 document.getElementById('csX').addEventListener('click', closeCombo);
 document.getElementById('csBg').addEventListener('click', closeCombo);
 document.addEventListener('keydown', function(e){
