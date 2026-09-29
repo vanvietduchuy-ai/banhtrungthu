@@ -729,5 +729,114 @@ $('#btnZalo').addEventListener('click', ()=>{ copyOrder(makeCode()); toast('Đã
 })();
 render();
 </script>
+<!-- ===== POPUP MON MOI (hien 1 lan / trinh duyet) ===== -->
+<style>
+.np-bg{position:fixed;inset:0;z-index:140;background:rgba(24,15,10,.55);opacity:0;visibility:hidden;transition:.35s}
+.np{position:fixed;left:50%;top:50%;z-index:141;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 40px);
+  overflow:auto;background:#FFFDF8;border-radius:14px;box-shadow:0 24px 60px rgba(24,15,10,.28);
+  transform:translate(-50%,-46%) scale(.97);opacity:0;visibility:hidden;transition:.35s}
+.np-bg.on,.np.on{opacity:1;visibility:visible}
+.np.on{transform:translate(-50%,-50%) scale(1)}
+.np-top{position:relative;text-align:center;padding:30px 26px 18px;
+  background:linear-gradient(180deg,#F7EFE0 0%,#FFFDF8 100%);border-bottom:1px solid var(--line);border-radius:14px 14px 0 0}
+.np-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;
+  background:transparent;color:var(--mute);font-size:20px;cursor:pointer}
+.np-x:hover{background:rgba(42,29,22,.07);color:var(--ink)}
+.np-cup{width:54px;height:54px;margin:0 auto 10px;display:block}
+.np-eye{font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--red);margin-bottom:6px}
+.np-h{font-family:var(--disp);font-weight:500;font-size:32px;line-height:1.08}
+.np-h i{color:var(--gold-soft)}
+.np-sub{font-size:13px;color:var(--mute);margin-top:8px;line-height:1.55}
+.np-list{list-style:none;padding:6px 22px}
+.np-list li{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px dotted var(--line)}
+.np-list li:last-child{border-bottom:0}
+.np-nm{flex:1;min-width:0}
+.np-nm b{display:block;font-family:var(--disp);font-weight:600;font-size:19px;line-height:1.2}
+.np-nm em{display:block;font-family:var(--disp);font-size:13.5px;color:var(--gold-soft)}
+.np-nm small{display:block;font-size:11.5px;color:var(--mute);margin-top:2px}
+.np-pr{font-weight:500;font-size:14.5px;white-space:nowrap}
+.np-add{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--ink);
+  background:#FFFDF8;color:var(--ink);font-size:18px;line-height:1;cursor:pointer;transition:.2s}
+.np-add:hover,.np-add.ok{background:var(--ink);color:#FDF8EF}
+.np-ft{display:flex;gap:10px;padding:8px 22px 22px}
+.np-ft button{flex:1;height:46px;border-radius:999px;font-family:var(--body);font-size:12.5px;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.np-go{background:var(--ink);color:#FDF8EF;border:1px solid var(--ink)}
+.np-later{background:transparent;color:var(--mute);border:1px solid var(--line)}
+@media(max-width:420px){.np-h{font-size:28px}.np-top{padding:26px 20px 16px}.np-list,.np-ft{padding-left:18px;padding-right:18px}}
+</style>
+<div class="np-bg" id="npBg"></div>
+<div class="np" id="np" role="dialog" aria-modal="true" aria-labelledby="npH">
+  <div class="np-top">
+    <button type="button" class="np-x" id="npX" aria-label="Đóng">×</button>
+    <svg class="np-cup" viewBox="0 0 64 64" fill="none" stroke="#8A6A1E" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+      <path d="M26 8c-3 4 3 6 0 10M34 6c-3 4 3 6 0 10M42 8c-3 4 3 6 0 10"/>
+      <path d="M12 26h40v8a18 18 0 0 1-18 18h-4a18 18 0 0 1-18-18z" fill="#FDF3DC"/>
+      <path d="M12 30c8 3 32 3 40 0" stroke="#B8912F"/>
+      <path d="M52 30h3a6 6 0 0 1 0 12h-4"/>
+      <path d="M8 56h48"/>
+    </svg>
+    <div class="np-eye">Món mới · Served hot</div>
+    <h2 class="np-h" id="npH">Bộ sưu tập <i>kem trứng</i></h2>
+    <p class="np-sub">Bốn ly nóng phủ lớp kem trứng đánh bông mịn —<br>ấm tay cho những ngày trở gió.</p>
+  </div>
+  <ul class="np-list" id="npList"></ul>
+  <div class="np-ft">
+    <button type="button" class="np-later" id="npLater">Để sau</button>
+    <button type="button" class="np-go" id="npGo">Xem menu nóng</button>
+  </div>
+</div>
+<script>
+(function(){
+  const KEY = 'tc-popup-kemtrung-v1';
+  try{ if(localStorage.getItem(KEY)) return; }catch(e){}
+  const NEW = [
+    ['caphetrung','Vietnamese Egg Coffee'],
+    ['caphetrungdua','Coconut Egg Coffee'],
+    ['cacaotrung','Egg Cream Cocoa'],
+    ['matchatrung','Egg Cream Matcha']
+  ].filter(x => ITEMS[x[0]]);
+  if(!NEW.length) return;
+  const ul = document.getElementById('npList');
+  NEW.forEach(([id, en])=>{
+    const it = ITEMS[id], li = document.createElement('li');
+    const nm = document.createElement('div'); nm.className = 'np-nm';
+    const b = document.createElement('b'); b.textContent = it.n;
+    const e = document.createElement('em'); e.textContent = en;
+    const s = document.createElement('small'); s.textContent = it.d;
+    nm.append(b, e, s);
+    const pr = document.createElement('span'); pr.className = 'np-pr'; pr.textContent = vnd(it.p);
+    const add = document.createElement('button'); add.type = 'button'; add.className = 'np-add';
+    add.textContent = '+'; add.setAttribute('aria-label', 'Thêm ' + it.n);
+    add.addEventListener('click', ()=>{
+      bump(id, 1); add.classList.add('ok'); add.textContent = '✓';
+      toast('Đã thêm ' + it.n);
+    });
+    li.append(nm, pr, add); ul.appendChild(li);
+  });
+  const bg = document.getElementById('npBg'), box = document.getElementById('np');
+  function close(){
+    bg.classList.remove('on'); box.classList.remove('on');
+    document.removeEventListener('keydown', esc);
+  }
+  function esc(e){ if(e.key === 'Escape') close(); }
+  function open(){
+    bg.classList.add('on'); box.classList.add('on');
+    try{ localStorage.setItem(KEY, '1'); }catch(e){}
+    document.addEventListener('keydown', esc);
+  }
+  document.getElementById('npX').addEventListener('click', close);
+  document.getElementById('npLater').addEventListener('click', close);
+  bg.addEventListener('click', close);
+  document.getElementById('npGo').addEventListener('click', ()=>{
+    close();
+    const gi = DATA.findIndex(g => g.cat === 'Đồ Uống Nóng');
+    const sec = document.getElementById('cat' + gi);
+    if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  setTimeout(open, 900);
+})();
+</script>
+
 </body>
 </html>
