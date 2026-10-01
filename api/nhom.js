@@ -33,6 +33,9 @@ const key = code => 'g:' + code;
 function cleanName(s) {
   return String(s || '').replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 30);
 }
+function cleanGroupName(s) {
+  return String(s || '').replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
+}
 function cleanCode(s) {
   const c = String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   return c.length === 4 ? c : '';
@@ -43,6 +46,17 @@ function cleanCart(c) {
   Object.keys(c).slice(0, MAX_LINES).forEach(k => {
     const q = Math.floor(Number(c[k]));
     if (/^[a-z0-9~]{1,40}$/.test(k) && q > 0) out[k] = Math.min(q, MAX_QTY);
+  });
+  return out;
+}
+
+function cleanNotes(n, cart) {
+  const out = {};
+  if (!n || typeof n !== 'object') return out;
+  Object.keys(cart).forEach(k => {
+    const a = Array.isArray(n[k]) ? n[k] : [];
+    const v = a.slice(0, cart[k]).map(x => String(x || '').replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80));
+    if (v.some(Boolean)) out[k] = v;
   });
   return out;
 }
@@ -64,11 +78,12 @@ function publicView(code, g) {
   const host = g.members[g.meta.h];
   return {
     code,
+    name: g.meta.nm || '',
     status: g.meta.s,
     sentAt: g.meta.sentAt || null,
     host: { mid: g.meta.h, name: host ? host.n : '' },
     members: Object.keys(g.members)
-      .map(mid => ({ mid, name: g.members[mid].n, cart: g.members[mid].c || {}, t: g.members[mid].t, j: g.members[mid].j || 0 }))
+      .map(mid => ({ mid, name: g.members[mid].n, cart: g.members[mid].c || {}, notes: g.members[mid].o || {}, t: g.members[mid].t, j: g.members[mid].j || 0 }))
       .sort((a, b) => (a.mid === g.meta.h ? -1 : b.mid === g.meta.h ? 1 : a.j - b.j)),
   };
 }
@@ -111,9 +126,9 @@ module.exports = async (req, res) => {
       const mid = rnd(4), tok = rnd(16);
       for (let i = 0; i < 6; i++) {
         const code = newCode();
-        const okSet = await redis('HSETNX', key(code), 'meta', JSON.stringify({ s: 'open', h: mid, at: now }));
+        const okSet = await redis('HSETNX', key(code), 'meta', JSON.stringify({ s: 'open', h: mid, at: now, nm: cleanGroupName(b.gname) }));
         if (okSet === 1) {
-          await redis('HSET', key(code), 'm:' + mid, JSON.stringify({ n: name, c: cleanCart(b.cart), t: now, j: now, k: sha(tok) }));
+          await redis('HSET', key(code), 'm:' + mid, JSON.stringify((c => ({ n: name, c, o: cleanNotes(b.notes, c), t: now, j: now, k: sha(tok) }))(cleanCart(b.cart))));
           await redis('EXPIRE', key(code), TTL);
           const g = await load(code);
           return send(200, { ok: true, code, mid, tok, group: publicView(code, g) });
@@ -129,12 +144,13 @@ module.exports = async (req, res) => {
     if (b.a === 'join') {
       const name = cleanName(b.name);
       if (!name) return send(400, { ok: false, err: 'Vui lòng nhập tên.' });
-      if (g.meta.s !== 'open') return send(409, { ok: false, err: 'Nhóm đã gửi đơn, không thể tham gia.' });
+      if (g.meta.s !== 'open') return send(409, { ok: false, err: g.meta.s === 'closed' ? 'Nhóm đã được trưởng nhóm giải tán.' : 'Nhóm đã gửi đơn, không thể tham gia.' });
       if (Object.keys(g.members).length >= MAX_MEMBERS) return send(409, { ok: false, err: 'Nhóm đã đủ ' + MAX_MEMBERS + ' người.' });
       const mid = rnd(4), tok = rnd(16);
-      await redis('HSET', key(code), 'm:' + mid, JSON.stringify({ n: name, c: cleanCart(b.cart), t: now, j: now, k: sha(tok) }));
+      await redis('HSET', key(code), 'm:' + mid, JSON.stringify((c => ({ n: name, c, o: cleanNotes(b.notes, c), t: now, j: now, k: sha(tok) }))(cleanCart(b.cart))));
       await redis('EXPIRE', key(code), TTL);
       g.members[mid] = { n: name, c: cleanCart(b.cart), t: now, j: now };
+      g.members[mid].o = cleanNotes(b.notes, g.members[mid].c);
       return send(200, { ok: true, mid, tok, group: publicView(code, g) });
     }
 
@@ -145,6 +161,7 @@ module.exports = async (req, res) => {
     if (b.a === 'save') {
       if (g.meta.s !== 'open') return send(409, { ok: false, err: 'Nhóm đã gửi đơn.', group: publicView(code, g) });
       me.c = cleanCart(b.cart);
+      me.o = cleanNotes(b.notes, me.c);
       if (b.name) me.n = cleanName(b.name) || me.n;
       me.t = now;
       await redis('HSET', key(code), 'm:' + b.mid, JSON.stringify(me));
@@ -168,8 +185,27 @@ module.exports = async (req, res) => {
       return send(200, { ok: true, group: publicView(code, g) });
     }
 
+    if (b.a === 'disband') {
+      if (!isHost) return send(403, { ok: false, err: 'Chỉ trưởng nhóm được giải tán nhóm.' });
+      if (g.meta.s === 'open') {
+        g.meta.s = 'closed'; g.meta.closedAt = now;
+        await redis('HSET', key(code), 'meta', JSON.stringify(g.meta));
+        await redis('EXPIRE', key(code), 900); // giu 15 phut de thanh vien nhan duoc thong bao
+      }
+      return send(200, { ok: true });
+    }
+
+    if (b.a === 'rename') {
+      if (!isHost) return send(403, { ok: false, err: 'Chỉ trưởng nhóm được đổi tên nhóm.' });
+      g.meta.nm = cleanGroupName(b.gname);
+      await redis('HSET', key(code), 'meta', JSON.stringify(g.meta));
+      await redis('EXPIRE', key(code), TTL);
+      return send(200, { ok: true, group: publicView(code, g) });
+    }
+
     if (b.a === 'send') {
       if (!isHost) return send(403, { ok: false, err: 'Chỉ trưởng nhóm được gửi đơn.' });
+      if (g.meta.s === 'closed') return send(409, { ok: false, err: 'Nhóm đã giải tán.' });
       if (g.meta.s === 'open') {
         const any = Object.values(g.members).some(m => Object.keys(m.c || {}).length);
         if (!any) return send(400, { ok: false, err: 'Nhóm chưa có món nào.' });
