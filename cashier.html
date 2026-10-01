@@ -60,6 +60,14 @@ button{font-family:var(--body);cursor:pointer}
 .c-act .zl{background:#0068FF;border-color:#0068FF;color:#fff}
 .c-act .ok{background:var(--green);border-color:var(--green);color:#fff}
 .card.done .c-act .ok{background:transparent;color:var(--green)}
+.c-st{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);align-items:center}
+.c-st .lb{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-right:4px}
+.c-st button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:12px;color:var(--ink)}
+.c-st button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.c-st button.on.ready,.c-st button.on.ship{background:var(--green);border-color:var(--green)}
+.c-st button.on.cancel{background:var(--red);border-color:var(--red)}
+.c-st button.cancel{color:var(--red)}
+.c-st .na{font-size:11.5px;color:var(--mute)}
 .empty{text-align:center;color:var(--mute);padding:44px 10px;font-size:14px;line-height:1.7}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#FDF8EF;
   padding:11px 22px;border-radius:999px;font-size:13px;opacity:0;visibility:hidden;transition:.3s;z-index:50}
@@ -93,6 +101,8 @@ button{font-family:var(--body);cursor:pointer}
       <input id="urlNuoc" type="text" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-…/pub?output=csv"></div>
     <div class="field"><label>Liên kết CSV — Sheet BÁNH TRUNG THU (bỏ trống nếu chỉ theo dõi nước)</label>
       <input id="urlBanh" type="text" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-…/pub?output=csv"></div>
+    <div class="field"><label>Mã PIN quầy — để cập nhật tình trạng đơn cho khách (Đang pha / Sẵn sàng…)</label>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="Nhập mã PIN của quán"></div>
     <div class="bar">
       <button class="btn" id="btnStart">🔔 Bắt đầu ca trực</button>
       <button class="btn ghost" id="btnTest">Thử chuông</button>
@@ -276,6 +286,31 @@ function msgFor(o){
 function phoneClean(p){ return (p||'').replace(/[^0-9+]/g,'').replace(/^\+?84/,'0'); }
 
 let orders = [];
+/* ---- tinh trang don cho khach (api/don) ---- */
+const PIN_KEY = 'tcCashierPin';
+let pin = ''; try{ pin = localStorage.getItem(PIN_KEY) || ''; }catch(e){}
+if(pin) $('#pin').value = pin;
+let stMap = {}, stErr = '';
+const ST_LBL = { ok:'Đã nhận', make:'Đang pha', ready:'Sẵn sàng', ship:'Đang giao', done:'Hoàn thành', cancel:'Huỷ' };
+const codeOf = o => { const m = /Mã đơn:\s*([A-Z0-9-]+)/.exec(o.detail || ''); return m ? m[1] : ''; };
+async function fetchStatus(){
+  if(!pin) return;
+  try{
+    const r = await fetch('/api/don?staff=1&_=' + Date.now(), { headers:{ 'x-staff-pin': pin } }).then(x=>x.json());
+    if(r.ok){ stMap = {}; r.list.forEach(x => stMap[x.c] = x.s); stErr = ''; }
+    else stErr = r.err || 'Lỗi';
+  }catch(e){ stErr = 'Mất kết nối'; }
+}
+async function setStatus(c, s){
+  let why = '';
+  if(s === 'cancel'){ why = prompt('Lý do huỷ (khách sẽ thấy):', 'Hết món') ; if(why === null) return; }
+  const prev = stMap[c]; stMap[c] = s; render();
+  try{
+    const r = await fetch('/api/don', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-staff-pin': pin }, body:JSON.stringify({ a:'status', c, s, why }) }).then(x=>x.json());
+    if(!r.ok){ stMap[c] = prev; render(); toast(r.err || 'Chưa cập nhật được'); }
+    else toast('Đã báo khách: ' + ST_LBL[s]);
+  }catch(e){ stMap[c] = prev; render(); toast('Mất kết nối'); }
+}
 async function fetchOne(url, loai){
   const r = await fetch(url + (url.includes('?')?'&':'?') + 'cb=' + Date.now(), {cache:'no-store'});
   if(!r.ok) throw new Error('HTTP '+r.status);
@@ -299,6 +334,7 @@ async function poll(first){
   if(cfg.nuoc) jobs.push(fetchOne(cfg.nuoc,'nuoc').catch(e=>{toast('Không đọc được Sheet nước'); return [];}));
   if(cfg.banh) jobs.push(fetchOne(cfg.banh,'banh').catch(e=>{toast('Không đọc được Sheet bánh'); return [];}));
   jobs.push(fetchSync().then(()=>[]));
+  jobs.push(fetchStatus().then(()=>[]));
   const all = (await Promise.all(jobs)).flat();
   all.sort((a,b)=> tsVal(b.ts) - tsVal(a.ts));
   let fresh=[];
@@ -348,16 +384,31 @@ function render(freshKeys){
       moi ? done.add(o.k) : done.delete(o.k);
       localStorage.setItem(DONE_KEY, JSON.stringify([...done].slice(-600)));
       pushSync(o.k, moi ? 'done' : 'undo');
+      const oc = codeOf(o); if(moi && oc && stMap[oc] === 'new') setStatus(oc, 'ok');
       render();
     });
     act.append(zl,cp,tel,ok);
     card.append(top,dt,meta,act);
+    const oc = o.loai === 'nuoc' ? codeOf(o) : '';
+    if(oc && pin){
+      const row = document.createElement('div'); row.className = 'c-st';
+      row.innerHTML = '<span class="lb">Báo khách</span>';
+      if(stMap[oc]){
+        const giao = /giao/i.test(o.ship);
+        ['ok','make', giao ? 'ship' : 'ready','done','cancel'].forEach(s=>{
+          const b = document.createElement('button'); b.textContent = ST_LBL[s]; b.className = s + (stMap[oc] === s ? ' on' : '');
+          b.addEventListener('click', ()=> setStatus(oc, s)); row.appendChild(b);
+        });
+      } else row.insertAdjacentHTML('beforeend', '<span class="na">' + (stErr ? stErr : 'Đơn này không có trên hệ thống theo dõi (đơn cũ)') + '</span>');
+      card.appendChild(row);
+    }
     box.appendChild(card);
   });
 }
 
 $('#btnStart').addEventListener('click', async ()=>{
   cfg = { nuoc: $('#urlNuoc').value.trim(), banh: $('#urlBanh').value.trim() };
+  pin = $('#pin').value.trim(); try{ localStorage.setItem(PIN_KEY, pin); }catch(e){}
   if(!cfg.nuoc && !cfg.banh){ toast('Dán ít nhất một liên kết CSV'); return; }
   localStorage.setItem(KEY, JSON.stringify(cfg));
   if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();

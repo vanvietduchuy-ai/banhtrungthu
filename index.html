@@ -1398,6 +1398,13 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     set(v){ try{ localStorage.setItem(SKEY, JSON.stringify(v)); }catch(e){} },
     del(){ try{ localStorage.removeItem(SKEY); }catch(e){} }
   };
+  const GL_KEY = 'tcGroups';
+  const gl = {
+    all(){ try{ return (JSON.parse(localStorage.getItem(GL_KEY) || '[]') || []).filter(e => e && e.code && Date.now() - e.at < 7*3600e3); }catch(e){ return []; } },
+    save(a){ try{ localStorage.setItem(GL_KEY, JSON.stringify(a.slice(0, 8))); }catch(e){} },
+    put(e){ const a = gl.all().filter(x => x.code !== e.code); a.unshift(Object.assign({}, (gl.all().find(x=>x.code===e.code) || {}), e)); gl.save(a); },
+    del(code){ gl.save(gl.all().filter(x => x.code !== code)); }
+  };
   async function api(body){
     const opt = body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : {};
     const url = body ? API : API + '?code=' + encodeURIComponent(G.code) + '&_=' + Date.now();
@@ -1588,6 +1595,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   function enter(id, group){
     Object.assign(G, id, { group });
     store.set({ code:G.code, mid:G.mid, tok:G.tok, name:G.name });
+    gl.put({ code:G.code, mid:G.mid, tok:G.tok, name:G.name, gname:group.name || '', host:group.host.mid === G.mid, at:Date.now() });
     setUrl(G.code);
     document.body.classList.add('g-on');
     const me = group.members.find(m => m.mid === G.mid);
@@ -1644,7 +1652,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         const b = $('#gxDis'); b.disabled = true; b.querySelector('b').textContent = 'Đang giải tán…';
         const r = await api({ a:'disband', code:G.code, mid:G.mid, tok:G.tok });
         if(!r.ok){ b.disabled = false; b.querySelector('b').textContent = 'Giải tán nhóm'; toast(r.err || 'Chưa giải tán được'); return; }
-        closeModal(); leave(true); toast('Đã giải tán nhóm — mọi người sẽ nhận được thông báo');
+        gl.del(G.code); closeModal(); leave(true); toast('Đã giải tán nhóm — mọi người sẽ nhận được thông báo');
       });
       $('#gxLeave').addEventListener('click', ()=>{ closeModal(); leave(true); toast('Đã thoát — nhóm vẫn giữ 6 giờ'); });
     } else {
@@ -1654,7 +1662,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       $('#gxOut').addEventListener('click', async ()=>{
         $('#gxOut').disabled = true;
         await api({ a:'leave', code:G.code, mid:G.mid, tok:G.tok });
-        closeModal(); leave(true); toast('Đã rời nhóm');
+        gl.del(G.code); closeModal(); leave(true); toast('Đã rời nhóm');
       });
     }
     $('#gmNo').addEventListener('click', closeModal);
@@ -1675,7 +1683,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     const r = await api({ a:'save', code:G.code, mid:G.mid, tok:G.tok, cart, notes:NOTES });
     G.saving = false;
     if(r.ok){ G.group = r.group; paint(); }
-    else if(r.gone){ toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
+    else if(r.gone){ gl.del(G.code); toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
     else if(r.group){ G.group = r.group; paint(); }
     else { G.dirty = true; $('#gbSub').textContent = r.err || 'Chưa lưu được — đang thử lại'; G.timer = setTimeout(save, 3000); return; }
     if(G.dirty) save();
@@ -1683,9 +1691,9 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   async function refresh(){
     if(!G.code || document.hidden || G.saving || G.dirty) return;
     const r = await api();
-    if(!r.ok){ if(r.err && /tồn tại|hết hạn/.test(r.err)){ toast('Nhóm đã hết hạn'); leave(false); } return; }
-    if(r.group.status === 'closed'){ if(r.group.host.mid !== G.mid) toast('Trưởng nhóm đã giải tán nhóm ' + gTitle(r.group)); leave(false); return; }
-    if(!r.group.members.some(m => m.mid === G.mid)){ toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
+    if(!r.ok){ if(r.err && /tồn tại|hết hạn/.test(r.err)){ gl.del(G.code); toast('Nhóm đã hết hạn'); leave(false); } return; }
+    if(r.group.status === 'closed'){ gl.del(G.code); if(r.group.host.mid !== G.mid) toast('Trưởng nhóm đã giải tán nhóm ' + gTitle(r.group)); leave(false); return; }
+    if(!r.group.members.some(m => m.mid === G.mid)){ gl.del(G.code); toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
     G.group = r.group; paint();
   }
   document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refresh(); });
@@ -1755,10 +1763,13 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     });
     $('#gNote').innerHTML = sent ? '' : 'Món bạn chọn được <b>lưu tự động</b> vào đơn nhóm. <b>' + esc(g.host.name) +
       '</b> sẽ gửi đơn cho quán khi cả nhóm chọn xong.';
+    gl.put({ code:g.code, gname:g.name || '', at:Date.now() });
     if(sent){
       const t = new Date(g.sentAt), p = x => String(x).padStart(2,'0');
       $('#gSent').innerHTML = '✓ <b>' + esc(g.host.name) + '</b> đã gửi đơn nhóm lúc ' + p(t.getHours()) + ':' + p(t.getMinutes()) +
-        ' — quán sẽ gọi lại xác nhận.';
+        ' — quán sẽ gọi lại xác nhận.' + (g.ord ? '<button type="button" class="g-track" id="gTrack"><span id="gSentSt">Xem tình trạng đơn</span> →</button>' : '');
+      if(g.ord && window.TCO){ TCO.track({ c:g.ord, g:g.code, kind:'nhom', gname:gTitle(g), at:g.sentAt }); TCO.paintGroup(g.ord); }
+      const gt = $('#gTrack'); if(gt) gt.addEventListener('click', ()=> window.TCO && TCO.open(g.ord));
       if(G.poll && !isHost && !first) confetti($('#summary'));
       clearInterval(G.poll); G.poll = null;
     }
@@ -1789,10 +1800,12 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     if(miss.length){ toast('Vui lòng điền ' + miss.map(m=>m[1]).join(' và ')); $(miss[0][0]).focus(); return; }
     btn.disabled = true; btn.textContent = 'Đang gửi…';
     clearTimeout(G.timer); G.dirty = true; await save();
-    const r = await api({ a:'send', code:G.code, mid:G.mid, tok:G.tok });
+    const nowD = new Date(), p2 = x => String(x).padStart(2,'0');
+    const ordCode = 'NHOM-' + G.code + '-' + p2(nowD.getDate()) + p2(nowD.getMonth()+1) + '-' + p2(nowD.getHours()) + p2(nowD.getMinutes());
+    const r = await api({ a:'send', code:G.code, mid:G.mid, tok:G.tok, ord:ordCode });
     if(!r.ok){ btn.disabled = false; btn.textContent = 'Gửi đơn nhóm'; paint(); toast(r.err || 'Chưa gửi được'); return; }
     G.group = r.group;
-    const g = r.group, code = 'NHOM-' + g.code, D = ['Mã đơn: ' + code + (g.name ? ' · ' + g.name : '') + ' (' + g.members.length + ' người)'];
+    const g = r.group, code = g.ord || ordCode, D = ['Mã đơn: ' + code + (g.name ? ' · ' + g.name : '') + ' (' + g.members.length + ' người)'];
     let total = 0, count = 0;
     g.members.forEach(m=>{
       const keys = Object.keys(m.cart).filter(k => ITEMS[k]); if(!keys.length) return;
@@ -1810,6 +1823,11 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     data[GFORM.f.addr] = ship === 'Giao tận nơi' ? $('#addr').value.trim() : '';
     data[GFORM.f.note] = $('#note').value.trim();
     try{ postForm(data); saveCust(); navigator.clipboard && navigator.clipboard.writeText(D.join('\n')).catch(()=>{}); }catch(err){}
+    if(window.TCO){
+      const items = [];
+      g.members.forEach(m => Object.keys(m.cart).filter(k => ITEMS[k]).forEach(k => items.push({ w:m.name, n:ITEMS[k].n, q:m.cart[k], p:ITEMS[k].p, t:noteText(k, m.notes || {}) })));
+      TCO.create({ c:code, kind:'nhom', items, ship, time:$('#time').value, nm:$('#name').value.trim(), g:{ code:g.code, name:gTitle(g) } });
+    }
     paint();
     setTimeout(()=>{
       $('#actions').hidden = true; $('#hint').hidden = true; $('#sentBox').hidden = false;
@@ -1916,6 +1934,9 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     }
     G.code = '';
     if(!q) { store.del(); return; }
+    joinFlow(code, g);
+  })();
+  function joinFlow(code, g){
     if(g.status !== 'open'){ toast('Nhóm ' + code + ' đã gửi đơn'); setUrl(''); return; }
     askName(esc(g.host.name) + (g.name ? ' mời bạn vào nhóm “' + esc(g.name) + '”' : ' mời bạn đặt nước cùng nhóm'),
       '<span class="g-av" style="justify-content:center;margin-bottom:10px">' + g.members.slice(0,6).map(m=>avatar(m,'a')).join('') + '</span><br>' +
@@ -1931,9 +1952,334 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
           else setTimeout(()=>toast('Chọn món của bạn nhé — đơn nhóm tự lưu'), 900);
         });
       });
-  })();
+  }
+  async function rejoin(code){
+    if(G.code === code){ window.scrollTo({top:0, behavior:'smooth'}); return; }
+    if(G.code) leave(false);
+    const e = gl.all().find(x => x.code === code);
+    G.code = code; const r = await api(); G.code = '';
+    if(!r.ok){ gl.del(code); toast('Nhóm ' + code + ' đã hết hạn'); return false; }
+    const g = r.group;
+    if(g.status === 'closed'){ gl.del(code); toast('Nhóm ' + code + ' đã được giải tán'); return false; }
+    if(e && g.members.some(m => m.mid === e.mid)){
+      wipe(code, null, ()=>{ enter({ code, mid:e.mid, tok:e.tok, name:e.name }, g); window.scrollTo({top:0}); });
+      return true;
+    }
+    setUrl(code); joinFlow(code, g); return true;
+  }
+  window.TCG = { rejoin, list: () => gl.all(), current: () => G.code, forget: c => gl.del(c) };
 })();
 </script>
 
+<!-- ===== DON CUA TOI: theo doi trang thai don + quay lai nhom ===== -->
+<style>
+.nav-r{display:flex;align-items:center;gap:8px}
+.nav-ord{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#FFFDF8;border-radius:999px;padding:6px 12px 6px 10px;
+  font-family:var(--body);font-size:11.5px;letter-spacing:.06em;color:var(--ink);cursor:pointer;transition:.2s;white-space:nowrap}
+.nav-ord:hover{border-color:var(--ink)}
+.nav-ord svg{width:15px;height:15px}
+.nav-ord .bd{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:999px;background:var(--red);color:#fff;font-style:normal;font-size:10px;
+  font-weight:600;display:none;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 0 0 2px var(--cream)}
+.nav-ord.has .bd{display:inline-flex;animation:gPop .4s both}
+.nav-ord.live .bd{background:#1F6B4A}
+@media(max-width:430px){.nav-ord .tx{display:none}.nav-ord{padding:7px 9px}}
+.o-strip{display:none;align-items:center;gap:12px;width:100%;margin-top:12px;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;
+  font-family:var(--body);text-align:left;cursor:pointer;animation:gIn .5s both;transition:.2s}
+.o-strip.on{display:flex}
+.o-strip:hover{border-color:var(--ink)}
+.o-strip .dot{flex:0 0 38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px}
+.o-strip .t{flex:1;min-width:0}
+.o-strip b{display:block;font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-strip small{display:block;font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o-strip .ar{color:var(--mute);font-size:18px}
+.o-back{border-color:var(--gp-line);background:linear-gradient(120deg,#F3F7F1,#fff)}
+.o-back .dot{background:var(--gp)}
+body.g-on .o-back,body.g-on #oLive{display:none}
+.g-track{display:block;margin-top:8px;border:0;background:#fff;border-radius:999px;padding:6px 12px;font-family:var(--body);font-size:12.5px;color:#6A4F12;cursor:pointer;border:1px solid rgba(184,145,47,.4)}
+.g-track:hover{background:#FFF1CF}
+#btnTrack{margin-top:10px}
+/* bang don */
+.op-bg{position:fixed;inset:0;z-index:175;background:rgba(24,15,10,.5);opacity:0;visibility:hidden;transition:.3s}
+.op-bg.on{opacity:1;visibility:visible}
+.op{position:fixed;z-index:176;background:#FDF8EF;display:flex;flex-direction:column;left:0;right:0;bottom:0;height:90vh;border-radius:20px 20px 0 0;
+  transform:translateY(105%);transition:transform .4s cubic-bezier(.2,.8,.3,1);box-shadow:0 -20px 60px -20px rgba(24,15,10,.45)}
+.op.on{transform:none}
+@media(min-width:901px){.op{left:auto;top:0;right:0;bottom:0;height:auto;width:440px;border-radius:0;transform:translateX(105%)}.op.on{transform:none}}
+.op-hd{padding:14px 20px 0;position:relative}
+.op-hd .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+@media(min-width:901px){.op-hd .grab{display:none}.op-hd{padding-top:22px}}
+.op-hd h3{font-family:var(--disp);font-size:28px;font-weight:500;line-height:1.1}
+.op-hd .x{position:absolute;right:12px;top:12px;width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:24px;color:var(--mute);cursor:pointer}
+@media(min-width:901px){.op-hd .x{top:18px}}
+.op-tabs{display:flex;gap:4px;margin-top:12px;background:var(--cream-2);border-radius:999px;padding:3px}
+.op-tabs button{flex:1;height:36px;border:0;border-radius:999px;background:transparent;font-family:var(--body);font-size:13px;color:var(--mute);cursor:pointer;transition:.2s}
+.op-tabs button.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 2px 6px -2px rgba(0,0,0,.2)}
+.op-tabs i{font-style:normal;font-size:10.5px;background:var(--red);color:#fff;border-radius:999px;padding:1px 6px;margin-left:5px;vertical-align:1px}
+.op-bd{flex:1;overflow:auto;padding:14px 20px 24px}
+.op-empty{text-align:center;color:var(--mute);font-size:13.5px;line-height:1.7;padding:40px 10px}
+.op-empty .ic{font-size:34px;display:block;margin-bottom:8px;opacity:.6}
+.oc{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin-bottom:12px;animation:gIn .4s both}
+.oc.focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(42,29,22,.08)}
+.oc-top{display:flex;align-items:flex-start;gap:10px}
+.oc-top .t{flex:1;min-width:0}
+.oc-top b{display:block;font-size:14.5px;font-weight:500}
+.oc-top small{display:block;font-size:11.5px;color:var(--mute);margin-top:1px}
+.oc-kind{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:2px 8px;margin-bottom:4px;background:var(--cream-2);color:var(--mute)}
+.oc-kind.nhom{background:var(--gp-soft);color:var(--gp)}
+.oc-st{flex:0 0 auto;font-size:11.5px;font-weight:500;border-radius:999px;padding:5px 11px;white-space:nowrap}
+.st-new{background:#FFF3D6;color:#7A5A12}.st-ok{background:#E7EEF8;color:#2D4E7E}.st-make{background:#FCE9DC;color:#8A4A1C}
+.st-ready,.st-ship{background:#E3F2E8;color:#1F6B4A}.st-done{background:#EEE;color:#555}.st-cancel{background:#F8E3E0;color:var(--red)}
+.oc-msg{margin-top:10px;font-size:13px;line-height:1.5;color:var(--ink)}
+.oc-msg.hl{background:#E3F2E8;border-radius:10px;padding:9px 12px;color:#1F5A3D;animation:gIn .4s both}
+.oc-step{display:flex;align-items:flex-start;margin-top:14px}
+.oc-step .s{flex:1;position:relative;text-align:center;font-size:9.5px;color:var(--mute);line-height:1.3;padding-top:22px}
+.oc-step .s::before{content:"";position:absolute;top:6px;left:-50%;right:50%;height:2px;background:var(--line)}
+.oc-step .s:first-child::before{display:none}
+.oc-step .s i{position:absolute;top:0;left:50%;transform:translateX(-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--line);z-index:1}
+.oc-step .s.done{color:var(--ink)}
+.oc-step .s.done::before,.oc-step .s.cur::before{background:#1F6B4A}
+.oc-step .s.done i{background:#1F6B4A;border-color:#1F6B4A}
+.oc-step .s.cur{color:#1F6B4A;font-weight:500}
+.oc-step .s.cur i{background:#fff;border-color:#1F6B4A;box-shadow:0 0 0 0 rgba(31,107,74,.5);animation:oPulse 1.6s infinite}
+.oc-step .s.cur i::after{content:"";position:absolute;inset:2px;border-radius:50%;background:#1F6B4A}
+@keyframes oPulse{0%{box-shadow:0 0 0 0 rgba(31,107,74,.5)}70%{box-shadow:0 0 0 8px rgba(31,107,74,0)}100%{box-shadow:0 0 0 0 rgba(31,107,74,0)}}
+.oc details{margin-top:12px;border-top:1px dotted var(--line);padding-top:10px}
+.oc summary{cursor:pointer;font-size:12.5px;color:var(--mute);list-style:none;display:flex;justify-content:space-between}
+.oc summary::-webkit-details-marker{display:none}
+.oc summary b{color:var(--ink);font-weight:500}
+.oc ul{list-style:none;margin-top:8px}
+.oc li{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:3px 0;line-height:1.45}
+.oc li em{display:block;font-size:11.5px;color:var(--gold-soft)}
+.oc li .w{font-size:10.5px;color:var(--gp);font-weight:500;display:block}
+.oc-act{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.oc-act a,.oc-act button{flex:1;min-width:90px;height:38px;border-radius:999px;border:1px solid var(--line);background:transparent;font-family:var(--body);font-size:12px;
+  color:var(--ink);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer}
+.oc-act .pri{background:var(--ink);border-color:var(--ink);color:#fff}
+.oc-act .del{flex:0 0 38px;min-width:0;color:var(--mute)}
+.gc{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:10px;animation:gIn .4s both}
+.gc .av{flex:0 0 42px;height:42px;border-radius:13px;background:linear-gradient(140deg,var(--gp-2),var(--gp-ink));color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.02em}
+.gc .t{flex:1;min-width:0}
+.gc b{display:block;font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc small{display:block;font-size:11.5px;color:var(--mute)}
+.gc{flex-wrap:wrap}
+.gc .acts{display:flex;gap:8px;flex-basis:100%;padding-left:54px}
+.gc .acts .go{flex:1}
+.gc .go{flex:0 0 auto;height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--gp);color:#fff;font-family:var(--body);font-size:12px;cursor:pointer}
+.gc .go.ghost{background:transparent;border:1px solid var(--gp-line);color:var(--gp)}
+.gc .go[disabled]{opacity:.5}
+.op-note{font-size:11.5px;color:var(--mute);text-align:center;margin-top:6px;line-height:1.6}
+</style>
+<div class="op-bg" id="opBg"></div>
+<div class="op" id="op" role="dialog" aria-modal="true" aria-labelledby="opH">
+  <div class="op-hd"><div class="grab"></div><h3 id="opH">Đơn của tôi</h3><button type="button" class="x" id="opX" aria-label="Đóng">×</button>
+    <div class="op-tabs"><button type="button" class="on" data-t="o">Đơn đã đặt<i id="opTo" hidden></i></button><button type="button" data-t="g">Nhóm của tôi<i id="opTg" hidden></i></button></div></div>
+  <div class="op-bd" id="opBd"></div>
+</div>
+<script>
+(function(){
+  const API = '/api/don', KEY = 'tcOrders', POLL = 20000;
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const ICON_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>';
+  const ST = {
+    new:   { t:'Đã gửi',         d:'Đơn đã tới quầy — quán sẽ gọi lại xác nhận.', c:'#B8912F', i:'✉' },
+    ok:    { t:'Quán đã nhận',   d:'Quán đã xác nhận đơn và sẽ chuẩn bị đúng giờ hẹn.', c:'#2D4E7E', i:'✓' },
+    make:  { t:'Đang pha chế',   d:'Barista đang chuẩn bị đồ uống của bạn.', c:'#C0703A', i:'☕' },
+    ready: { t:'Sẵn sàng',       d:'Đồ uống đã xong — mời bạn tới quầy HG02-02 nhận.', c:'#1F6B4A', i:'🔔' },
+    ship:  { t:'Đang giao',      d:'Shipper đang trên đường giao tới bạn.', c:'#1F6B4A', i:'🛵' },
+    done:  { t:'Hoàn thành',     d:'Cảm ơn bạn đã chọn The Curator!', c:'#666', i:'★' },
+    cancel:{ t:'Đã huỷ',         d:'Đơn đã được huỷ.', c:'#9C3226', i:'×' }
+  };
+  const ACTIVE = s => !['done','cancel'].includes(s);
+  const ls = {
+    all(){ try{ return (JSON.parse(localStorage.getItem(KEY) || '[]') || []).filter(e => e && e.c && Date.now() - e.at < 3*86400e3); }catch(e){ return []; } },
+    save(a){ try{ localStorage.setItem(KEY, JSON.stringify(a.slice(0, 20))); }catch(e){} }
+  };
+  let L = ls.all(), openTab = 'o', focus = '', timer = null, busy = false;
+  function upsert(e){
+    const i = L.findIndex(x => x.c === e.c);
+    if(i > -1) L[i] = Object.assign({}, L[i], Object.fromEntries(Object.entries(e).filter(([,v]) => v !== undefined && v !== '')));
+    else L.unshift(Object.assign({ at:Date.now() }, e));
+    L.sort((a,b) => b.at - a.at); ls.save(L);
+  }
+  const ago = t => { const m = Math.round((Date.now() - t)/60000); if(m < 1) return 'vừa xong'; if(m < 60) return m + ' phút trước';
+    const d = new Date(t), p = x => String(x).padStart(2,'0'); return p(d.getHours()) + ':' + p(d.getMinutes()) + (Date.now() - t > 20*3600e3 ? ' · ' + p(d.getDate()) + '/' + p(d.getMonth()+1) : ''); };
+
+  /* ---------- goi API ---------- */
+  async function create(o){
+    upsert({ c:o.c, kind:o.kind, gname:o.g && o.g.name, g:o.g && o.g.code, at:Date.now(),
+      last:{ c:o.c, s:'new', h:[{s:'new',t:Date.now()}], items:o.items, tot:o.items.reduce((a,i)=>a+i.p*i.q,0), cnt:o.items.reduce((a,i)=>a+i.q,0), ship:o.ship, time:o.time, kind:o.kind, g:o.g }, local:true });
+    paintAll();
+    try{
+      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create' }, o)) }).then(x=>x.json());
+      if(r.ok){ upsert({ c:o.c, k:r.k, last:r.order, local:false }); paintAll(); }
+    }catch(e){}
+  }
+  async function refresh(force){
+    if(busy || (document.hidden && !force)) return;
+    const want = L.filter(e => !e.last || ACTIVE(e.last.s) || force).slice(0, 10);
+    if(!want.length) return;
+    busy = true;
+    try{
+      await Promise.all(want.map(async e=>{
+        const q = 'c=' + encodeURIComponent(e.c) + (e.k ? '&k=' + e.k : '') + (e.g ? '&g=' + e.g : '');
+        let r; try{ r = await fetch(API + '?' + q + '&_=' + Date.now()).then(x=>x.json()); }catch(err){ return; }
+        const o = r && r.ok && r.orders && r.orders[e.c]; if(!o) return;
+        const before = e.last && e.last.s;
+        upsert({ c:e.c, last:o, local:false });
+        if(before && before !== o.s){
+          const lab = (e.kind === 'nhom' ? 'Đơn nhóm ' + (e.gname || '') : 'Đơn của bạn') + ': ' + ST[o.s].t;
+          if(typeof toast === 'function') toast(lab);
+          try{ navigator.vibrate && navigator.vibrate([120,60,120]); }catch(err){}
+        }
+      }));
+    } finally { busy = false; }
+    paintAll();
+  }
+  function loop(){ clearInterval(timer); timer = setInterval(()=>refresh(false), POLL); }
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refresh(false); });
+
+  /* ---------- giao dien ---------- */
+  const navR = document.createElement('div'); navR.className = 'nav-r';
+  const tt = document.querySelector('.nav-tt'); tt.parentNode.insertBefore(navR, tt); navR.appendChild(tt);
+  navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-ord" id="navOrd">' + ICON_R + '<span class="tx">Đơn của tôi</span><i class="bd" id="navBd"></i></button>');
+  const hero = document.querySelector('.hero');
+  hero.insertAdjacentHTML('beforeend', '<button type="button" class="o-strip" id="oLive"></button><button type="button" class="o-strip o-back" id="oBack"></button>');
+  $('#sentBox .sent').insertAdjacentHTML('afterend', '<button class="btn btn-ink" type="button" id="btnTrack">Theo dõi tình trạng đơn</button>');
+  $('#btnTrack').addEventListener('click', ()=> open(L[0] && L[0].c));
+
+  function stepsFor(o){ return ['new','ok','make', /giao/i.test(o.ship || '') ? 'ship' : 'ready', 'done']; }
+  function cardHtml(e){
+    const o = e.last || { s:'new', items:[], tot:0, cnt:0 };
+    const st = ST[o.s] || ST.new, steps = stepsFor(o), ci = steps.indexOf(o.s);
+    const nm = e.kind === 'nhom' ? 'Đơn nhóm' + (e.gname ? ' · ' + e.gname : '') : 'Đơn cá nhân';
+    const step = o.s === 'cancel' ? '' : '<div class="oc-step">' + steps.map((s,i)=>'<div class="s ' + (i < ci ? 'done' : i === ci ? 'cur' : '') + '"><i></i>' + ST[s].t + '</div>').join('') + '</div>';
+    const items = (o.items || []).map(i => '<li><span>' + (i.w ? '<span class="w">' + esc(i.w) + '</span>' : '') + esc(i.n) + ' × ' + i.q + (i.t ? '<em>✎ ' + esc(i.t) + '</em>' : '') + '</span><span>' + vnd(i.p*i.q) + '</span></li>').join('');
+    return '<div class="oc' + (focus === e.c ? ' focus' : '') + '" data-c="' + esc(e.c) + '">' +
+      '<div class="oc-top"><div class="t"><span class="oc-kind ' + (e.kind || 'le') + '">' + nm + '</span><b>' + esc(e.c) + '</b><small>' + ago(e.at) +
+        (o.time ? ' · ' + (/giao/i.test(o.ship||'') ? 'giao' : 'nhận') + ' lúc ' + esc(o.time) : '') + '</small></div>' +
+        '<span class="oc-st st-' + o.s + '">' + st.t + '</span></div>' +
+      step +
+      '<div class="oc-msg' + (['ready','ship'].includes(o.s) ? ' hl' : '') + '">' + st.d + (o.s === 'cancel' && o.why ? ' Lý do: ' + esc(o.why) : '') +
+        (e.local ? ' <span style="color:var(--mute);font-size:11.5px">(đang đồng bộ trạng thái…)</span>' : '') + '</div>' +
+      (items ? '<details><summary><span>' + (o.cnt || 0) + ' món</span><b>' + vnd(o.tot || 0) + '</b></summary><ul>' + items + '</ul></details>' : '') +
+      '<div class="oc-act"><a href="tel:0846413314">📞 Gọi quán</a><a href="https://zalo.me/0846413314" target="_blank" rel="noopener">💬 Zalo</a>' +
+        (e.kind !== 'nhom' && (o.items || []).length ? '<button type="button" class="again">↻ Đặt lại</button>' : '') +
+        (!ACTIVE(o.s) ? '<button type="button" class="del" aria-label="Xoá khỏi danh sách">🗑</button>' : '') + '</div></div>';
+  }
+  async function groupsHtml(){
+    const list = window.TCG ? TCG.list() : [];
+    if(!list.length) return '<div class="op-empty"><span class="ic">👥</span>Chưa có nhóm nào gần đây.<br>Bấm <b>Đặt theo nhóm</b> để rủ bạn bè cùng đặt.</div>';
+    const rows = await Promise.all(list.map(async e=>{
+      let g = null; try{ const r = await fetch('/api/nhom?code=' + e.code + '&_=' + Date.now()).then(x=>x.json()); if(r.ok) g = r.group; }catch(err){}
+      return { e, g };
+    }));
+    const cur = window.TCG ? TCG.current() : '';
+    const out = rows.map(({e,g})=>{
+      if(!g || g.status === 'closed'){ TCG.forget(e.code); return ''; }
+      const mine = g.members.some(m => m.mid === e.mid);
+      const nm = g.name || ('Nhóm của ' + g.host.name);
+      const sub = (g.host.mid === e.mid ? 'Trưởng nhóm' : 'Thành viên') + ' · ' + g.members.length + ' người · ' + (g.status === 'sent' ? 'đã gửi đơn' : 'đang mở');
+      const btn = cur === e.code ? '<button class="go ghost" disabled>Đang xem</button>'
+        : (mine || g.status === 'open') ? '<button class="go" data-g="' + e.code + '">↩ Quay lại nhóm</button>' : '';
+      const trk = g.status === 'sent' && g.ord ? '<button class="go ghost" data-o="' + esc(g.ord) + '" data-gc="' + e.code + '" data-gn="' + esc(nm) + '">Tình trạng</button>' : '';
+      return '<div class="gc"><span class="av">' + e.code + '</span><div class="t"><b>' + esc(nm) + '</b><small>' + sub + '</small></div>' + (trk || btn ? '<div class="acts">' + trk + btn + '</div>' : '') + '</div>';
+    }).join('');
+    return out || '<div class="op-empty"><span class="ic">👥</span>Các nhóm gần đây đã hết hạn.</div>';
+  }
+  async function paintPanel(){
+    const bd = $('#opBd');
+    $('#op').querySelectorAll('.op-tabs button').forEach(b=>b.classList.toggle('on', b.dataset.t === openTab));
+    if(openTab === 'o'){
+      bd.innerHTML = L.length ? L.map(cardHtml).join('') + '<p class="op-note">Trạng thái tự cập nhật · lưu trên máy này trong 3 ngày</p>'
+        : '<div class="op-empty"><span class="ic">🧾</span>Bạn chưa có đơn nào trên máy này.<br>Đơn bạn gửi sẽ hiện ở đây kèm tình trạng pha chế.</div>';
+      bd.querySelectorAll('.oc').forEach(el=>{
+        const e = L.find(x => x.c === el.dataset.c);
+        const ag = el.querySelector('.again'); if(ag) ag.addEventListener('click', ()=> reorder(e));
+        const dl = el.querySelector('.del'); if(dl) dl.addEventListener('click', ()=>{ L = L.filter(x => x.c !== e.c); ls.save(L); paintAll(); });
+      });
+      const f = focus && bd.querySelector('.oc.focus'); if(f) f.scrollIntoView({block:'nearest'});
+    } else {
+      bd.innerHTML = '<div class="op-empty">Đang tải…</div>';
+      bd.innerHTML = await groupsHtml();
+      bd.querySelectorAll('[data-g]').forEach(b=>b.addEventListener('click', async ()=>{ b.disabled = true; close(); await TCG.rejoin(b.dataset.g); }));
+      bd.querySelectorAll('[data-o]').forEach(b=>b.addEventListener('click', ()=>{
+        upsert({ c:b.dataset.o, g:b.dataset.gc, kind:'nhom', gname:b.dataset.gn }); focus = b.dataset.o; openTab = 'o'; paintPanel(); refresh(true); }));
+    }
+  }
+  function reorder(e){
+    const o = e.last || {}; let n = 0;
+    (o.items || []).forEach(i=>{ const k = Object.keys(ITEMS).find(id => ITEMS[id].n === i.n); if(k){ cart[k] = Math.min(30, (cart[k] || 0) + i.q); n++; } });
+    if(!n){ toast('Không tìm thấy món trong menu hiện tại'); return; }
+    if(typeof sync === 'function') sync(); render(); close(); toast('Đã thêm lại ' + n + ' món vào đơn');
+    $('#summary').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  function paintStrips(){
+    const act = L.filter(e => e.last && ACTIVE(e.last.s));
+    const bd = $('#navBd'), nb = $('#navOrd');
+    bd.textContent = act.length; nb.classList.toggle('has', act.length > 0); nb.classList.toggle('live', act.some(e => ['ready','ship'].includes(e.last.s)));
+    const lv = $('#oLive'), e = act[0];
+    if(e){
+      const st = ST[e.last.s];
+      lv.innerHTML = '<span class="dot" style="background:' + st.c + '">' + st.i + '</span><span class="t"><b>' + (e.kind === 'nhom' ? 'Đơn nhóm ' + esc(e.gname || '') : 'Đơn của bạn') + ' · ' + st.t + '</b><small>' +
+        esc(e.c) + (act.length > 1 ? ' · và ' + (act.length - 1) + ' đơn khác' : '') + ' · bấm để xem chi tiết</small></span><span class="ar">→</span>';
+      lv.classList.add('on'); lv.onclick = () => open(e.c);
+    } else lv.classList.remove('on');
+    $('#opTo').hidden = !act.length; $('#opTo').textContent = act.length;
+  }
+  async function paintBack(){
+    const b = $('#oBack'); if(!window.TCG) return;
+    const list = TCG.list().filter(e => e.code !== TCG.current());
+    if(!list.length){ b.classList.remove('on'); $('#opTg').hidden = true; return; }
+    $('#opTg').hidden = false; $('#opTg').textContent = list.length;
+    const e = list[0];
+    let g = null; try{ const r = await fetch('/api/nhom?code=' + e.code + '&_=' + Date.now()).then(x=>x.json()); if(r.ok) g = r.group; }catch(err){}
+    if(!g || g.status === 'closed'){ TCG.forget(e.code); b.classList.remove('on'); return; }
+    const mine = g.members.some(m => m.mid === e.mid);
+    if(!mine && g.status !== 'open'){ b.classList.remove('on'); return; }
+    b.innerHTML = '<span class="dot">↩</span><span class="t"><b>Quay lại nhóm “' + esc(g.name || 'Nhóm của ' + g.host.name) + '”</b><small>' + g.members.length + ' người · ' +
+      (g.status === 'sent' ? 'đã gửi đơn — xem tình trạng' : 'đang chọn món') + '</small></span><span class="ar">→</span>';
+    b.classList.add('on'); b.onclick = () => TCG.rejoin(e.code);
+  }
+  function paintAll(){ paintStrips(); if($('#op').classList.contains('on') && openTab === 'o') paintPanel(); if(window.TCO_paintGroupCb) window.TCO_paintGroupCb(); }
+  function open(c, tab){
+    focus = c || ''; openTab = tab || 'o';
+    $('#op').classList.add('on'); $('#opBg').classList.add('on');
+    paintPanel(); refresh(true);
+  }
+  function close(){ $('#op').classList.remove('on'); $('#opBg').classList.remove('on'); focus = ''; }
+  $('#navOrd').addEventListener('click', ()=> open('', L.length || !(window.TCG && TCG.list().length) ? 'o' : 'g'));
+  $('#opX').addEventListener('click', close); $('#opBg').addEventListener('click', close);
+  $('#op').querySelectorAll('.op-tabs button').forEach(b=>b.addEventListener('click', ()=>{ openTab = b.dataset.t; paintPanel(); if(openTab === 'g') paintBack(); }));
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && $('#op').classList.contains('on')) close(); });
+  let y0 = null; const sh = $('#op');
+  sh.addEventListener('touchstart', e=>{ if(e.target.closest('.op-hd')) y0 = e.touches[0].clientY; }, {passive:true});
+  sh.addEventListener('touchend', e=>{ if(y0 !== null && e.changedTouches[0].clientY - y0 > 70) close(); y0 = null; }, {passive:true});
+
+  /* ---------- moc vao don ca nhan ---------- */
+  const _sendOrder = sendOrder;
+  sendOrder = function(code){
+    _sendOrder(code);
+    const items = Object.keys(cart).map(k => ({ n:ITEMS[k].n, q:cart[k], p:ITEMS[k].p, t:noteText(k) }));
+    create({ c:code, kind:'le', items, ship:document.querySelector('input[name=ship]:checked').value, time:$('#time').value, nm:$('#name').value.trim() });
+  };
+
+  /* trang thai don nhom trong khung nhom */
+  function paintGroup(c){
+    window.TCO_paintGroupCb = () => {
+      const el = document.getElementById('gSentSt'); if(!el) return;
+      const e = L.find(x => x.c === c); if(e && e.last) el.textContent = 'Tình trạng: ' + ST[e.last.s].t;
+    };
+    window.TCO_paintGroupCb();
+    const e = L.find(x => x.c === c); if(!e || !e.last) refresh(true);
+  }
+  window.TCO = { create, track: upsert, open, paintGroup, refresh };
+  paintStrips(); setTimeout(paintBack, 600); refresh(true); loop();
+  window.addEventListener('pageshow', ()=>{ L = ls.all(); paintStrips(); });
+  // cap nhat nut quay lai nhom moi khi ra / vao che do nhom
+  new MutationObserver(()=>{ if(!document.body.classList.contains('g-on')) setTimeout(paintBack, 300); })
+    .observe(document.body, { attributes:true, attributeFilter:['class'] });
+})();
+</script>
 </body>
 </html>
