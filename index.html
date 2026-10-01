@@ -1307,6 +1307,16 @@ body.g-on .g-how{display:none}
 .g-tap svg{width:100%;height:100%;animation:gTap 1.6s ease-in-out infinite;transform-origin:50% 10%}
 .g-tap::before{content:"";position:absolute;left:3px;top:-12px;width:26px;height:26px;border-radius:50%;border:2px solid #EFC15C;animation:gRing 1.6s ease-out infinite}
 .g-tap.dk::before{border-color:var(--gp-2)}
+.g-swipe{position:fixed;left:50%;bottom:calc(178px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:69;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .35s,transform .35s,visibility .35s}
+.g-swipe.on{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.g-swipe .tr{position:relative;width:46px;height:104px}
+.g-swipe .tr::before{content:"";position:absolute;left:50%;bottom:22px;width:4px;height:70px;margin-left:-2px;border-radius:2px;background:linear-gradient(to top,rgba(239,193,92,.95),rgba(239,193,92,0));transform-origin:50% 100%;animation:gTrail 1.9s ease-in-out infinite}
+.g-swipe .hd{position:absolute;left:8px;bottom:0;width:32px;height:40px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3));animation:gSwipe 1.9s ease-in-out infinite}
+.g-swipe .hd svg{width:100%;height:100%}
+.g-swipe .lb{background:rgba(17,48,42,.92);color:#fff;font-size:12.5px;letter-spacing:.04em;padding:8px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 20px -10px rgba(0,0,0,.5)}
+@keyframes gSwipe{0%{transform:translateY(0);opacity:0}15%{opacity:1}65%{transform:translateY(-62px);opacity:1}85%,100%{transform:translateY(-70px);opacity:0}}
+@keyframes gTrail{0%,15%{transform:scaleY(0);opacity:0}65%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.g-swipe .hd,.g-swipe .tr::before{animation:none!important}}
 .g-fab{display:none;position:fixed;left:20px;bottom:20px;z-index:80;align-items:center;gap:8px;height:44px;padding:0 18px 0 14px;border-radius:999px;
   border:1px solid rgba(156,50,38,.25);background:rgba(255,253,248,.96);color:var(--red);font-family:var(--body);font-size:13px;cursor:pointer;
   box-shadow:0 10px 26px -12px rgba(17,48,42,.45);backdrop-filter:blur(8px);transition:.2s;animation:gIn .5s .3s both}
@@ -1484,6 +1494,26 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     const h = el.querySelector(':scope > .g-tap');
     if(on && !h){ el.insertAdjacentHTML('beforeend', '<span class="g-tap' + (dark ? ' dk' : '') + '" aria-hidden="true">' + ICO.hand + '</span>'); }
     else if(!on && h) h.remove();
+  }
+  /* ban tay vuot len: nhom tu 2 nguoi (hoac minh la thanh vien) ma minh chua chon mon -> huong dan keo xuong menu */
+  let swEl = null, swOn = false, swDone = false;
+  function swCheck(){
+    if(!swOn) return;
+    const m = document.getElementById('menu');
+    if(m && m.getBoundingClientRect().top < innerHeight * .55){ swDone = true; swipeHint(false); }
+  }
+  function swipeHint(on){
+    if(swDone) on = false;
+    if(on === swOn) return;
+    swOn = on;
+    if(on && !swEl){
+      const touch = matchMedia('(pointer:coarse)').matches;
+      document.body.insertAdjacentHTML('beforeend', '<div class="g-swipe" id="gSwipe" aria-hidden="true"><div class="tr"><span class="hd">' + ICO.hand + '</span></div><div class="lb">' + (touch ? 'Vuốt lên để chọn món' : 'Cuộn xuống để chọn món') + '</div></div>');
+      swEl = document.getElementById('gSwipe');
+      addEventListener('scroll', swCheck, { passive:true });
+    }
+    if(swEl) swEl.classList.toggle('on', on);
+    if(on) swCheck();
   }
   const hero = document.querySelector('.hero');
   hero.insertAdjacentHTML('afterbegin', '<div class="g-mode"><i></i>Chế độ đặt nhóm</div>');
@@ -1663,6 +1693,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     Object.assign(G, { code:'', mid:'', tok:'', name:'', group:null, dirty:false, seen:null });
     const gc = $('#gbCode'); if(gc) gc.dataset.c = ''; const ga = $('#gbAv'); if(ga) ga.dataset.k = '';
     document.body.classList.remove('g-on','g-member','g-locked');
+    swipeHint(false);
     sumH.textContent = H0; sumP.textContent = P0; totLb.textContent = T0;
     const sb = $('#btnSend'); if(!sb.disabled) sb.textContent = 'Gửi đơn hàng';
     if(clearCart){ Object.keys(cart).forEach(k=>delete cart[k]); Object.keys(NOTES).forEach(k=>delete NOTES[k]); }
@@ -1771,6 +1802,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       rb.innerHTML = g.name ? ICO.pen : ICO.pen + 'Đặt tên nhóm'; rb.setAttribute('aria-label', 'Đổi tên nhóm'); }
     setHand(rb, isHost && !sent && !g.name);
     setHand($('#gbShare'), isHost && !sent && g.members.length === 1);
+    swipeHint(!sent && (g.members.length > 1 || !isHost) && !lineCnt(cart));
     const xt = sent ? 'Đóng nhóm' : (isHost ? 'Thoát / giải tán nhóm' : 'Rời nhóm');
     $('#gFabT').textContent = xt; $('#mbExitT').textContent = sent ? 'Đóng' : (isHost ? 'Thoát' : 'Rời');
     $('#gExit').textContent = xt;
