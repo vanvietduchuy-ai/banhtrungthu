@@ -898,6 +898,7 @@ body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
 .pm-ft button{flex:1;height:46px;border-radius:999px;font-family:var(--body);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .pm-ft .no{background:transparent;border:1px solid rgba(255,255,255,.25);color:#e9dcc6}
 .pm-ft .go{flex:1.6;background:#D9B56A;border:1px solid #D9B56A;color:#1d140d;font-weight:600}
+.pm-dn{display:block;width:100%;padding:0 12px 12px;border:0;background:#15100c;color:rgba(233,220,198,.6);font-family:var(--body);font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .pm-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:20px;cursor:pointer}
 </style>
 <div class="pm-bg" id="pmBg"></div>
@@ -905,23 +906,27 @@ body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
   <button type="button" class="pm-x" id="pmX" aria-label="Đóng">×</button>
   <img src="img/uudai-giaohang.jpg" alt="Ưu đãi giao hàng: Freeship khu vực Đông Hà · Tặng túi giữ nhiệt cho đơn từ 2 ly · Giảm 5% khi đặt đơn nhóm trên web thecuratorcafe.vn" width="900" height="1349">
   <div class="pm-ft"><button type="button" class="no" id="pmNo">Đặt một mình</button><button type="button" class="go" id="pmGo">👥 Đặt nhóm −5%</button></div>
+  <button type="button" class="pm-dn" id="pmDn">Đừng nhắc lại</button>
 </div>
 <script>
 (function(){
-  const KEY = 'tc-popup-uudai-v1';
-  try{ if(localStorage.getItem(KEY)) return; }catch(e){ return; }
+  /* hien moi lan mo web (1 lan / phien) cho den khi khach bam "Dung nhac lai" */
+  const KEY = 'tc-popup-uudai-off', SKEY = 'tc-popup-uudai-s';
+  try{ if(localStorage.getItem(KEY) || sessionStorage.getItem(SKEY)) return; }catch(e){ return; }
   if(/[?&]nhom=/i.test(location.search)) return;
+  window.__pmUudai = true;   // bao popup mon moi nhuong lan nay
   const bg = document.getElementById('pmBg'), box = document.getElementById('pm');
   function close(){ bg.classList.remove('on'); box.classList.remove('on'); document.removeEventListener('keydown', esc); }
   function esc(e){ if(e.key === 'Escape') close(); }
   function open(){
     if(document.body.classList.contains('g-on')) return;
     bg.classList.add('on'); box.classList.add('on');
-    try{ localStorage.setItem(KEY, '1'); }catch(e){}
+    try{ sessionStorage.setItem(SKEY, '1'); }catch(e){}
     document.addEventListener('keydown', esc);
   }
   document.getElementById('pmX').addEventListener('click', close);
   document.getElementById('pmNo').addEventListener('click', close);
+  document.getElementById('pmDn').addEventListener('click', ()=>{ try{ localStorage.setItem(KEY, '1'); }catch(e){} close(); });
   bg.addEventListener('click', close);
   document.getElementById('pmGo').addEventListener('click', ()=>{ close(); const s = document.getElementById('gStart'); if(s) setTimeout(()=>s.click(), 350); });
   const img = box.querySelector('img');
@@ -992,7 +997,7 @@ body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
   const KEY = 'tc-popup-kemtrung-v1';
   try{ if(localStorage.getItem(KEY)) return; }catch(e){}
   if(/[?&]nhom=/i.test(location.search)) return; // dang vao nhom -> khong chen popup
-  try{ if(!localStorage.getItem('tc-popup-uudai-v1')) return; }catch(e){}   // uu tien popup uu dai giao hang truoc
+  if(window.__pmUudai) return;   // lan nay da hien popup uu dai -> de lan vao sau
   const NEW = [
     ['caphetrung','Vietnamese Egg Coffee'],
     ['caphetrungdua','Coconut Egg Coffee'],
