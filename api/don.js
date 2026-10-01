@@ -39,7 +39,7 @@ function cleanItems(a) {
   })).filter(i => i.n);
 }
 function view(o) {
-  return { c: o.c, kind: o.kind, at: o.at, s: o.s, h: o.h, why: o.why || '', items: o.items, tot: o.tot, cnt: o.cnt,
+  return { c: o.c, kind: o.kind, at: o.at, s: o.s, h: o.h, why: o.why || '', items: o.items, tot: o.tot, sub: o.sub || o.tot, disc: o.disc || 0, cnt: o.cnt,
     ship: o.ship, time: o.time, nm: o.nm, g: o.g || null };
 }
 async function rateLimit(req, limit) {
@@ -98,10 +98,12 @@ module.exports = async (req, res) => {
       const grp = String(b.g && b.g.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
       const o = {
         c, kind: b.kind === 'nhom' ? 'nhom' : 'le', at: now, s: 'new', h: [{ s: 'new', t: now }],
-        items, tot: items.reduce((a, i) => a + i.p * i.q, 0), cnt: items.reduce((a, i) => a + i.q, 0),
+        items, cnt: items.reduce((a, i) => a + i.q, 0),
+        disc: Math.max(0, Math.min(20, Math.floor(Number(b.disc) || 0))), sub: items.reduce((a, i) => a + i.p * i.q, 0),
         ship: txt(b.ship, 30), time: txt(b.time, 10), nm: txt(b.nm, 40),
         g: grp ? { code: grp, name: txt(b.g.name, 40) } : null, gk: grp || '', k: sha(tok),
       };
+      o.tot = o.sub - (o.disc ? Math.round(o.sub * o.disc / 100 / 1000) * 1000 : 0);
       const okSet = await redis('SET', 'o:' + c, JSON.stringify(o), 'EX', TTL, 'NX');
       if (okSet !== 'OK') return send(409, { ok: false, err: 'Mã đơn đã tồn tại.' });
       await redis('ZADD', 'ol', now, c);
