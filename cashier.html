@@ -147,12 +147,32 @@ function pushSync(k, action){
   document.body.appendChild(f); f.submit();
   setTimeout(()=>f.remove(), 4000);
 }
-async function fetchSync(){
-  if(!syncReady()) return;
+/* fetch co gioi han thoi gian — mot nguon cham khong lam treo ca trang */
+function tfetch(url, ms, opt){
+  const c = new AbortController(); const t = setTimeout(()=>c.abort(), ms);
+  return fetch(url, Object.assign({ signal:c.signal, cache:'no-store' }, opt || {})).finally(()=>clearTimeout(t));
+}
+const bust = u => u + (u.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+/* doc ca 3 Sheet qua /api/sheets (1 request, Vercel giu ban sao 5 giay); nguon nao loi thi doc thang tu Google */
+async function loadTexts(){
+  const want = {};
+  if(cfg.nuoc) want.nuoc = cfg.nuoc;
+  if(cfg.banh) want.banh = cfg.banh;
+  if(syncReady()) want.sync = SYNC.csv;
+  let got = {};
   try{
-    const r = await fetch(SYNC.csv + (SYNC.csv.includes('?')?'&':'?') + 'cb=' + Date.now(), {cache:'no-store'});
-    if(!r.ok) return;
-    const rows = parseCSV(await r.text());
+    const r = await tfetch('/api/sheets?' + new URLSearchParams(want).toString(), 7000, { cache:'default' });
+    if(r.ok){ const j = await r.json(); got = (j && j.data) || {}; }
+  }catch(e){}
+  await Promise.all(Object.keys(want).filter(k => typeof got[k] !== 'string').map(async k=>{
+    try{ const r = await tfetch(bust(want[k]), 9000); if(r.ok) got[k] = await r.text(); }catch(e){}
+  }));
+  return { want, got };
+}
+function applySync(text){
+  if(!syncReady() || typeof text !== 'string') return;
+  try{
+    const rows = parseCSV(text);
     const last = {};
     for(let i=1;i<rows.length;i++){
       const k = (rows[i][1]||'').trim(), a = (rows[i][2]||'').trim().toLowerCase();
@@ -311,10 +331,8 @@ async function setStatus(c, s){
     else toast('Đã báo khách: ' + ST_LBL[s]);
   }catch(e){ stMap[c] = prev; render(); toast('Mất kết nối'); }
 }
-async function fetchOne(url, loai){
-  const r = await fetch(url + (url.includes('?')?'&':'?') + 'cb=' + Date.now(), {cache:'no-store'});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const rows = parseCSV(await r.text());
+function parseOrders(text, loai){
+  const rows = parseCSV(text);
   if(rows.length < 1) return [];
   const M = mapCols(rows[0]);
   const out=[];
@@ -329,18 +347,31 @@ async function fetchOne(url, loai){
   return out;
 }
 
+const CACHE_KEY = 'tcCashierCache';
+let polling = false, lastOk = 0;
 async function poll(first){
-  const jobs=[];
-  if(cfg.nuoc) jobs.push(fetchOne(cfg.nuoc,'nuoc').catch(e=>{toast('Không đọc được Sheet nước'); return [];}));
-  if(cfg.banh) jobs.push(fetchOne(cfg.banh,'banh').catch(e=>{toast('Không đọc được Sheet bánh'); return [];}));
-  jobs.push(fetchSync().then(()=>[]));
-  jobs.push(fetchStatus().then(()=>[]));
-  const all = (await Promise.all(jobs)).flat();
+  if(polling) return;              // lan truoc chua xong thi bo qua, khong chong request
+  polling = true;
+  try{ await pollInner(first); } finally { polling = false; }
+}
+async function pollInner(first){
+  const [{ want, got }] = await Promise.all([loadTexts(), fetchStatus()]);
+  applySync(got.sync);
+  const all = [], failed = [];
+  ['nuoc','banh'].forEach(k=>{
+    if(!want[k]) return;
+    if(typeof got[k] === 'string'){ try{ all.push(...parseOrders(got[k], k)); }catch(e){ failed.push(k); } }
+    else { failed.push(k); all.push(...orders.filter(o => o.loai === k)); }   // giu don cu cua nguon loi
+  });
+  if(failed.length) toast('Mạng chậm — chưa đọc được Sheet ' + failed.map(k => k === 'nuoc' ? 'nước' : 'bánh').join(', ') + ', đang thử lại');
+  else lastOk = Date.now();
+  updateStt();
   all.sort((a,b)=> tsVal(b.ts) - tsVal(a.ts));
   let fresh=[];
   all.forEach(o=>{ if(!seen.has(o.k)){ seen.add(o.k); if(!first) fresh.push(o); } });
   localStorage.setItem(SEEN_KEY, JSON.stringify([...seen].slice(-600)));
   orders = all;
+  try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ t:Date.now(), o:all.slice(0, 80) })); }catch(e){}
   render(fresh.map(f=>f.k));
   if(fresh.length){
     alarm(alarmMsg(fresh));
@@ -406,31 +437,59 @@ function render(freshKeys){
   });
 }
 
-$('#btnStart').addEventListener('click', async ()=>{
+let soundOn = false;
+function unlockAudio(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    audioCtx.resume(); speechSynthesis.getVoices(); soundOn = true; updateStt();
+  }catch(e){}
+}
+function updateStt(){
+  const el = $('#stt'); if(!started) return;
+  const stale = lastOk && Date.now() - lastOk > 45000;
+  el.textContent = stale ? '● Mất kết nối Sheet' : (soundOn ? '● Đang theo dõi' : '● Đang theo dõi · chạm để bật chuông');
+  el.classList.toggle('live', !stale); el.classList.toggle('wait', stale || !soundOn);
+}
+function showCached(){
+  try{
+    const c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if(c && Array.isArray(c.o) && c.o.length && !orders.length){ orders = c.o; render(); }
+  }catch(e){}
+}
+async function startWatch(auto){
+  $('#setup').hidden = true; started = true;
+  try{ localStorage.setItem('tcCashierAuto', '1'); }catch(e){}
+  showCached();                       // hien ngay don lan truoc, khong de man hinh trang
+  updateStt();
+  if(!orders.length) toast('Đang tải đơn…');
+  await poll(true);
+  if(!auto && lastOk) toast('Sẵn sàng — đơn mới sẽ reo chuông');
+  clearInterval(timer); timer = setInterval(()=>poll(false), 10000);
+}
+$('#btnStart').addEventListener('click', ()=>{
   cfg = { nuoc: $('#urlNuoc').value.trim(), banh: $('#urlBanh').value.trim() };
   pin = $('#pin').value.trim(); try{ localStorage.setItem(PIN_KEY, pin); }catch(e){}
   if(!cfg.nuoc && !cfg.banh){ toast('Dán ít nhất một liên kết CSV'); return; }
   localStorage.setItem(KEY, JSON.stringify(cfg));
-  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  audioCtx.resume(); speechSynthesis.getVoices();
-  $('#setup').hidden = true;
-  $('#stt').textContent = '● Đang theo dõi'; $('#stt').classList.add('live');
-  started = true;
-  toast('Đang tải đơn…');
-  await poll(true);
-  toast('Sẵn sàng — đơn mới sẽ reo chuông');
-  clearInterval(timer); timer = setInterval(()=>poll(false), 10000);
+  unlockAudio();
+  startWatch(false);
 });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && started) poll(false); });
 $('#btnTest').addEventListener('click', ()=>{
   if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
   audioCtx.resume(); alarm('Xin chào The Curator! Bạn có một đơn hàng mới');
 });
 $('#btnReset').addEventListener('click', ()=>{
-  clearInterval(timer); started=false;
+  clearInterval(timer); started=false; try{ localStorage.removeItem('tcCashierAuto'); }catch(e){}
   $('#setup').hidden=false; $('#stt').textContent='Chưa theo dõi'; $('#stt').classList.remove('live');
   window.scrollTo({top:0,behavior:'smooth'});
 });
-if(cfg.nuoc || cfg.banh){ /* co cau hinh san — van cho bam nut de mo khoa am thanh */ }
+/* mo lai trang: da tung vao ca thi tu theo doi ngay, cham bat ky dau de bat chuong */
+let autoOn = false; try{ autoOn = localStorage.getItem('tcCashierAuto') === '1'; }catch(e){}
+if((cfg.nuoc || cfg.banh) && autoOn){
+  startWatch(true);
+  document.addEventListener('pointerdown', unlockAudio, { once:true });
+}
 </script>
 </body>
 </html>
