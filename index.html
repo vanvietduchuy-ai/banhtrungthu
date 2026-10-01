@@ -1125,6 +1125,7 @@ body.g-locked .gb-live i{background:#EFC15C;animation:none}
 .gb-code b{display:flex;gap:3px;font-family:var(--disp);font-size:30px;font-weight:600;line-height:1;margin-top:3px;perspective:300px}
 .gb-code b span{display:inline-block;animation:gFlip .5s both}
 .gb-code b span:nth-child(2){animation-delay:.08s}.gb-code b span:nth-child(3){animation-delay:.16s}.gb-code b span:nth-child(4){animation-delay:.24s}
+.gb-code{display:none}   /* an ma nhom cho gon — van moi qua link */
 .gb-sum{margin-left:auto;text-align:right}
 .gb-sum b{display:block;font-family:var(--disp);font-size:26px;font-weight:500;line-height:1.05;color:#fff}
 .gb-sum small{font-size:11.5px;color:rgba(238,245,240,.72)}
@@ -1795,7 +1796,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     if(!first) g.members.forEach(m => { if(!(m.mid in prev) && m.mid !== G.mid) toast(m.name + ' vừa vào nhóm'); });
     G.seen = now;
 
-    sumH.textContent = g.name ? 'Đơn nhóm · ' + g.name : 'Đơn nhóm ' + g.code;
+    sumH.textContent = 'Đơn nhóm · ' + (g.name || 'của ' + g.host.name);
     const nmEl = $('#gbName'); nmEl.textContent = gTitle(g); nmEl.classList.toggle('empty', !g.name);
     const rb = $('#gbRename'), rKey = g.name ? 'i' : 't';
     if(rb.dataset.k !== rKey){ rb.dataset.k = rKey; rb.className = 'gb-ren' + (g.name ? ' icon' : '');
@@ -1861,7 +1862,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       clearInterval(G.poll); G.poll = null;
     }
     const sb = $('#btnSend'); if(isHost && !sb.disabled) sb.textContent = 'Gửi đơn nhóm · ' + vnd(fin);
-    $('#mbLb').textContent = (g.name || 'Nhóm ' + g.code) + ' · ' + g.members.length + ' người';
+    $('#mbLb').textContent = gTitle(g) + ' · ' + g.members.length + ' người';
     $('#mbVal').textContent = vnd(fin) + (disc ? ' (−5%)' : '');
   }
 
