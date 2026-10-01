@@ -792,6 +792,7 @@ render();
 (function(){
   const KEY = 'tc-popup-kemtrung-v1';
   try{ if(localStorage.getItem(KEY)) return; }catch(e){}
+  if(/[?&]nhom=/i.test(location.search)) return; // dang vao nhom -> khong chen popup
   const NEW = [
     ['caphetrung','Vietnamese Egg Coffee'],
     ['caphetrungdua','Coconut Egg Coffee'],
@@ -842,76 +843,230 @@ render();
 
 <!-- ===== DAT NUOC THEO NHOM ===== -->
 <style>
-.g-start{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 18px;border:1px dashed var(--gold);
-  border-radius:14px;background:#FFF8E6;color:var(--ink);font-family:var(--body);font-size:14px;text-align:left;cursor:pointer;transition:.2s}
-.g-start:hover{background:#FFF1CF}
-.g-start .ic{font-size:22px;line-height:1}
-.g-start b{font-weight:500;display:block}
-.g-start small{display:block;font-size:11.5px;color:var(--mute);font-weight:300}
-.g-start .ar{margin-left:auto;color:var(--gold-soft);font-size:18px}
-.g-bar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:11px 14px;border-radius:14px;
-  background:var(--ink);color:#FDF8EF;font-size:13px}
-.g-bar b{font-family:var(--disp);font-size:19px;font-weight:500;letter-spacing:.06em}
-.g-bar .meta{flex:1;min-width:150px;line-height:1.35}
-.g-bar .meta small{display:block;color:rgba(253,248,239,.7);font-size:11.5px}
-.g-bar button{border:1px solid rgba(253,248,239,.4);background:transparent;color:#FDF8EF;border-radius:999px;
-  padding:7px 13px;font-family:var(--body);font-size:12px;cursor:pointer;white-space:nowrap}
-.g-bar button.pri{background:var(--gold);border-color:var(--gold)}
+/* ================= CHE DO NHOM — giao dien rieng ================= */
+:root{--gp:#1E4D3E;--gp-2:#2E6B55;--gp-ink:#11302A;--gp-soft:#E6EFE8;--gp-line:rgba(30,77,62,.22);--gp-glow:rgba(46,107,85,.35)}
+@keyframes gIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes gPop{0%{opacity:0;transform:scale(.4)}70%{transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes gPulse{0%{box-shadow:0 0 0 0 rgba(122,214,160,.7)}70%{box-shadow:0 0 0 8px rgba(122,214,160,0)}100%{box-shadow:0 0 0 0 rgba(122,214,160,0)}}
+@keyframes gSheen{0%{transform:translateX(-120%) skewX(-18deg)}60%,100%{transform:translateX(320%) skewX(-18deg)}}
+@keyframes gFlash{0%{background:rgba(239,193,92,.38)}100%{background:transparent}}
+@keyframes gFlip{from{opacity:0;transform:rotateX(-90deg) translateY(-6px)}to{opacity:1;transform:none}}
+@keyframes gFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes gNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes gConf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}}
+
+/* ---- nut bat dau (o che do ca nhan) ---- */
+.g-start{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;width:100%;margin-top:14px;padding:13px 16px;
+  border:1px solid var(--gp-line);border-radius:16px;background:linear-gradient(120deg,#F3F7F1 0%,#FFFDF8 60%);color:var(--ink);
+  font-family:var(--body);font-size:14px;text-align:left;cursor:pointer;transition:transform .25s,box-shadow .25s,border-color .25s;
+  animation:gIn .6s .15s both}
+.g-start::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
+  animation:gSheen 4.5s 1.2s infinite;pointer-events:none}
+.g-start:hover{transform:translateY(-2px);border-color:var(--gp);box-shadow:0 14px 30px -18px var(--gp-glow)}
+.g-start:hover .ar{animation:gNudge .8s infinite}
+.g-start .ic{flex:0 0 46px;height:46px;border-radius:13px;background:linear-gradient(140deg,var(--gp-2),var(--gp-ink));color:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -10px var(--gp)}
+.g-start .ic svg{width:24px;height:24px;animation:gFloat 3s ease-in-out infinite}
+.g-start b{font-weight:500;display:flex;align-items:center;gap:8px;font-size:15px}
+.g-start b em{font-style:normal;font-size:8.5px;letter-spacing:.14em;background:var(--gp);color:#fff;border-radius:999px;padding:2px 7px;font-weight:500}
+.g-start small{display:block;font-size:12px;color:var(--mute);font-weight:300;margin-top:1px}
+.g-start .ar{margin-left:auto;color:var(--gp);font-size:20px;flex:0 0 auto}
+
+/* ---- nhan dien che do nhom ---- */
+.g-mode{display:none;align-items:center;gap:8px;width:max-content;margin-bottom:10px;padding:5px 12px 5px 9px;border-radius:999px;
+  background:var(--gp);color:#EAF4EE;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;animation:gIn .5s both}
+.g-mode i{width:7px;height:7px;border-radius:50%;background:#7AD6A0;animation:gPulse 1.8s infinite}
+body.g-on .g-mode{display:inline-flex}
+body.g-on .hero .eyebrow{display:none}
+body.g-on .hero h1::after{content:" nhóm";font-style:italic;color:var(--gp);font-weight:400}
+body{transition:background-color .6s}
+body.g-on{background:#F4F6F0}
+body.g-on .nav{background:rgba(244,246,240,.95)}
+body.g-on .cats{background:rgba(244,246,240,.96)}
+body.g-on .cat-btn.on,body.g-on .cat-btn:hover{background:var(--gp);border-color:var(--gp)}
+body.g-on .mcat-hd{border-bottom-color:var(--gp)}
+body.g-on .mcat-hd h2{color:var(--gp-ink)}
+body.g-on .mi{transition:border-color .3s,box-shadow .3s}
+body.g-on .mi:has(.stp.has),body.g-on .mi:has(.addbtn.has){border-color:var(--gp);box-shadow:0 0 0 1px var(--gp) inset}
+body.g-on .addbtn{background:var(--gp);border-color:var(--gp)}
+body.g-on .addbtn:hover{background:var(--gp-ink)}
+body.g-on .stp.has{border-color:var(--gp)}
+body.g-on .stp.has .n{color:var(--gp)}
+body.g-on .search input:focus{border-color:var(--gp)}
+body.g-on .sum{border-color:var(--gp);box-shadow:0 22px 44px -28px var(--gp-glow)}
+body.g-on .sum-hd{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--gp-ink) 0%,var(--gp) 55%,var(--gp-2) 100%)}
+body.g-on .sum-hd::after{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle,rgba(239,193,92,.28),transparent 70%)}
+body.g-on .total{border-top-color:var(--gp-line);border-top-width:1px}
+body.g-on .total .vl{font-size:22px;color:var(--mute)}
+body.g-on .btn-ink{background:var(--gp);border-color:var(--gp)}
+body.g-on .btn-ink:hover{background:var(--gp-ink)}
+body.g-on .radios label:has(input:checked){border-color:var(--gp)}
+body.g-on .radios input[type=radio]:checked{border-color:var(--gp)}
+body.g-on .field input:focus,body.g-on .field textarea:focus{border-color:var(--gp)}
+body.g-on .toast{background:var(--gp-ink)}
+
+/* ---- the nhom tren dau trang ---- */
+.g-bar{display:none;position:relative;overflow:hidden;margin-top:14px;padding:16px 18px 14px;border-radius:18px;color:#EEF5F0;
+  background:linear-gradient(135deg,var(--gp-ink) 0%,var(--gp) 60%,var(--gp-2) 100%);box-shadow:0 22px 40px -26px var(--gp-ink)}
+.g-bar::before{content:"";position:absolute;inset:0;background:radial-gradient(420px 160px at 100% 0%,rgba(239,193,92,.22),transparent 70%);pointer-events:none}
+.g-bar::after{content:"";position:absolute;top:0;bottom:0;left:0;width:25%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
+  animation:gSheen 6s 1s infinite;pointer-events:none}
 body.g-on .g-start{display:none}
-body.g-on .g-bar{display:flex}
-.g-box{display:none;margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+body.g-on .g-bar{display:block;animation:gIn .55s cubic-bezier(.2,.8,.3,1) both}
+.gb-top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase}
+.gb-live{display:flex;align-items:center;gap:7px;color:#BFE3CD}
+.gb-live i{width:7px;height:7px;border-radius:50%;background:#7AD6A0;animation:gPulse 1.8s infinite}
+body.g-locked .gb-live{color:#F3D58C}
+body.g-locked .gb-live i{background:#EFC15C;animation:none}
+.gb-role{border:1px solid rgba(239,193,92,.6);color:#F3D58C;border-radius:999px;padding:2px 9px;letter-spacing:.12em}
+.gb-main{position:relative;display:flex;align-items:center;gap:14px;margin-top:12px}
+.gb-code small{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(238,245,240,.6)}
+.gb-code b{display:flex;gap:3px;font-family:var(--disp);font-size:30px;font-weight:600;line-height:1;margin-top:3px;perspective:300px}
+.gb-code b span{display:inline-block;animation:gFlip .5s both}
+.gb-code b span:nth-child(2){animation-delay:.08s}.gb-code b span:nth-child(3){animation-delay:.16s}.gb-code b span:nth-child(4){animation-delay:.24s}
+.gb-sum{margin-left:auto;text-align:right}
+.gb-sum b{display:block;font-family:var(--disp);font-size:26px;font-weight:500;line-height:1.05;color:#fff}
+.gb-sum small{font-size:11.5px;color:rgba(238,245,240,.72)}
+.gb-prog{position:relative;height:4px;border-radius:4px;background:rgba(255,255,255,.14);margin-top:14px;overflow:hidden}
+.gb-prog i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:4px;background:linear-gradient(90deg,#7AD6A0,#EFC15C);
+  transition:width .7s cubic-bezier(.2,.8,.3,1)}
+.gb-sub{position:relative;display:block;font-size:11.5px;color:rgba(238,245,240,.72);margin-top:7px}
+.gb-act{position:relative;display:flex;gap:8px;margin-top:12px}
+.gb-act button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;height:40px;border-radius:999px;
+  border:1px solid rgba(238,245,240,.32);background:rgba(255,255,255,.06);color:#EEF5F0;font-family:var(--body);font-size:12.5px;
+  cursor:pointer;transition:.2s;white-space:nowrap}
+.gb-act button:hover{background:rgba(255,255,255,.14)}
+.gb-act button.pri{background:#EFC15C;border-color:#EFC15C;color:var(--gp-ink);font-weight:500}
+.gb-act button.pri:hover{background:#F6D27E}
+.gb-act svg{width:16px;height:16px}
+
+/* ---- avatar ---- */
+.g-av{display:flex;align-items:center}
+.g-av .a,.g-ava{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;color:#fff;font-weight:500;
+  flex:0 0 auto;text-transform:uppercase;font-family:var(--body)}
+.g-av .a{width:30px;height:30px;font-size:12px;margin-left:-8px;border:2px solid var(--gp);animation:gPop .45s both}
+.g-av .a:first-child{margin-left:0}
+.g-av .a.more{background:rgba(255,255,255,.18);font-size:10.5px}
+
+/* ---- khoi danh sach nhom trong bang don ---- */
+.g-box{display:none;margin-top:16px;padding-top:2px}
 body.g-on .g-box{display:block}
 .g-hd{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--mute);margin-bottom:6px}
-.g-hd span{letter-spacing:.04em;text-transform:none}
-.g-mem{padding:10px 0;border-bottom:1px dotted var(--line)}
-.g-mem:last-child{border-bottom:0}
+  text-transform:uppercase;color:var(--gp);margin-bottom:8px;font-weight:500}
+.g-hd span{letter-spacing:.03em;text-transform:none;color:var(--mute);font-weight:300}
+.g-mem{position:relative;display:flex;gap:11px;padding:11px 10px;margin:0 -10px;border-radius:10px;transition:background .3s}
+.g-mem+.g-mem{border-top:1px dotted var(--line)}
+.g-mem.me{background:var(--gp-soft)}
+.g-mem.me+.g-mem{border-top-color:transparent}
+.g-mem.is-new{animation:gIn .5s cubic-bezier(.2,.8,.3,1) both}
+.g-mem.is-upd{animation:gFlash 1.4s ease-out}
+.g-ava{width:34px;height:34px;font-size:13px;box-shadow:0 4px 10px -6px rgba(0,0,0,.4)}
+.g-mem.is-new .g-ava{animation:gPop .5s .1s both}
+.g-mem .bd{flex:1;min-width:0}
 .g-mem .r1{display:flex;align-items:center;gap:8px}
 .g-mem .nm{font-weight:500;font-size:14px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.g-mem .tag{font-size:9px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold-soft);
-  border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:2px}
-.g-mem .st{font-size:13.5px;font-weight:500;white-space:nowrap}
-.g-mem .x{border:0;background:transparent;color:var(--mute);font-size:16px;width:26px;height:26px;border-radius:50%;cursor:pointer}
-.g-mem .x:hover{background:rgba(42,29,22,.07);color:var(--red)}
+.g-mem .nm small{font-weight:300;color:var(--mute);font-size:12px}
+.g-mem .tag{display:inline-flex;align-items:center;gap:3px;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;background:#FFF3D6;
+  color:var(--gold-soft);border-radius:999px;padding:2px 7px;margin-left:6px;vertical-align:2px;font-weight:500}
+.g-mem .st{font-size:13.5px;font-weight:500;white-space:nowrap;color:var(--gp-ink)}
+.g-mem .x{border:0;background:transparent;color:var(--mute);font-size:16px;width:26px;height:26px;border-radius:50%;cursor:pointer;flex:0 0 auto}
+.g-mem .x:hover{background:rgba(156,50,38,.1);color:var(--red)}
 .g-mem ul{list-style:none;margin-top:3px}
-.g-mem li{font-size:12.5px;color:var(--mute);line-height:1.55}
-.g-mem .wait{font-size:12px;color:var(--mute);font-style:italic}
-.g-tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:12px;border-top:2px solid var(--ink)}
-.g-tot .lb{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
-.g-tot .vl{font-family:var(--disp);font-size:28px;font-weight:500}
-.g-note{display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--cream-2);font-size:13px;line-height:1.55}
-.g-note a{color:var(--mute);font-size:12px}
-.g-sent{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:#EEF4EC;color:#2F5130;font-size:13px}
+.g-mem li{font-size:12.5px;color:var(--mute);line-height:1.6;display:flex;justify-content:space-between;gap:8px}
+.g-mem li b{font-weight:500;color:var(--ink)}
+.g-mem .wait{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);font-style:italic;margin-top:2px}
+.g-dots{display:inline-flex;gap:3px}
+.g-dots i{width:4px;height:4px;border-radius:50%;background:var(--gp-2);opacity:.3;animation:gDot 1.2s infinite}
+.g-dots i:nth-child(2){animation-delay:.2s}.g-dots i:nth-child(3){animation-delay:.4s}
+@keyframes gDot{0%,100%{opacity:.25;transform:none}40%{opacity:1;transform:translateY(-2px)}}
+.g-bar-s{height:3px;border-radius:3px;background:var(--gp-soft);margin-top:7px;overflow:hidden}
+.g-bar-s i{display:block;height:100%;background:var(--gp-2);border-radius:3px;transition:width .6s cubic-bezier(.2,.8,.3,1)}
+.g-mem.me .g-bar-s{background:#fff}
+.g-tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding:14px 16px;border-radius:12px;
+  background:linear-gradient(135deg,var(--gp-ink),var(--gp));color:#fff}
+.g-tot .lb{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.g-tot .lb small{display:block;letter-spacing:.03em;text-transform:none;font-size:11.5px;margin-top:2px}
+.g-tot .vl{font-family:var(--disp);font-size:32px;font-weight:500;line-height:1}
+.g-note{display:none;margin-top:14px;padding:12px 14px 12px 40px;position:relative;border-radius:10px;background:var(--gp-soft);
+  font-size:13px;line-height:1.55;color:var(--gp-ink)}
+.g-note::before{content:"✓";position:absolute;left:13px;top:12px;width:18px;height:18px;border-radius:50%;background:var(--gp-2);
+  color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center}
+.g-sent{display:none;margin-top:4px;margin-bottom:10px;padding:12px 14px;border-radius:10px;background:#FFF6DF;color:#6A4F12;
+  font-size:13px;border:1px solid rgba(184,145,47,.35);animation:gIn .5s both}
 body.g-locked .g-sent{display:block}
 body.g-locked .stp,body.g-locked .addbtn,body.g-locked .np-add,body.g-locked .c-x{opacity:.35;pointer-events:none}
 body.g-member .sum-bd>.two,body.g-member .sum-bd>.field,body.g-member #actions,body.g-member #hint{display:none!important}
 body.g-member .g-note{display:block}
 body.g-locked .g-note{display:none!important}
-.g-save{font-size:11px;color:var(--mute);margin-left:6px}
-.g-exit{display:inline-block;margin-top:10px;font-size:12px;color:var(--mute);background:none;border:0;text-decoration:underline;
+.g-exit{display:inline-block;margin-top:12px;font-size:12px;color:var(--mute);background:none;border:0;text-decoration:underline;
   text-underline-offset:3px;cursor:pointer;font-family:var(--body)}
-/* hop thoai */
-.gm-bg{position:fixed;inset:0;z-index:150;background:rgba(24,15,10,.55);opacity:0;visibility:hidden;transition:.3s}
-.gm{position:fixed;left:50%;top:50%;z-index:151;width:min(400px,calc(100vw - 32px));background:#FFFDF8;border-radius:14px;
-  box-shadow:0 24px 60px rgba(24,15,10,.28);padding:26px 22px 20px;transform:translate(-50%,-46%);opacity:0;visibility:hidden;transition:.3s}
+.g-exit:hover{color:var(--red)}
+@media(max-width:900px){
+  body.g-on .mbar{background:linear-gradient(135deg,var(--gp-ink),var(--gp));border-top-color:transparent}
+  body.g-on .mbar::after{background:var(--gp-ink)}
+  body.g-on .mbar .lb{color:rgba(238,245,240,.7)}
+  body.g-on .mbar .vl{color:#fff}
+  body.g-on .mbar .go{background:#EFC15C;color:var(--gp-ink);font-weight:500}
+}
+@media(max-width:400px){.gb-code b{font-size:26px}.gb-sum b{font-size:22px}.g-av .a{width:26px;height:26px;font-size:11px}}
+
+/* ---- man chuyen canh khi vao nhom ---- */
+.g-wipe{position:fixed;inset:0;z-index:200;pointer-events:none;background:radial-gradient(circle at 50% 45%,var(--gp-2),var(--gp-ink));
+  clip-path:circle(0 at var(--x,50%) var(--y,50%));display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;
+  transition:clip-path .7s cubic-bezier(.7,0,.3,1),opacity .45s}
+.g-wipe.on{clip-path:circle(150% at var(--x,50%) var(--y,50%))}
+.g-wipe.out{opacity:0}
+.g-wipe small{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#BFE3CD;opacity:0;transition:.4s .35s}
+.g-wipe b{font-family:var(--disp);font-size:56px;font-weight:500;letter-spacing:.18em;opacity:0;transform:translateY(10px);transition:.5s .4s}
+.g-wipe.on small,.g-wipe.on b{opacity:1;transform:none}
+.g-conf{position:fixed;z-index:210;width:8px;height:12px;border-radius:2px;pointer-events:none;animation:gConf 1.3s cubic-bezier(.2,.7,.3,1) forwards}
+
+/* ---- hop thoai ---- */
+.gm-bg{position:fixed;inset:0;z-index:150;background:rgba(17,48,42,.55);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:.3s}
+.gm{position:fixed;left:50%;top:50%;z-index:151;width:min(410px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;background:#FFFDF8;
+  border-radius:20px;box-shadow:0 30px 70px rgba(17,48,42,.35);padding:0 0 20px;transform:translate(-50%,-44%) scale(.94);opacity:0;visibility:hidden;
+  transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .25s,visibility .3s}
 .gm-bg.on,.gm.on{opacity:1;visibility:visible}
-.gm.on{transform:translate(-50%,-50%)}
-.gm .eye{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-soft);text-align:center}
-.gm h3{font-family:var(--disp);font-weight:500;font-size:28px;text-align:center;line-height:1.1;margin-top:4px}
-.gm p{font-size:13px;color:var(--mute);text-align:center;margin-top:8px;line-height:1.55}
-.gm ol{margin:14px 0 0 18px;font-size:13px;line-height:1.7}
-.gm input{width:100%;height:48px;margin-top:16px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 14px;
-  font-family:var(--body);font-size:16px;color:var(--ink)}
-.gm input:focus{outline:none;border-color:var(--ink)}
-.gm .link{margin-top:14px;padding:12px;border:1px dashed var(--gold);border-radius:10px;background:#FFF8E6;font-size:13px;
-  word-break:break-all;text-align:center}
-.gm .link b{display:block;font-family:var(--disp);font-size:30px;letter-spacing:.2em;font-weight:500}
+.gm.on{transform:translate(-50%,-50%) scale(1)}
+.gm-top{position:relative;overflow:hidden;padding:26px 22px 20px;background:linear-gradient(135deg,var(--gp-ink),var(--gp) 60%,var(--gp-2));color:#fff;text-align:center}
+.gm-top::after{content:"";position:absolute;right:-40px;top:-50px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(239,193,92,.3),transparent 70%)}
+.gm-ic{position:relative;width:54px;height:54px;margin:0 auto 10px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;animation:gPop .5s .1s both}
+.gm-ic svg{width:28px;height:28px}
+.gm .eye{position:relative;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:#BFE3CD}
+.gm h3{position:relative;font-family:var(--disp);font-weight:500;font-size:28px;line-height:1.12;margin-top:4px}
+.gm .in{padding:0 22px}
+.gm p{font-size:13px;color:var(--mute);text-align:center;margin-top:16px;line-height:1.55}
+.gm .steps{list-style:none;margin-top:16px;display:grid;gap:10px}
+.gm .steps li{display:flex;gap:11px;align-items:flex-start;font-size:13px;line-height:1.5;animation:gIn .4s both}
+.gm .steps li:nth-child(2){animation-delay:.08s}.gm .steps li:nth-child(3){animation-delay:.16s}
+.gm .steps i{flex:0 0 24px;height:24px;border-radius:50%;background:var(--gp-soft);color:var(--gp);font-style:normal;font-weight:500;font-size:12px;
+  display:flex;align-items:center;justify-content:center}
+.gm input{width:100%;height:50px;margin-top:16px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:0 14px;
+  font-family:var(--body);font-size:16px;color:var(--ink);transition:.2s}
+.gm input:focus{outline:none;border-color:var(--gp);box-shadow:0 0 0 4px var(--gp-soft)}
+.gm .tiles{display:flex;justify-content:center;gap:8px;margin-top:18px;perspective:400px}
+.gm .tiles span{width:52px;height:62px;border-radius:12px;background:var(--gp-soft);border:1px solid var(--gp-line);color:var(--gp-ink);
+  font-family:var(--disp);font-size:36px;font-weight:600;display:flex;align-items:center;justify-content:center;animation:gFlip .55s both}
+.gm .tiles span:nth-child(2){animation-delay:.1s}.gm .tiles span:nth-child(3){animation-delay:.2s}.gm .tiles span:nth-child(4){animation-delay:.3s}
+.gm .link{margin-top:12px;padding:10px 12px;border:1px dashed var(--gp-line);border-radius:10px;background:#F6F9F5;font-size:12.5px;
+  word-break:break-all;text-align:center;color:var(--gp-ink)}
 .gm .row{display:flex;gap:10px;margin-top:16px}
-.gm .row button{flex:1;height:46px;border-radius:999px;font-family:var(--body);font-size:12.5px;letter-spacing:.08em;
-  text-transform:uppercase;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--mute)}
-.gm .row button.pri{background:var(--ink);border-color:var(--ink);color:#FDF8EF}
-.gm .x{position:absolute;top:8px;right:8px;width:36px;height:36px;border:0;border-radius:50%;background:transparent;
-  color:var(--mute);font-size:20px;cursor:pointer}
+.gm .row button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;height:48px;border-radius:999px;font-family:var(--body);
+  font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--mute);transition:.2s}
+.gm .row button:hover{border-color:var(--gp);color:var(--gp)}
+.gm .row button.pri{background:var(--gp);border-color:var(--gp);color:#fff}
+.gm .row button.pri:hover{background:var(--gp-ink)}
+.gm .row button[disabled]{opacity:.6}
+.gm .row svg{width:16px;height:16px;flex:0 0 16px}
+.gm .x{position:absolute;z-index:2;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.12);
+  color:#fff;font-size:20px;cursor:pointer}
+.gm .x:hover{background:rgba(255,255,255,.22)}
+@media (prefers-reduced-motion:reduce){
+  .g-start,.g-start::after,.g-bar,.g-bar::after,.g-mem,.g-ava,.g-av .a,.gb-code b span,.gm .tiles span,.gm .steps li,.g-mode i,.gb-live i,.g-dots i,.g-start .ic svg{animation:none!important}
+  .g-wipe,.g-conf{display:none!important}
+}
 </style>
 
 <div class="gm-bg" id="gmBg"></div>
@@ -946,22 +1101,37 @@ body.g-locked .g-note{display:none!important}
 
   /* ---------- giao dien ---------- */
   // nut bat dau + thanh nhom duoi o tim kiem
+  const ICO = {
+    grp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.2c2.3.2 4 1.7 4.5 4.3"/></svg>',
+    share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a3 3 0 1 0-2.8-4"/><path d="M8.6 10.7l6.8-3.4M8.6 13.3l6.8 3.4"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/></svg>',
+    list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
+    link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'
+  };
   const hero = document.querySelector('.hero');
+  hero.insertAdjacentHTML('afterbegin', '<div class="g-mode"><i></i>Chế độ đặt nhóm</div>');
   hero.insertAdjacentHTML('beforeend',
-    '<button type="button" class="g-start" id="gStart"><span class="ic">👥</span><span><b>Đặt theo nhóm</b>' +
-    '<small>Mỗi người tự chọn món trên máy mình · một người gửi đơn</small></span><span class="ar">→</span></button>' +
-    '<div class="g-bar" id="gBar"><div class="meta"><b id="gbCode"></b> <span id="gbInfo"></span><small id="gbSub"></small></div>' +
-    '<button type="button" id="gbShare" class="pri">Mời thêm</button><button type="button" id="gbView">Xem nhóm</button></div>');
+    '<button type="button" class="g-start" id="gStart"><span class="ic">' + ICO.grp + '</span><span><b>Đặt theo nhóm <em>MỚI</em></b>' +
+    '<small>Gửi link cho bạn bè · mỗi người tự chọn món · gửi đơn một lần</small></span><span class="ar">→</span></button>' +
+    '<div class="g-bar" id="gBar">' +
+      '<div class="gb-top"><span class="gb-live"><i></i><span id="gbLive">Đang mở · tự lưu</span></span><span class="gb-role" id="gbRole"></span></div>' +
+      '<div class="gb-main"><div class="gb-code"><small>Mã nhóm</small><b id="gbCode"></b></div>' +
+        '<div class="g-av" id="gbAv"></div>' +
+        '<div class="gb-sum"><b id="gbTotal">0đ</b><small id="gbInfo"></small></div></div>' +
+      '<div class="gb-prog"><i id="gbProg"></i></div><small class="gb-sub" id="gbSub"></small>' +
+      '<div class="gb-act"><button type="button" id="gbShare" class="pri">' + ICO.share + 'Mời thêm</button>' +
+        '<button type="button" id="gbView">' + ICO.list + 'Xem đơn nhóm</button></div>' +
+    '</div>');
   // khoi danh sach nhom trong bang don
   $('.total').insertAdjacentHTML('afterend',
     '<div class="g-box" id="gBox"><div class="g-sent" id="gSent"></div>' +
-    '<div class="g-hd">Cả nhóm <span id="gCount"></span></div><div id="gList"></div>' +
-    '<div class="g-tot"><span class="lb">Tổng cả nhóm</span><span class="vl" id="gTotal">0đ</span></div>' +
+    '<div class="g-hd">Thành viên <span id="gCount"></span></div><div id="gList"></div>' +
+    '<div class="g-tot"><span class="lb">Tổng cả nhóm<small id="gTotSub"></small></span><span class="vl" id="gTotal">0đ</span></div>' +
     '<div class="g-note" id="gNote"></div><button type="button" class="g-exit" id="gExit">Thoát chế độ nhóm</button></div>');
   const sumH = $('.sum-hd h3'), sumP = $('.sum-hd p'), totLb = $('.total .lb');
   const H0 = sumH.textContent, P0 = sumP.textContent, T0 = totLb.textContent;
 
   function modal(html){
+    document.querySelectorAll('#np.on,#npBg.on').forEach(e=>e.classList.remove('on'));
     $('#gmBody').innerHTML = html;
     $('#gm').classList.add('on'); $('#gmBg').classList.add('on');
     const i = $('#gmBody input'); if(i) setTimeout(()=>i.focus(), 250);
@@ -974,33 +1144,76 @@ body.g-locked .g-note{display:none!important}
     try{ const c = JSON.parse(localStorage.getItem('tcCust') || 'null'); if(c && c.n) return c.n; }catch(e){}
     return '';
   }
-  function askName(title, sub, btn, cb){
-    modal('<div class="eye">Đặt theo nhóm</div><h3 id="gmH">' + title + '</h3><p>' + sub + '</p>' +
+  const top = (eye, title, ic) => '<div class="gm-top"><div class="gm-ic">' + (ic || ICO.grp) + '</div><div class="eye">' + eye + '</div><h3 id="gmH">' + title + '</h3></div>';
+  function askName(title, sub, btn, cb, steps){
+    modal(top('Đặt theo nhóm', title) + '<div class="in">' +
+      (steps ? '<ul class="steps">' + steps.map((t,i)=>'<li><i>' + (i+1) + '</i><span>' + t + '</span></li>').join('') + '</ul>' : '<p>' + sub + '</p>') +
       '<input id="gmName" maxlength="30" placeholder="Tên của bạn — ví dụ: Lan" value="' + esc(defaultName()) + '">' +
-      '<div class="row"><button type="button" id="gmNo">Để sau</button><button type="button" class="pri" id="gmOk">' + btn + '</button></div>');
+      '<div class="row"><button type="button" id="gmNo">Để sau</button><button type="button" class="pri" id="gmOk">' + btn + '</button></div></div>');
     const go = ()=>{
       const v = $('#gmName').value.trim();
       if(!v){ $('#gmName').focus(); toast('Nhập tên để mọi người biết món nào của bạn'); return; }
-      $('#gmOk').disabled = true; cb(v);
+      $('#gmOk').disabled = true; $('#gmOk').textContent = 'Đang vào…'; cb(v);
     };
     $('#gmOk').addEventListener('click', go);
     $('#gmName').addEventListener('keydown', e=>{ if(e.key === 'Enter') go(); });
     $('#gmNo').addEventListener('click', closeModal);
   }
   function shareModal(){
-    modal('<div class="eye">Nhóm đã sẵn sàng</div><h3 id="gmH">Mời mọi người cùng chọn</h3>' +
-      '<p>Gửi link này qua Zalo / Messenger. Ai mở link sẽ tự chọn món của mình, bạn thấy ngay trong đơn.</p>' +
-      '<div class="link"><b>' + G.code + '</b>' + esc(groupLink().replace(/^https?:\/\//,'')) + '</div>' +
-      '<div class="row"><button type="button" id="gmCopy">Sao chép link</button>' +
-      (navigator.share ? '<button type="button" class="pri" id="gmShare">Chia sẻ</button>' : '<button type="button" class="pri" id="gmDone">Xong</button>') + '</div>');
+    modal(top('Nhóm đã sẵn sàng', 'Mời mọi người cùng chọn', ICO.share) + '<div class="in">' +
+      '<div class="tiles">' + G.code.split('').map(c=>'<span>' + c + '</span>').join('') + '</div>' +
+      '<div class="link">' + esc(groupLink().replace(/^https?:\/\//,'')) + '</div>' +
+      '<p>Gửi link qua Zalo / Messenger. Ai mở link sẽ tự chọn món của mình — bạn thấy ngay trong đơn nhóm.</p>' +
+      '<div class="row"><button type="button" id="gmCopy">' + ICO.link + 'Sao chép</button>' +
+      (navigator.share ? '<button type="button" class="pri" id="gmShare">' + ICO.share + 'Chia sẻ</button>' : '<button type="button" class="pri" id="gmDone">Xong</button>') + '</div></div>');
     $('#gmCopy').addEventListener('click', async ()=>{
-      try{ await navigator.clipboard.writeText(groupLink()); toast('Đã sao chép link nhóm'); }catch(e){ toast(groupLink()); }
+      try{ await navigator.clipboard.writeText(groupLink()); toast('Đã sao chép link nhóm'); $('#gmCopy').innerHTML = '✓ Đã chép'; }catch(e){ toast(groupLink()); }
     });
     const s = $('#gmShare');
     if(s) s.addEventListener('click', ()=>{
       navigator.share({ title:'Đặt nước cùng nhóm — The Curator', text:G.name + ' mời bạn chọn món cùng nhóm ' + G.code, url:groupLink() }).catch(()=>{});
     });
     const d = $('#gmDone'); if(d) d.addEventListener('click', closeModal);
+  }
+
+  /* ---------- hieu ung ---------- */
+  const RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const AVC = ['#2E6B55','#B8912F','#9C3226','#4A6FA5','#7A5C99','#C0703A','#3E8A86','#6B7F3A','#A2546E','#5B6B7A'];
+  const avColor = id => { let h = 0; for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) >>> 0; return AVC[h % AVC.length]; };
+  const initial = n => { const w = String(n||'?').trim().split(/\s+/); return (w[w.length-1] || '?').charAt(0); };
+  const avatar = (m, cls) => '<span class="' + cls + '" style="background:' + avColor(m.mid) + '" title="' + esc(m.name) + '">' + esc(initial(m.name)) + '</span>';
+  function tween(el, to){
+    const from = +el.dataset.v || 0; el.dataset.v = to;
+    if(RM || from === to){ el.textContent = vnd(to); return; }
+    const t0 = performance.now(), d = 550;
+    cancelAnimationFrame(el._raf);
+    const step = t => { const k = Math.min(1, (t - t0)/d), e = 1 - Math.pow(1-k, 3);
+      el.textContent = vnd(Math.round((from + (to-from)*e)/1000)*1000); if(k < 1) el._raf = requestAnimationFrame(step); else el.textContent = vnd(to); };
+    el._raf = requestAnimationFrame(step);
+  }
+  function wipe(code, fromEl, done){
+    if(RM){ done(); return; }
+    const w = document.createElement('div'); w.className = 'g-wipe';
+    if(fromEl){ const r = fromEl.getBoundingClientRect(); w.style.setProperty('--x', (r.left + r.width/2) + 'px'); w.style.setProperty('--y', (r.top + r.height/2) + 'px'); }
+    w.innerHTML = '<small>Chào mừng vào nhóm</small><b>' + esc(code) + '</b>';
+    document.body.appendChild(w);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')));
+    setTimeout(done, 650);
+    setTimeout(()=>w.classList.add('out'), 1250);
+    setTimeout(()=>w.remove(), 1800);
+  }
+  function confetti(el){
+    if(RM) return;
+    const r = (el || document.body).getBoundingClientRect(), cx = r.left + r.width/2, cy = r.top + Math.min(r.height/2, 160);
+    const cols = ['#EFC15C','#7AD6A0','#2E6B55','#B8912F','#FDF8EF','#9C3226'];
+    for(let i = 0; i < 46; i++){
+      const c = document.createElement('i'); c.className = 'g-conf';
+      const ang = Math.random()*Math.PI*2, dist = 80 + Math.random()*170;
+      c.style.left = cx + 'px'; c.style.top = cy + 'px'; c.style.background = cols[i % cols.length];
+      c.style.setProperty('--dx', Math.cos(ang)*dist + 'px'); c.style.setProperty('--dy', (Math.sin(ang)*dist + 120) + 'px');
+      c.style.setProperty('--r', (Math.random()*720 - 360) + 'deg'); c.style.animationDelay = (Math.random()*.12) + 's';
+      document.body.appendChild(c); setTimeout(()=>c.remove(), 1600);
+    }
   }
 
   /* ---------- vao / ra che do nhom ---------- */
@@ -1016,13 +1229,14 @@ body.g-locked .g-note{display:none!important}
     document.body.classList.add('g-on');
     const me = group.members.find(m => m.mid === G.mid);
     if(me){ Object.keys(cart).forEach(k=>delete cart[k]); Object.keys(me.cart).forEach(k=>{ if(ITEMS[k]) cart[k] = me.cart[k]; }); }
-    G.dirty = false; sync(); _render(); paint();
+    G.dirty = false; G.seen = null; sync(); _render(); paint();
     clearInterval(G.poll); G.poll = setInterval(refresh, POLL_MS);
   }
   function leave(clearCart){
     clearInterval(G.poll); clearTimeout(G.timer);
     store.del(); setUrl('');
-    Object.assign(G, { code:'', mid:'', tok:'', name:'', group:null, dirty:false });
+    Object.assign(G, { code:'', mid:'', tok:'', name:'', group:null, dirty:false, seen:null });
+    const gc = $('#gbCode'); if(gc) gc.dataset.c = ''; const ga = $('#gbAv'); if(ga) ga.dataset.k = '';
     document.body.classList.remove('g-on','g-member','g-locked');
     sumH.textContent = H0; sumP.textContent = P0; totLb.textContent = T0;
     const sb = $('#btnSend'); if(!sb.disabled) sb.textContent = 'Gửi đơn hàng';
@@ -1034,10 +1248,14 @@ body.g-locked .g-note{display:none!important}
     askName('Tạo nhóm đặt nước', 'Bạn là trưởng nhóm — mọi người chọn món, bạn điền thông tin nhận và gửi đơn một lần.', 'Tạo nhóm', async name=>{
       const r = await api({ a:'create', name, cart });
       if(!r.ok){ closeModal(); toast(r.err || 'Không tạo được nhóm'); return; }
-      enter({ code:r.code, mid:r.mid, tok:r.tok, name }, r.group);
-      if(!$('#name').value.trim()) $('#name').value = name;
-      shareModal();
-    });
+      closeModal();
+      wipe(r.code, $('#gStart'), ()=>{
+        enter({ code:r.code, mid:r.mid, tok:r.tok, name }, r.group);
+        if(!$('#name').value.trim()) $('#name').value = name;
+        window.scrollTo({top:0});
+        setTimeout(shareModal, 900);
+      });
+    }, ['Bạn tạo nhóm và gửi link cho mọi người', 'Mỗi người tự chọn món trên máy mình — đơn tự cập nhật', 'Bạn điền thông tin nhận và gửi đơn một lần']);
   });
   $('#gbShare').addEventListener('click', shareModal);
   $('#gbView').addEventListener('click', ()=> $('#summary').scrollIntoView({behavior:'smooth', block:'start'}));
@@ -1080,28 +1298,47 @@ body.g-locked .g-note{display:none!important}
     const isHost = g.host.mid === G.mid, sent = g.status === 'sent';
     document.body.classList.toggle('g-member', !isHost);
     document.body.classList.toggle('g-locked', sent);
-    // tong (lay gio hang cua minh tu may nay, nguoi khac tu may chu)
-    let total = 0, count = 0;
-    g.members.forEach(m => { const c = m.mid === G.mid ? cart : m.cart; total += lineSum(c); count += lineCnt(c); });
+    let total = 0, count = 0, ready = 0;
+    const cartOf = m => m.mid === G.mid ? cart : m.cart;
+    g.members.forEach(m => { const c = cartOf(m), n = lineCnt(c); total += lineSum(c); count += n; if(n) ready++; });
+    // phat hien thanh vien moi / thay doi mon
+    const first = !G.seen, prev = G.seen || {}, now = {};
+    g.members.forEach(m => { now[m.mid] = JSON.stringify(m.cart || {}); });
+    if(!first) g.members.forEach(m => { if(!(m.mid in prev) && m.mid !== G.mid) toast(m.name + ' vừa vào nhóm'); });
+    G.seen = now;
+
     sumH.textContent = 'Đơn nhóm ' + g.code;
-    sumP.textContent = isHost ? 'Bạn là trưởng nhóm · điền thông tin nhận rồi gửi một lần.' : 'Trưởng nhóm: ' + g.host.name;
-    totLb.textContent = 'Món của bạn';
-    $('#gbCode').textContent = g.code;
-    $('#gbInfo').textContent = '· ' + g.members.length + ' người · ' + vnd(total);
-    $('#gbSub').textContent = sent ? 'Đơn đã gửi' : (isHost ? 'Bạn là trưởng nhóm' : 'Trưởng nhóm: ' + g.host.name) + ' · tự lưu';
+    sumP.textContent = isHost ? 'Bạn là trưởng nhóm · điền thông tin nhận rồi gửi một lần.' : 'Trưởng nhóm: ' + g.host.name + ' · món của bạn tự lưu';
+    totLb.textContent = 'Phần của bạn';
+    const codeEl = $('#gbCode');
+    if(codeEl.dataset.c !== g.code){ codeEl.dataset.c = g.code; codeEl.innerHTML = g.code.split('').map(c=>'<span>' + c + '</span>').join(''); }
+    $('#gbRole').textContent = isHost ? 'Trưởng nhóm' : 'Thành viên';
+    $('#gbLive').textContent = sent ? 'Đã gửi đơn' : 'Đang mở · tự lưu';
+    const shown = g.members.slice(0, 5), more = g.members.length - shown.length;
+    const avKey = g.members.map(m=>m.mid).join(',');
+    const av = $('#gbAv');
+    if(av.dataset.k !== avKey){ av.dataset.k = avKey; av.innerHTML = shown.map(m=>avatar(m,'a')).join('') + (more > 0 ? '<span class="a more">+' + more + '</span>' : ''); }
+    tween($('#gbTotal'), total);
+    $('#gbInfo').textContent = g.members.length + ' người · ' + count + ' món';
+    $('#gbProg').style.width = (g.members.length ? Math.round(ready / g.members.length * 100) : 0) + '%';
+    $('#gbSub').textContent = sent ? 'Quán đã nhận đơn nhóm · sẽ gọi xác nhận' : ready + '/' + g.members.length + ' người đã chọn món' + (isHost ? '' : ' · trưởng nhóm: ' + g.host.name);
     $('#gCount').textContent = g.members.length + ' người · ' + count + ' món';
-    $('#gTotal').textContent = vnd(total);
+    tween($('#gTotal'), total);
+    $('#gTotSub').textContent = ready + '/' + g.members.length + ' người đã chọn';
     const L = $('#gList'); L.innerHTML = '';
-    g.members.forEach(m=>{
-      const mine = m.mid === G.mid, c = mine ? cart : m.cart;
-      const keys = Object.keys(c).filter(k => ITEMS[k]);
-      const d = document.createElement('div'); d.className = 'g-mem';
-      d.innerHTML = '<div class="r1"><span class="nm">' + esc(m.name) + (mine ? ' (bạn)' : '') +
-        (m.mid === g.host.mid ? '<span class="tag">Trưởng nhóm</span>' : '') + '</span>' +
-        '<span class="st">' + (keys.length ? vnd(lineSum(c)) : '') + '</span>' +
+    g.members.forEach((m, i)=>{
+      const mine = m.mid === G.mid, c = cartOf(m);
+      const keys = Object.keys(c).filter(k => ITEMS[k]), sub = lineSum(c);
+      const d = document.createElement('div');
+      d.className = 'g-mem' + (mine ? ' me' : '') + (first || !(m.mid in prev) ? ' is-new' : (!mine && prev[m.mid] !== now[m.mid] ? ' is-upd' : ''));
+      if(first) d.style.animationDelay = (i * 0.06) + 's';
+      d.innerHTML = avatar(m, 'g-ava') + '<div class="bd"><div class="r1"><span class="nm">' + esc(m.name) + (mine ? ' <small>(bạn)</small>' : '') +
+        (m.mid === g.host.mid ? '<span class="tag">★ Trưởng nhóm</span>' : '') + '</span>' +
+        '<span class="st">' + (keys.length ? vnd(sub) : '') + '</span>' +
         (isHost && !mine && !sent ? '<button type="button" class="x" aria-label="Xoá ' + esc(m.name) + '">×</button>' : '') + '</div>' +
-        (keys.length ? '<ul>' + keys.map(k => '<li>' + esc(ITEMS[k].n) + ' × ' + c[k] + '</li>').join('') + '</ul>'
-                     : '<div class="wait">' + (mine ? 'Bấm dấu cộng ở menu để chọn món' : 'Đang chọn món…') + '</div>');
+        (keys.length ? '<ul>' + keys.map(k => '<li><span>' + esc(ITEMS[k].n) + ' <b>× ' + c[k] + '</b></span></li>').join('') + '</ul>' +
+                       '<div class="g-bar-s"><i style="width:' + (total ? Math.max(4, Math.round(sub/total*100)) : 0) + '%"></i></div>'
+                     : '<div class="wait">' + (mine ? 'Bấm dấu cộng ở menu để chọn món' : '<span class="g-dots"><i></i><i></i><i></i></span> Đang chọn món') + '</div>') + '</div>';
       const x = d.querySelector('.x');
       if(x) x.addEventListener('click', async ()=>{
         if(!confirm('Xoá ' + m.name + ' khỏi nhóm?')) return;
@@ -1116,9 +1353,10 @@ body.g-locked .g-note{display:none!important}
       const t = new Date(g.sentAt), p = x => String(x).padStart(2,'0');
       $('#gSent').innerHTML = '✓ <b>' + esc(g.host.name) + '</b> đã gửi đơn nhóm lúc ' + p(t.getHours()) + ':' + p(t.getMinutes()) +
         ' — quán sẽ gọi lại xác nhận.';
-      clearInterval(G.poll);
+      if(G.poll && !isHost && !first) confetti($('#summary'));
+      clearInterval(G.poll); G.poll = null;
     }
-    const sb = $('#btnSend'); if(isHost && !sb.disabled) sb.textContent = 'Gửi đơn nhóm';
+    const sb = $('#btnSend'); if(isHost && !sb.disabled) sb.textContent = 'Gửi đơn nhóm · ' + vnd(total);
     $('#mbLb').textContent = 'Nhóm ' + g.code + ' · ' + g.members.length + ' người';
     $('#mbVal').textContent = vnd(total);
   }
@@ -1145,7 +1383,7 @@ body.g-locked .g-note{display:none!important}
     btn.disabled = true; btn.textContent = 'Đang gửi…';
     clearTimeout(G.timer); G.dirty = true; await save();
     const r = await api({ a:'send', code:G.code, mid:G.mid, tok:G.tok });
-    if(!r.ok){ btn.disabled = false; btn.textContent = 'Gửi đơn nhóm'; toast(r.err || 'Chưa gửi được'); return; }
+    if(!r.ok){ btn.disabled = false; btn.textContent = 'Gửi đơn nhóm'; paint(); toast(r.err || 'Chưa gửi được'); return; }
     G.group = r.group;
     const g = r.group, code = 'NHOM-' + g.code, D = ['Mã đơn: ' + code + ' (' + g.members.length + ' người)'];
     let total = 0, count = 0;
@@ -1171,6 +1409,7 @@ body.g-locked .g-note{display:none!important}
       $('#sentCode').textContent = 'Mã đơn ' + code;
       $('#sentMsg').textContent = 'Đã gửi đơn nhóm ' + count + ' món — ' + vnd(total) + '. Quán gọi lại xác nhận ngay.';
       $('#summary').scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(()=>confetti($('#sentBox')), 450);
     }, 700);
   }, true);
   // "Dat don khac" sau khi gui nhom -> thoat che do nhom
@@ -1194,13 +1433,16 @@ body.g-locked .g-note{display:none!important}
     if(!q) { store.del(); return; }
     if(g.status !== 'open'){ toast('Nhóm ' + code + ' đã gửi đơn'); setUrl(''); return; }
     askName(esc(g.host.name) + ' mời bạn đặt nước cùng nhóm',
-      'Nhóm ' + code + ' · ' + g.members.length + ' người. Nhập tên rồi chọn món — trưởng nhóm sẽ gửi đơn một lần cho cả nhóm.',
+      '<span class="g-av" style="justify-content:center;margin-bottom:10px">' + g.members.slice(0,6).map(m=>avatar(m,'a')).join('') + '</span><br>' +
+      'Nhóm <b>' + code + '</b> · ' + g.members.length + ' người. Nhập tên rồi chọn món — trưởng nhóm sẽ gửi đơn một lần cho cả nhóm.',
       'Vào nhóm', async name=>{
         const j = await api({ a:'join', code, name, cart });
         if(!j.ok){ closeModal(); toast(j.err || 'Không vào được nhóm'); return; }
         closeModal();
-        enter({ code, mid:j.mid, tok:j.tok, name }, j.group);
-        toast('Đã vào nhóm ' + code + ' — chọn món của bạn nhé');
+        wipe(code, null, ()=>{
+          enter({ code, mid:j.mid, tok:j.tok, name }, j.group);
+          setTimeout(()=>toast('Chọn món của bạn nhé — đơn nhóm tự lưu'), 900);
+        });
       });
   })();
 })();
