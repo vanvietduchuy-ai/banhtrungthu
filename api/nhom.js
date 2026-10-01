@@ -79,6 +79,7 @@ function publicView(code, g) {
   return {
     code,
     name: g.meta.nm || '',
+    ord: g.meta.ord || '',
     status: g.meta.s,
     sentAt: g.meta.sentAt || null,
     host: { mid: g.meta.h, name: host ? host.n : '' },
@@ -210,6 +211,8 @@ module.exports = async (req, res) => {
         const any = Object.values(g.members).some(m => Object.keys(m.c || {}).length);
         if (!any) return send(400, { ok: false, err: 'Nhóm chưa có món nào.' });
         g.meta.s = 'sent'; g.meta.sentAt = now;
+        const ord = String(b.ord || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 30);
+        if (ord) g.meta.ord = ord;
         await redis('HSET', key(code), 'meta', JSON.stringify(g.meta));
         await redis('EXPIRE', key(code), TTL);
       }
