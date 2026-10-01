@@ -20,3 +20,10 @@ Sửa menu: `const DATA` trong index.html.
 Set 350.000/380.000/560.000 · lẻ 35.000/80.000
 Ưu đãi 10–29:−10% · 30–49:−12% · 50–99:−15% · 100+:−20%
 0846 413 314 · thecuratorcafe.vn.
+
+## Đặt theo nhóm (/?nhom=MÃ)
+API: `api/nhom.js` (Vercel Function) lưu trên Upstash Redis — cần biến môi trường
+`KV_REST_API_URL` + `KV_REST_API_TOKEN` (hoặc `UPSTASH_REDIS_REST_URL` + `_TOKEN`), có sẵn khi gắn Upstash ở tab Storage.
+Thiếu biến → nút nhóm báo "chưa được bật", đặt lẻ vẫn chạy bình thường.
+Nhóm tự xoá sau 6 giờ · tối đa 30 người · chỉ trưởng nhóm gửi đơn/xoá thành viên.
+Đơn nhóm về cùng Google Form, mã `NHOM-XXXX`, chi tiết ghi theo từng người.

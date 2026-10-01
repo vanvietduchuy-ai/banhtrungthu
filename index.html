@@ -840,5 +840,371 @@ render();
 })();
 </script>
 
+<!-- ===== DAT NUOC THEO NHOM ===== -->
+<style>
+.g-start{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 18px;border:1px dashed var(--gold);
+  border-radius:14px;background:#FFF8E6;color:var(--ink);font-family:var(--body);font-size:14px;text-align:left;cursor:pointer;transition:.2s}
+.g-start:hover{background:#FFF1CF}
+.g-start .ic{font-size:22px;line-height:1}
+.g-start b{font-weight:500;display:block}
+.g-start small{display:block;font-size:11.5px;color:var(--mute);font-weight:300}
+.g-start .ar{margin-left:auto;color:var(--gold-soft);font-size:18px}
+.g-bar{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;padding:11px 14px;border-radius:14px;
+  background:var(--ink);color:#FDF8EF;font-size:13px}
+.g-bar b{font-family:var(--disp);font-size:19px;font-weight:500;letter-spacing:.06em}
+.g-bar .meta{flex:1;min-width:150px;line-height:1.35}
+.g-bar .meta small{display:block;color:rgba(253,248,239,.7);font-size:11.5px}
+.g-bar button{border:1px solid rgba(253,248,239,.4);background:transparent;color:#FDF8EF;border-radius:999px;
+  padding:7px 13px;font-family:var(--body);font-size:12px;cursor:pointer;white-space:nowrap}
+.g-bar button.pri{background:var(--gold);border-color:var(--gold)}
+body.g-on .g-start{display:none}
+body.g-on .g-bar{display:flex}
+.g-box{display:none;margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+body.g-on .g-box{display:block}
+.g-hd{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.g-hd span{letter-spacing:.04em;text-transform:none}
+.g-mem{padding:10px 0;border-bottom:1px dotted var(--line)}
+.g-mem:last-child{border-bottom:0}
+.g-mem .r1{display:flex;align-items:center;gap:8px}
+.g-mem .nm{font-weight:500;font-size:14px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g-mem .tag{font-size:9px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--gold);color:var(--gold-soft);
+  border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:2px}
+.g-mem .st{font-size:13.5px;font-weight:500;white-space:nowrap}
+.g-mem .x{border:0;background:transparent;color:var(--mute);font-size:16px;width:26px;height:26px;border-radius:50%;cursor:pointer}
+.g-mem .x:hover{background:rgba(42,29,22,.07);color:var(--red)}
+.g-mem ul{list-style:none;margin-top:3px}
+.g-mem li{font-size:12.5px;color:var(--mute);line-height:1.55}
+.g-mem .wait{font-size:12px;color:var(--mute);font-style:italic}
+.g-tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:12px;border-top:2px solid var(--ink)}
+.g-tot .lb{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
+.g-tot .vl{font-family:var(--disp);font-size:28px;font-weight:500}
+.g-note{display:none;margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--cream-2);font-size:13px;line-height:1.55}
+.g-note a{color:var(--mute);font-size:12px}
+.g-sent{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:#EEF4EC;color:#2F5130;font-size:13px}
+body.g-locked .g-sent{display:block}
+body.g-locked .stp,body.g-locked .addbtn,body.g-locked .np-add,body.g-locked .c-x{opacity:.35;pointer-events:none}
+body.g-member .sum-bd>.two,body.g-member .sum-bd>.field,body.g-member #actions,body.g-member #hint{display:none!important}
+body.g-member .g-note{display:block}
+body.g-locked .g-note{display:none!important}
+.g-save{font-size:11px;color:var(--mute);margin-left:6px}
+.g-exit{display:inline-block;margin-top:10px;font-size:12px;color:var(--mute);background:none;border:0;text-decoration:underline;
+  text-underline-offset:3px;cursor:pointer;font-family:var(--body)}
+/* hop thoai */
+.gm-bg{position:fixed;inset:0;z-index:150;background:rgba(24,15,10,.55);opacity:0;visibility:hidden;transition:.3s}
+.gm{position:fixed;left:50%;top:50%;z-index:151;width:min(400px,calc(100vw - 32px));background:#FFFDF8;border-radius:14px;
+  box-shadow:0 24px 60px rgba(24,15,10,.28);padding:26px 22px 20px;transform:translate(-50%,-46%);opacity:0;visibility:hidden;transition:.3s}
+.gm-bg.on,.gm.on{opacity:1;visibility:visible}
+.gm.on{transform:translate(-50%,-50%)}
+.gm .eye{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-soft);text-align:center}
+.gm h3{font-family:var(--disp);font-weight:500;font-size:28px;text-align:center;line-height:1.1;margin-top:4px}
+.gm p{font-size:13px;color:var(--mute);text-align:center;margin-top:8px;line-height:1.55}
+.gm ol{margin:14px 0 0 18px;font-size:13px;line-height:1.7}
+.gm input{width:100%;height:48px;margin-top:16px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 14px;
+  font-family:var(--body);font-size:16px;color:var(--ink)}
+.gm input:focus{outline:none;border-color:var(--ink)}
+.gm .link{margin-top:14px;padding:12px;border:1px dashed var(--gold);border-radius:10px;background:#FFF8E6;font-size:13px;
+  word-break:break-all;text-align:center}
+.gm .link b{display:block;font-family:var(--disp);font-size:30px;letter-spacing:.2em;font-weight:500}
+.gm .row{display:flex;gap:10px;margin-top:16px}
+.gm .row button{flex:1;height:46px;border-radius:999px;font-family:var(--body);font-size:12.5px;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--mute)}
+.gm .row button.pri{background:var(--ink);border-color:var(--ink);color:#FDF8EF}
+.gm .x{position:absolute;top:8px;right:8px;width:36px;height:36px;border:0;border-radius:50%;background:transparent;
+  color:var(--mute);font-size:20px;cursor:pointer}
+</style>
+
+<div class="gm-bg" id="gmBg"></div>
+<div class="gm" id="gm" role="dialog" aria-modal="true" aria-labelledby="gmH">
+  <button type="button" class="x" id="gmX" aria-label="Đóng">×</button>
+  <div id="gmBody"></div>
+</div>
+
+<script>
+(function(){
+  const API = '/api/nhom';
+  const SKEY = 'tcGroup';
+  const POLL_MS = 4000;
+  const G = { code:'', mid:'', tok:'', name:'', group:null, saving:false, dirty:false, timer:null, poll:null };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const store = {
+    get(){ try{ return JSON.parse(localStorage.getItem(SKEY) || 'null'); }catch(e){ return null; } },
+    set(v){ try{ localStorage.setItem(SKEY, JSON.stringify(v)); }catch(e){} },
+    del(){ try{ localStorage.removeItem(SKEY); }catch(e){} }
+  };
+  async function api(body){
+    const opt = body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : {};
+    const url = body ? API : API + '?code=' + encodeURIComponent(G.code) + '&_=' + Date.now();
+    let r, j;
+    try{ r = await fetch(url, opt); j = await r.json(); }
+    catch(e){ return { ok:false, err:'Mất kết nối, thử lại sau.' }; }
+    return j;
+  }
+  const lineSum = c => Object.keys(c||{}).reduce((a,k)=> a + (ITEMS[k] ? ITEMS[k].p * c[k] : 0), 0);
+  const lineCnt = c => Object.keys(c||{}).reduce((a,k)=> a + (ITEMS[k] ? c[k] : 0), 0);
+  const groupLink = () => location.origin + '/?nhom=' + G.code;
+
+  /* ---------- giao dien ---------- */
+  // nut bat dau + thanh nhom duoi o tim kiem
+  const hero = document.querySelector('.hero');
+  hero.insertAdjacentHTML('beforeend',
+    '<button type="button" class="g-start" id="gStart"><span class="ic">👥</span><span><b>Đặt theo nhóm</b>' +
+    '<small>Mỗi người tự chọn món trên máy mình · một người gửi đơn</small></span><span class="ar">→</span></button>' +
+    '<div class="g-bar" id="gBar"><div class="meta"><b id="gbCode"></b> <span id="gbInfo"></span><small id="gbSub"></small></div>' +
+    '<button type="button" id="gbShare" class="pri">Mời thêm</button><button type="button" id="gbView">Xem nhóm</button></div>');
+  // khoi danh sach nhom trong bang don
+  $('.total').insertAdjacentHTML('afterend',
+    '<div class="g-box" id="gBox"><div class="g-sent" id="gSent"></div>' +
+    '<div class="g-hd">Cả nhóm <span id="gCount"></span></div><div id="gList"></div>' +
+    '<div class="g-tot"><span class="lb">Tổng cả nhóm</span><span class="vl" id="gTotal">0đ</span></div>' +
+    '<div class="g-note" id="gNote"></div><button type="button" class="g-exit" id="gExit">Thoát chế độ nhóm</button></div>');
+  const sumH = $('.sum-hd h3'), sumP = $('.sum-hd p'), totLb = $('.total .lb');
+  const H0 = sumH.textContent, P0 = sumP.textContent, T0 = totLb.textContent;
+
+  function modal(html){
+    $('#gmBody').innerHTML = html;
+    $('#gm').classList.add('on'); $('#gmBg').classList.add('on');
+    const i = $('#gmBody input'); if(i) setTimeout(()=>i.focus(), 250);
+  }
+  function closeModal(){ $('#gm').classList.remove('on'); $('#gmBg').classList.remove('on'); }
+  $('#gmX').addEventListener('click', closeModal);
+  $('#gmBg').addEventListener('click', closeModal);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeModal(); });
+  function defaultName(){
+    try{ const c = JSON.parse(localStorage.getItem('tcCust') || 'null'); if(c && c.n) return c.n; }catch(e){}
+    return '';
+  }
+  function askName(title, sub, btn, cb){
+    modal('<div class="eye">Đặt theo nhóm</div><h3 id="gmH">' + title + '</h3><p>' + sub + '</p>' +
+      '<input id="gmName" maxlength="30" placeholder="Tên của bạn — ví dụ: Lan" value="' + esc(defaultName()) + '">' +
+      '<div class="row"><button type="button" id="gmNo">Để sau</button><button type="button" class="pri" id="gmOk">' + btn + '</button></div>');
+    const go = ()=>{
+      const v = $('#gmName').value.trim();
+      if(!v){ $('#gmName').focus(); toast('Nhập tên để mọi người biết món nào của bạn'); return; }
+      $('#gmOk').disabled = true; cb(v);
+    };
+    $('#gmOk').addEventListener('click', go);
+    $('#gmName').addEventListener('keydown', e=>{ if(e.key === 'Enter') go(); });
+    $('#gmNo').addEventListener('click', closeModal);
+  }
+  function shareModal(){
+    modal('<div class="eye">Nhóm đã sẵn sàng</div><h3 id="gmH">Mời mọi người cùng chọn</h3>' +
+      '<p>Gửi link này qua Zalo / Messenger. Ai mở link sẽ tự chọn món của mình, bạn thấy ngay trong đơn.</p>' +
+      '<div class="link"><b>' + G.code + '</b>' + esc(groupLink().replace(/^https?:\/\//,'')) + '</div>' +
+      '<div class="row"><button type="button" id="gmCopy">Sao chép link</button>' +
+      (navigator.share ? '<button type="button" class="pri" id="gmShare">Chia sẻ</button>' : '<button type="button" class="pri" id="gmDone">Xong</button>') + '</div>');
+    $('#gmCopy').addEventListener('click', async ()=>{
+      try{ await navigator.clipboard.writeText(groupLink()); toast('Đã sao chép link nhóm'); }catch(e){ toast(groupLink()); }
+    });
+    const s = $('#gmShare');
+    if(s) s.addEventListener('click', ()=>{
+      navigator.share({ title:'Đặt nước cùng nhóm — The Curator', text:G.name + ' mời bạn chọn món cùng nhóm ' + G.code, url:groupLink() }).catch(()=>{});
+    });
+    const d = $('#gmDone'); if(d) d.addEventListener('click', closeModal);
+  }
+
+  /* ---------- vao / ra che do nhom ---------- */
+  function setUrl(code){
+    const u = new URL(location.href);
+    if(code) u.searchParams.set('nhom', code); else u.searchParams.delete('nhom');
+    history.replaceState(null, '', u.pathname + u.search + u.hash);
+  }
+  function enter(id, group){
+    Object.assign(G, id, { group });
+    store.set({ code:G.code, mid:G.mid, tok:G.tok, name:G.name });
+    setUrl(G.code);
+    document.body.classList.add('g-on');
+    const me = group.members.find(m => m.mid === G.mid);
+    if(me){ Object.keys(cart).forEach(k=>delete cart[k]); Object.keys(me.cart).forEach(k=>{ if(ITEMS[k]) cart[k] = me.cart[k]; }); }
+    G.dirty = false; sync(); _render(); paint();
+    clearInterval(G.poll); G.poll = setInterval(refresh, POLL_MS);
+  }
+  function leave(clearCart){
+    clearInterval(G.poll); clearTimeout(G.timer);
+    store.del(); setUrl('');
+    Object.assign(G, { code:'', mid:'', tok:'', name:'', group:null, dirty:false });
+    document.body.classList.remove('g-on','g-member','g-locked');
+    sumH.textContent = H0; sumP.textContent = P0; totLb.textContent = T0;
+    const sb = $('#btnSend'); if(!sb.disabled) sb.textContent = 'Gửi đơn hàng';
+    if(clearCart){ Object.keys(cart).forEach(k=>delete cart[k]); }
+    sync(); _render();
+  }
+
+  $('#gStart').addEventListener('click', ()=>{
+    askName('Tạo nhóm đặt nước', 'Bạn là trưởng nhóm — mọi người chọn món, bạn điền thông tin nhận và gửi đơn một lần.', 'Tạo nhóm', async name=>{
+      const r = await api({ a:'create', name, cart });
+      if(!r.ok){ closeModal(); toast(r.err || 'Không tạo được nhóm'); return; }
+      enter({ code:r.code, mid:r.mid, tok:r.tok, name }, r.group);
+      if(!$('#name').value.trim()) $('#name').value = name;
+      shareModal();
+    });
+  });
+  $('#gbShare').addEventListener('click', shareModal);
+  $('#gbView').addEventListener('click', ()=> $('#summary').scrollIntoView({behavior:'smooth', block:'start'}));
+  $('#gExit').addEventListener('click', async ()=>{
+    const isHost = G.group && G.group.host.mid === G.mid;
+    const open = G.group && G.group.status === 'open';
+    if(open && !confirm(isHost ? 'Thoát chế độ nhóm? Nhóm vẫn giữ trong 6 giờ, mở lại link để quay về.' : 'Rời nhóm? Món bạn đã chọn sẽ bị xoá khỏi đơn nhóm.')) return;
+    if(open && !isHost) await api({ a:'leave', code:G.code, mid:G.mid, tok:G.tok });
+    leave(true);
+  });
+
+  /* ---------- luu & dong bo ---------- */
+  function queueSave(){
+    if(!G.code || !G.group || G.group.status !== 'open') return;
+    G.dirty = true; clearTimeout(G.timer); G.timer = setTimeout(save, 600);
+    $('#gbSub').textContent = 'Đang lưu…';
+  }
+  async function save(){
+    if(!G.dirty || G.saving) return;
+    G.saving = true; G.dirty = false;
+    const r = await api({ a:'save', code:G.code, mid:G.mid, tok:G.tok, cart });
+    G.saving = false;
+    if(r.ok){ G.group = r.group; paint(); }
+    else if(r.gone){ toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
+    else if(r.group){ G.group = r.group; paint(); }
+    else { G.dirty = true; $('#gbSub').textContent = r.err || 'Chưa lưu được — đang thử lại'; G.timer = setTimeout(save, 3000); return; }
+    if(G.dirty) save();
+  }
+  async function refresh(){
+    if(!G.code || document.hidden || G.saving || G.dirty) return;
+    const r = await api();
+    if(!r.ok){ if(r.err && /tồn tại|hết hạn/.test(r.err)){ toast('Nhóm đã hết hạn'); leave(false); } return; }
+    if(!r.group.members.some(m => m.mid === G.mid)){ toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
+    G.group = r.group; paint();
+  }
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refresh(); });
+
+  function paint(){
+    const g = G.group; if(!g) return;
+    const isHost = g.host.mid === G.mid, sent = g.status === 'sent';
+    document.body.classList.toggle('g-member', !isHost);
+    document.body.classList.toggle('g-locked', sent);
+    // tong (lay gio hang cua minh tu may nay, nguoi khac tu may chu)
+    let total = 0, count = 0;
+    g.members.forEach(m => { const c = m.mid === G.mid ? cart : m.cart; total += lineSum(c); count += lineCnt(c); });
+    sumH.textContent = 'Đơn nhóm ' + g.code;
+    sumP.textContent = isHost ? 'Bạn là trưởng nhóm · điền thông tin nhận rồi gửi một lần.' : 'Trưởng nhóm: ' + g.host.name;
+    totLb.textContent = 'Món của bạn';
+    $('#gbCode').textContent = g.code;
+    $('#gbInfo').textContent = '· ' + g.members.length + ' người · ' + vnd(total);
+    $('#gbSub').textContent = sent ? 'Đơn đã gửi' : (isHost ? 'Bạn là trưởng nhóm' : 'Trưởng nhóm: ' + g.host.name) + ' · tự lưu';
+    $('#gCount').textContent = g.members.length + ' người · ' + count + ' món';
+    $('#gTotal').textContent = vnd(total);
+    const L = $('#gList'); L.innerHTML = '';
+    g.members.forEach(m=>{
+      const mine = m.mid === G.mid, c = mine ? cart : m.cart;
+      const keys = Object.keys(c).filter(k => ITEMS[k]);
+      const d = document.createElement('div'); d.className = 'g-mem';
+      d.innerHTML = '<div class="r1"><span class="nm">' + esc(m.name) + (mine ? ' (bạn)' : '') +
+        (m.mid === g.host.mid ? '<span class="tag">Trưởng nhóm</span>' : '') + '</span>' +
+        '<span class="st">' + (keys.length ? vnd(lineSum(c)) : '') + '</span>' +
+        (isHost && !mine && !sent ? '<button type="button" class="x" aria-label="Xoá ' + esc(m.name) + '">×</button>' : '') + '</div>' +
+        (keys.length ? '<ul>' + keys.map(k => '<li>' + esc(ITEMS[k].n) + ' × ' + c[k] + '</li>').join('') + '</ul>'
+                     : '<div class="wait">' + (mine ? 'Bấm dấu cộng ở menu để chọn món' : 'Đang chọn món…') + '</div>');
+      const x = d.querySelector('.x');
+      if(x) x.addEventListener('click', async ()=>{
+        if(!confirm('Xoá ' + m.name + ' khỏi nhóm?')) return;
+        const r = await api({ a:'remove', code:G.code, mid:G.mid, tok:G.tok, target:m.mid });
+        if(r.ok){ G.group = r.group; paint(); } else toast(r.err || 'Chưa xoá được');
+      });
+      L.appendChild(d);
+    });
+    $('#gNote').innerHTML = sent ? '' : 'Món bạn chọn được <b>lưu tự động</b> vào đơn nhóm. <b>' + esc(g.host.name) +
+      '</b> sẽ gửi đơn cho quán khi cả nhóm chọn xong.';
+    if(sent){
+      const t = new Date(g.sentAt), p = x => String(x).padStart(2,'0');
+      $('#gSent').innerHTML = '✓ <b>' + esc(g.host.name) + '</b> đã gửi đơn nhóm lúc ' + p(t.getHours()) + ':' + p(t.getMinutes()) +
+        ' — quán sẽ gọi lại xác nhận.';
+      clearInterval(G.poll);
+    }
+    const sb = $('#btnSend'); if(isHost && !sb.disabled) sb.textContent = 'Gửi đơn nhóm';
+    $('#mbLb').textContent = 'Nhóm ' + g.code + ' · ' + g.members.length + ' người';
+    $('#mbVal').textContent = vnd(total);
+  }
+
+  /* moc vao render() cua trang: moi lan gio hang doi -> luu len nhom */
+  const _render = render;
+  render = function(){ _render(); if(G.code){ paint(); queueSave(); } };
+
+  /* ---------- truong nhom gui don ---------- */
+  function postForm(data){
+    const f = document.createElement('form');
+    f.action = 'https://docs.google.com/forms/d/e/' + GFORM.id + '/formResponse';
+    f.method = 'POST'; f.target = 'gsink'; f.style.display = 'none';
+    Object.keys(data).forEach(k=>{ const i = document.createElement('input'); i.type='hidden'; i.name=k; i.value=data[k]; f.appendChild(i); });
+    document.body.appendChild(f); f.submit(); setTimeout(()=>f.remove(), 4000);
+  }
+  document.addEventListener('click', async function(e){
+    const btn = e.target.closest && e.target.closest('#btnSend');
+    if(!btn || !G.code) return;
+    e.stopPropagation(); e.preventDefault();
+    const miss = [['#name','tên'],['#phone','số điện thoại']].filter(([s])=>{
+      const el = $(s), bad = !el.value.trim(); el.classList.toggle('err', bad); return bad; });
+    if(miss.length){ toast('Vui lòng điền ' + miss.map(m=>m[1]).join(' và ')); $(miss[0][0]).focus(); return; }
+    btn.disabled = true; btn.textContent = 'Đang gửi…';
+    clearTimeout(G.timer); G.dirty = true; await save();
+    const r = await api({ a:'send', code:G.code, mid:G.mid, tok:G.tok });
+    if(!r.ok){ btn.disabled = false; btn.textContent = 'Gửi đơn nhóm'; toast(r.err || 'Chưa gửi được'); return; }
+    G.group = r.group;
+    const g = r.group, code = 'NHOM-' + g.code, D = ['Mã đơn: ' + code + ' (' + g.members.length + ' người)'];
+    let total = 0, count = 0;
+    g.members.forEach(m=>{
+      const keys = Object.keys(m.cart).filter(k => ITEMS[k]); if(!keys.length) return;
+      D.push('— ' + m.name + ':');
+      keys.forEach(k=>{ D.push('  ' + ITEMS[k].n + ' x ' + m.cart[k] + ' = ' + vnd(ITEMS[k].p * m.cart[k])); total += ITEMS[k].p * m.cart[k]; count += m.cart[k]; });
+    });
+    const ship = document.querySelector('input[name=ship]:checked').value;
+    const data = {};
+    data[GFORM.f.name] = $('#name').value.trim() + ' (trưởng nhóm ' + g.code + ')';
+    data[GFORM.f.phone] = $('#phone').value.trim();
+    data[GFORM.f.detail] = D.join('\n');
+    data[GFORM.f.total] = count + ' món — ' + vnd(total) + ' — ĐƠN NHÓM ' + g.members.length + ' người';
+    data[GFORM.f.ship] = ship;
+    data[GFORM.f.time] = $('#time').value;
+    data[GFORM.f.addr] = ship === 'Giao tận nơi' ? $('#addr').value.trim() : '';
+    data[GFORM.f.note] = $('#note').value.trim();
+    try{ postForm(data); saveCust(); navigator.clipboard && navigator.clipboard.writeText(D.join('\n')).catch(()=>{}); }catch(err){}
+    paint();
+    setTimeout(()=>{
+      $('#actions').hidden = true; $('#hint').hidden = true; $('#sentBox').hidden = false;
+      $('#sentCode').textContent = 'Mã đơn ' + code;
+      $('#sentMsg').textContent = 'Đã gửi đơn nhóm ' + count + ' món — ' + vnd(total) + '. Quán gọi lại xác nhận ngay.';
+      $('#summary').scrollIntoView({behavior:'smooth', block:'center'});
+    }, 700);
+  }, true);
+  // "Dat don khac" sau khi gui nhom -> thoat che do nhom
+  $('#btnAgain').addEventListener('click', ()=>{ if(G.code) leave(true); });
+
+  /* ---------- khoi dong ---------- */
+  (async function boot(){
+    const q = new URLSearchParams(location.search).get('nhom');
+    const saved = store.get();
+    const code = (q || '').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4) || (saved && saved.code) || '';
+    if(!code) return;
+    G.code = code;
+    const r = await api();
+    if(!r.ok){ G.code = ''; if(q){ toast(r.err || 'Nhóm không còn'); setUrl(''); } if(saved && saved.code === code) store.del(); return; }
+    const g = r.group;
+    if(saved && saved.code === code && g.members.some(m => m.mid === saved.mid)){
+      enter(saved, g);
+      return;
+    }
+    G.code = '';
+    if(!q) { store.del(); return; }
+    if(g.status !== 'open'){ toast('Nhóm ' + code + ' đã gửi đơn'); setUrl(''); return; }
+    askName(esc(g.host.name) + ' mời bạn đặt nước cùng nhóm',
+      'Nhóm ' + code + ' · ' + g.members.length + ' người. Nhập tên rồi chọn món — trưởng nhóm sẽ gửi đơn một lần cho cả nhóm.',
+      'Vào nhóm', async name=>{
+        const j = await api({ a:'join', code, name, cart });
+        if(!j.ok){ closeModal(); toast(j.err || 'Không vào được nhóm'); return; }
+        closeModal();
+        enter({ code, mid:j.mid, tok:j.tok, name }, j.group);
+        toast('Đã vào nhóm ' + code + ' — chọn món của bạn nhé');
+      });
+  })();
+})();
+</script>
+
 </body>
 </html>
