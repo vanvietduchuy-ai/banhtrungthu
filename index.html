@@ -382,6 +382,23 @@ DATA.filter(g => g.cat === 'Espresso').forEach(g => g.items.forEach(i => {
   ITEMS[i.id + '~lib'] = { id: i.id + '~lib', n: i.n + ' — hạt Liberica', p: i.p + LIB_UP, d: i.d, b: '' };
 }));
 const cart = {};
+const NOTES = {};            // ghi chu tung ly: NOTES[id] = ['it da', '', ...]
+const CATOF = {}; DATA.forEach(g => g.items.forEach(i => { CATOF[i.id] = g.cat; CATOF[i.id + '~lib'] = g.cat; }));
+function fitNotes(){
+  Object.keys(NOTES).forEach(k=>{
+    if(!cart[k]) { delete NOTES[k]; return; }
+    NOTES[k] = NOTES[k].slice(0, cart[k]);
+    if(!NOTES[k].some(Boolean)) delete NOTES[k];
+  });
+}
+function noteText(k, notes){
+  const a = ((notes || NOTES)[k] || []).slice(0, cart[k] || 99);
+  if(!a.some(Boolean)) return '';
+  const q = a.length;
+  if(q === 1) return a[0];
+  if(a.every(x => x === a[0])) return 'cả ' + q + ' ly: ' + a[0];
+  return a.map((x,i)=> x ? 'ly ' + (i+1) + ': ' + x : '').filter(Boolean).join(' · ');
+}
 
 /* ----- dung menu ----- */
 const menuEl = $('#menu'), catsEl = $('#cats');
@@ -525,6 +542,7 @@ function calc(){
   return {total, count};
 }
 function render(){
+  fitNotes();
   const c = calc(), list = $('#cart'); list.innerHTML = '';
   Object.keys(cart).forEach(k=>{
     const it = ITEMS[k], li = document.createElement('li');
@@ -532,10 +550,16 @@ function render(){
     nm.appendChild(document.createTextNode(it.n));
     const sm = document.createElement('small'); sm.textContent = vnd(it.p) + ' × ' + cart[k];
     nm.appendChild(sm);
+    const nt = noteText(k);
+    const nb = document.createElement('button'); nb.type = 'button'; nb.className = 'c-note' + (nt ? ' has' : '');
+    nb.innerHTML = '<span class="pn">✎</span>' + (nt ? '<span class="tx"></span>' : 'Thêm ghi chú' + (cart[k] > 1 ? ' từng ly' : ''));
+    if(nt) nb.querySelector('.tx').textContent = nt;
+    nb.addEventListener('click', ()=> openNote(k));
+    nm.appendChild(nb);
     const vl = document.createElement('span'); vl.className='c-vl'; vl.textContent = vnd(it.p*cart[k]);
     const x = document.createElement('button'); x.type='button'; x.className='c-x'; x.textContent='×';
     x.setAttribute('aria-label','Bỏ '+it.n);
-    x.addEventListener('click',()=>{ delete cart[k]; sync(); render(); });
+    x.addEventListener('click',()=>{ delete cart[k]; delete NOTES[k]; sync(); render(); });
     li.appendChild(nm); li.appendChild(vl); li.appendChild(x);
     list.appendChild(li);
   });
@@ -624,7 +648,7 @@ function orderText(code){
   L.push('Mã đơn: ' + code);
   Object.keys(cart).forEach(k=>{
     const it = ITEMS[k];
-    L.push('- ' + it.n + ' × ' + cart[k] + ' = ' + vnd(it.p*cart[k]));
+    L.push('- ' + it.n + ' × ' + cart[k] + ' = ' + vnd(it.p*cart[k]) + (noteText(k) ? ' (' + noteText(k) + ')' : ''));
   });
   L.push('TỔNG: ' + c.count + ' món — ' + vnd(c.total));
   const ship = document.querySelector('input[name=ship]:checked').value;
@@ -643,7 +667,7 @@ function sendOrder(code){
   const ship = document.querySelector('input[name=ship]:checked').value;
   const L = ['Mã đơn: ' + code];
   Object.keys(cart).forEach(k=>{
-    L.push(ITEMS[k].n + ' x ' + cart[k] + ' = ' + vnd(ITEMS[k].p*cart[k]));
+    L.push(ITEMS[k].n + ' x ' + cart[k] + ' = ' + vnd(ITEMS[k].p*cart[k]) + (noteText(k) ? ' — ' + noteText(k) : ''));
   });
   const data = {};
   data[GFORM.f.name] = $('#name').value.trim();
@@ -685,6 +709,7 @@ $('#btnSend').addEventListener('click', function(){
 });
 $('#btnAgain').addEventListener('click', ()=>{
   Object.keys(cart).forEach(k=>delete cart[k]);
+  Object.keys(NOTES).forEach(k=>delete NOTES[k]);
   $('#note').value = '';
   sync(); render();
   $('#actions').hidden = false; $('#hint').hidden = false; $('#sentBox').hidden = true;
@@ -731,6 +756,135 @@ $('#btnZalo').addEventListener('click', ()=>{ copyOrder(makeCode()); toast('Đã
 })();
 render();
 </script>
+<!-- ===== GHI CHU TUNG LY ===== -->
+<style>
+.c-note{display:flex;align-items:flex-start;gap:5px;margin-top:4px;border:0;background:none;padding:2px 0;font-family:var(--body);font-size:12px;
+  color:var(--gold-soft);cursor:pointer;text-align:left;line-height:1.45}
+.c-note .pn{font-size:12px;line-height:1.45}
+.c-note:hover{color:var(--ink)}
+.c-note.has{color:var(--ink);background:#FFF6DF;border-radius:6px;padding:3px 8px;margin-left:-2px}
+.c-note.has .tx{font-style:italic}
+body.g-on .c-note{color:var(--gp)}
+body.g-on .c-note.has{background:var(--gp-soft);color:var(--gp-ink)}
+body.g-locked .c-note{pointer-events:none;opacity:.6}
+.ns-bg{position:fixed;inset:0;z-index:170;background:rgba(24,15,10,.5);opacity:0;visibility:hidden;transition:.3s}
+.ns-bg.on{opacity:1;visibility:visible}
+.ns{position:fixed;left:0;right:0;bottom:0;z-index:171;background:#FFFDF8;border-radius:18px 18px 0 0;max-height:86vh;display:flex;flex-direction:column;
+  transform:translateY(105%);transition:transform .38s cubic-bezier(.2,.8,.3,1);box-shadow:0 -20px 60px -20px rgba(24,15,10,.45)}
+.ns.on{transform:none}
+.ns-hd{padding:12px 20px 10px;border-bottom:1px solid var(--line)}
+.ns-hd .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.ns-hd small{display:block;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.ns-hd b{font-family:var(--disp);font-size:24px;font-weight:600;line-height:1.15}
+.ns-hd .x{position:absolute;right:12px;top:14px;border:0;background:none;font-size:24px;color:var(--mute);cursor:pointer;width:36px;height:36px}
+.ns-mode{display:flex;gap:6px;margin-top:10px;background:var(--cream-2);border-radius:999px;padding:3px}
+.ns-mode button{flex:1;border:0;background:transparent;border-radius:999px;height:32px;font-family:var(--body);font-size:12.5px;color:var(--mute);cursor:pointer;transition:.2s}
+.ns-mode button.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px -2px rgba(0,0,0,.2);font-weight:500}
+.ns-bd{overflow:auto;padding:4px 20px 8px;flex:1}
+.ns-cup{padding:12px 0;border-bottom:1px dotted var(--line);animation:gIn .35s both}
+.ns-cup:last-child{border-bottom:0}
+.ns-cup .lb{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.ns-cup .lb i{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-style:normal;font-size:11px;display:inline-flex;align-items:center;justify-content:center}
+body.g-on .ns-cup .lb i{background:var(--gp)}
+.ns-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.ns-chips button{border:1px solid var(--line);background:#FDFAF3;border-radius:999px;padding:6px 12px;font-family:var(--body);font-size:12.5px;color:var(--ink);cursor:pointer;transition:.15s}
+.ns-chips button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+body.g-on .ns-chips button.on{background:var(--gp);border-color:var(--gp)}
+.ns-cup input{width:100%;height:42px;margin-top:9px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 12px;font-family:var(--body);font-size:15px;color:var(--ink)}
+.ns-cup input:focus{outline:none;border-color:var(--ink)}
+body.g-on .ns-cup input:focus{border-color:var(--gp)}
+.ns-ft{display:flex;gap:10px;padding:12px 20px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.ns-ft button{flex:1;height:46px;border-radius:999px;font-family:var(--body);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--mute)}
+.ns-ft button.pri{flex:2;background:var(--ink);border-color:var(--ink);color:#fff}
+body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
+@media(min-width:901px){
+  .ns{left:50%;right:auto;bottom:auto;top:50%;width:min(460px,92vw);border-radius:16px;transform:translate(-50%,-46%) scale(.96);opacity:0;visibility:hidden;transition:.28s}
+  .ns.on{transform:translate(-50%,-50%) scale(1);opacity:1;visibility:visible}
+  .ns-hd .grab{display:none}
+}
+</style>
+<div class="ns-bg" id="nsBg"></div>
+<div class="ns" id="ns" role="dialog" aria-modal="true" aria-labelledby="nsName">
+  <div class="ns-hd" style="position:relative"><div class="grab"></div><small>Ghi chú cho món</small><b id="nsName"></b>
+    <button type="button" class="x" id="nsX" aria-label="Đóng">×</button>
+    <div class="ns-mode" id="nsMode" hidden><button type="button" data-m="all">Chung cho tất cả ly</button><button type="button" data-m="each">Riêng từng ly</button></div></div>
+  <div class="ns-bd" id="nsBd"></div>
+  <div class="ns-ft"><button type="button" id="nsClear">Xoá ghi chú</button><button type="button" class="pri" id="nsOk">Lưu ghi chú</button></div>
+</div>
+<script>
+(function(){
+  const DRINK = ['Ít đá','Không đá','Đá riêng','Ít ngọt','Không đường','Thêm ngọt','Ít sữa','Nóng'];
+  const FOOD  = ['Hâm nóng','Cắt đôi','Để riêng túi'];
+  const NS = { k:null, mode:'all' };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const chipsFor = k => CATOF[k] === 'Bánh' ? FOOD : DRINK;
+  function split(str, chips){
+    const parts = String(str || '').split(',').map(x=>x.trim()).filter(Boolean);
+    return { on: parts.filter(p => chips.includes(p)), free: parts.filter(p => !chips.includes(p)).join(', ') };
+  }
+  function cupHtml(idx, label, val, chips){
+    const s = split(val, chips);
+    return '<div class="ns-cup" data-i="' + idx + '" style="animation-delay:' + (idx*0.05) + 's"><div class="lb"><i>' + label + '</i>' +
+      (label === '✓' ? 'Áp dụng cho tất cả ly' : 'Ly thứ ' + label) + '</div>' +
+      '<div class="ns-chips">' + chips.map(c => '<button type="button"' + (s.on.includes(c) ? ' class="on"' : '') + '>' + c + '</button>').join('') + '</div>' +
+      '<input type="text" maxlength="60" placeholder="Ghi chú khác — ví dụ: thêm ống hút giấy" value="' + esc(s.free) + '"></div>';
+  }
+  function readCup(el){
+    const on = Array.from(el.querySelectorAll('.ns-chips button.on')).map(b=>b.textContent);
+    const free = el.querySelector('input').value.trim();
+    return on.concat(free ? [free] : []).join(', ');
+  }
+  function draw(){
+    const k = NS.k, q = cart[k] || 1, chips = chipsFor(k), cur = NOTES[k] || [];
+    const md = $('#nsMode'); md.hidden = q < 2;
+    md.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.m === NS.mode));
+    const bd = $('#nsBd');
+    if(NS.mode === 'all' || q < 2) bd.innerHTML = cupHtml(0, q < 2 ? '1' : '✓', cur[0] || '', chips);
+    else bd.innerHTML = Array.from({length:q}, (_,i)=>cupHtml(i, String(i+1), cur[i] || '', chips)).join('');
+    bd.querySelectorAll('.ns-chips button').forEach(b=>b.addEventListener('click', ()=>{
+      b.classList.toggle('on');
+      const g = b.textContent, row = b.parentNode;           // loai tru cap mau thuan
+      const X = { 'Ít đá':['Không đá'], 'Không đá':['Ít đá','Đá riêng'], 'Đá riêng':['Không đá'], 'Ít ngọt':['Không đường','Thêm ngọt'], 'Không đường':['Ít ngọt','Thêm ngọt'], 'Thêm ngọt':['Ít ngọt','Không đường'] };
+      if(b.classList.contains('on') && X[g]) row.querySelectorAll('button').forEach(o=>{ if(X[g].includes(o.textContent)) o.classList.remove('on'); });
+    }));
+  }
+  function collect(){
+    const k = NS.k, q = cart[k] || 1;
+    const cups = Array.from($('#nsBd').querySelectorAll('.ns-cup')).map(readCup);
+    // giu lai noi dung dang go o che do kia khi doi qua lai
+    return (NS.mode === 'all' || q < 2) ? Array(q).fill(cups[0] || '') : cups;
+  }
+  window.openNote = function(k){
+    if(!cart[k]) return;
+    NS.k = k;
+    const cur = NOTES[k] || [];
+    NS.mode = cur.length > 1 && cur.some(x => x !== cur[0]) ? 'each' : 'all';
+    $('#nsName').textContent = ITEMS[k].n + (cart[k] > 1 ? ' × ' + cart[k] : '');
+    draw();
+    $('#ns').classList.add('on'); $('#nsBg').classList.add('on');
+  };
+  function close(){ $('#ns').classList.remove('on'); $('#nsBg').classList.remove('on'); }
+  $('#nsMode').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b || b.dataset.m === NS.mode) return;
+    NOTES[NS.k] = collect(); NS.mode = b.dataset.m;
+    if(NS.mode === 'all'){ const a = NOTES[NS.k]; NOTES[NS.k] = Array(a.length).fill(a.find(Boolean) || ''); }
+    draw();
+  });
+  $('#nsOk').addEventListener('click', ()=>{
+    const v = collect();
+    if(v.some(Boolean)) NOTES[NS.k] = v; else delete NOTES[NS.k];
+    close(); render(); toast(v.some(Boolean) ? 'Đã lưu ghi chú cho ' + ITEMS[NS.k].n : 'Đã xoá ghi chú');
+  });
+  $('#nsClear').addEventListener('click', ()=>{ delete NOTES[NS.k]; close(); render(); toast('Đã xoá ghi chú'); });
+  $('#nsX').addEventListener('click', close);
+  $('#nsBg').addEventListener('click', close);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && $('#ns').classList.contains('on')) close(); });
+  let y0 = null; const sh = $('#ns');
+  sh.addEventListener('touchstart', e=>{ if(e.target.closest('.ns-hd')) y0 = e.touches[0].clientY; }, {passive:true});
+  sh.addEventListener('touchend', e=>{ if(y0 !== null && e.changedTouches[0].clientY - y0 > 60) close(); y0 = null; }, {passive:true});
+})();
+</script>
+
 <!-- ===== POPUP MON MOI (hien 1 lan / trinh duyet) ===== -->
 <style>
 .np-bg{position:fixed;inset:0;z-index:140;background:rgba(24,15,10,.55);opacity:0;visibility:hidden;transition:.35s}
@@ -1063,6 +1217,163 @@ body.g-locked .g-note{display:none!important}
 .gm .x{position:absolute;z-index:2;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.12);
   color:#fff;font-size:20px;cursor:pointer}
 .gm .x:hover{background:rgba(255,255,255,.22)}
+/* ---- ten nhom ---- */
+.gb-name{position:relative;display:flex;align-items:center;gap:8px;margin-top:10px;min-width:0}
+.gb-name b{font-family:var(--disp);font-size:24px;font-weight:500;line-height:1.15;color:#fff;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gb-name b.empty{color:rgba(238,245,240,.6);font-style:italic}
+.gb-ren{position:relative;flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:999px;
+  border:1px dashed rgba(239,193,92,.75);background:rgba(239,193,92,.12);color:#F3D58C;font-family:var(--body);font-size:11.5px;cursor:pointer;transition:.2s}
+.gb-ren:hover{background:rgba(239,193,92,.22)}
+.gb-ren svg{width:13px;height:13px}
+.gb-ren.icon{width:30px;padding:0;justify-content:center;border-style:solid;border-color:rgba(238,245,240,.3);background:transparent;color:#EEF5F0}
+body.g-member .gb-ren,body.g-locked .gb-ren{display:none}
+.gb-main{margin-top:8px}
+.gb-code b{font-size:22px}
+.gb-help{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:1px solid rgba(238,245,240,.35);
+  background:transparent;color:#EEF5F0;font-size:12px;cursor:pointer;margin-left:6px;font-family:var(--body)}
+.gb-help:hover{background:rgba(255,255,255,.12)}
+.gm .lbl{display:block;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-top:16px;text-align:left}
+.gm .lbl+input{margin-top:7px}
+.gm .lbl em{font-style:normal;letter-spacing:.03em;text-transform:none;color:var(--mute);opacity:.8}
+.gm .fwrap{position:relative}
+.gm .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.gm .chips button{border:1px solid var(--gp-line);background:#F6F9F5;color:var(--gp-ink);border-radius:999px;padding:5px 11px;font-family:var(--body);
+  font-size:12px;cursor:pointer;transition:.15s}
+.gm .chips button:hover,.gm .chips button.on{background:var(--gp);border-color:var(--gp);color:#fff}
+.gm .gname{margin-top:16px;text-align:center;font-family:var(--disp);font-size:22px;color:var(--gp-ink);line-height:1.2}
+.gm .gname small{display:block;font-family:var(--body);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+.gm .how{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 0;border:0;background:none;color:var(--gp);font-family:var(--body);
+  font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.g-how{display:inline-flex;align-items:center;gap:7px;margin-top:9px;border:0;background:none;color:var(--gp);font-family:var(--body);font-size:12.5px;
+  cursor:pointer;padding:2px 0;animation:gIn .6s .3s both}
+.g-how .pl{width:20px;height:20px;border-radius:50%;background:var(--gp);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:8px;
+  animation:gPulse 2s infinite}
+.g-how u{text-underline-offset:3px}
+body.g-on .g-how{display:none}
+
+/* ---- ban tay chi dan ---- */
+@keyframes gTap{0%,100%{transform:translate(0,0) rotate(-12deg)}40%{transform:translate(-3px,-5px) rotate(-12deg)}55%{transform:translate(0,0) scale(.9) rotate(-12deg)}70%{transform:translate(0,0) rotate(-12deg)}}
+@keyframes gRing{0%,45%{opacity:0;transform:scale(.3)}55%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(1.6)}}
+.g-tap{position:absolute;right:12%;bottom:-20px;width:30px;height:38px;pointer-events:none;z-index:3;filter:drop-shadow(0 4px 6px rgba(0,0,0,.28))}
+.g-tap svg{width:100%;height:100%;animation:gTap 1.6s ease-in-out infinite;transform-origin:50% 10%}
+.g-tap::before{content:"";position:absolute;left:3px;top:-12px;width:26px;height:26px;border-radius:50%;border:2px solid #EFC15C;animation:gRing 1.6s ease-out infinite}
+.g-tap.dk::before{border-color:var(--gp-2)}
+.g-fab{display:none;position:fixed;left:20px;bottom:20px;z-index:80;align-items:center;gap:8px;height:44px;padding:0 18px 0 14px;border-radius:999px;
+  border:1px solid rgba(156,50,38,.25);background:rgba(255,253,248,.96);color:var(--red);font-family:var(--body);font-size:13px;cursor:pointer;
+  box-shadow:0 10px 26px -12px rgba(17,48,42,.45);backdrop-filter:blur(8px);transition:.2s;animation:gIn .5s .3s both}
+.g-fab:hover{background:#FFF4F1;border-color:var(--red)}
+.g-fab .ic svg{width:17px;height:17px;display:block}
+body.g-on .g-fab{display:inline-flex}
+.mb-exit{display:none}
+body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){
+  body.g-on .g-fab{display:none}
+  body.g-on .mb-exit{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex:0 0 auto;width:48px;height:46px;border-radius:12px;
+    border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);color:#F6C9BF;font-family:var(--body);font-size:9.5px;letter-spacing:.06em;cursor:pointer}
+  body.g-on .mb-exit svg{width:18px;height:18px}
+}
+.g-mem li span{display:block}
+.g-nt{display:block;font-style:italic;font-size:11.5px;color:var(--gp);margin-top:1px}
+.gm .opts{display:grid;gap:10px;margin-top:18px}
+.gm .opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:14px;background:#fff;padding:13px 15px;cursor:pointer;font-family:var(--body);transition:.2s}
+.gm .opt b{display:block;font-weight:500;font-size:14.5px;color:var(--ink)}
+.gm .opt small{display:block;font-size:12px;color:var(--mute);margin-top:2px;line-height:1.45}
+.gm .opt:hover{border-color:var(--gp)}
+.gm .opt.danger{border-color:rgba(156,50,38,.3);background:#FFF7F5}
+.gm .opt.danger b{color:var(--red)}
+.gm .opt.danger:hover{border-color:var(--red)}
+.gm .row button.danger{background:var(--red);border-color:var(--red);color:#fff}
+.gb-act button,.gm .row button{position:relative}
+.gm .row .g-tap{bottom:-12px}
+.gm .fwrap .g-tap{right:18px;bottom:-14px}
+.gb-ren .g-tap{right:-6px;bottom:-24px}
+
+/* ---- huong dan dong ---- */
+.gt-bg{position:fixed;inset:0;z-index:160;background:rgba(17,48,42,.62);backdrop-filter:blur(4px);opacity:0;visibility:hidden;transition:.3s}
+.gt{position:fixed;left:50%;top:50%;z-index:161;width:min(380px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;border-radius:22px;
+  background:#FFFDF8;box-shadow:0 30px 80px rgba(17,48,42,.45);transform:translate(-50%,-44%) scale(.94);opacity:0;visibility:hidden;
+  transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .25s,visibility .3s}
+.gt-bg.on,.gt.on{opacity:1;visibility:visible}
+.gt.on{transform:translate(-50%,-50%) scale(1)}
+.gt-head{position:relative;padding:14px 16px 0;background:linear-gradient(160deg,var(--gp-ink),var(--gp) 70%,var(--gp-2));}
+.gt-bars{display:flex;gap:5px;padding-right:40px}
+.gt-bars i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.gt-bars i b{display:block;height:100%;width:0;background:#EFC15C;border-radius:3px}
+.gt-bars i.done b{width:100%}
+.gt-bars i.run b{animation:gtBar var(--d,5s) linear forwards}
+.gt.paused .gt-bars i.run b{animation-play-state:paused}
+@keyframes gtBar{to{width:100%}}
+.gt-x{position:absolute;top:6px;right:8px;width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:19px;cursor:pointer}
+.gt-stage{position:relative;height:250px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer}
+.gt-stage::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;left:50%;top:40%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(239,193,92,.25),transparent 65%)}
+.ph{position:relative;width:200px;height:226px;border-radius:24px 24px 0 0;background:#FDF8EF;border:6px solid #0B201B;border-bottom:0;
+  padding:16px 12px 0;box-shadow:0 -10px 40px -10px rgba(0,0,0,.4);font-family:var(--body);color:var(--ink);overflow:hidden}
+.ph::before{content:"";position:absolute;top:5px;left:50%;width:46px;height:5px;border-radius:5px;background:#0B201B;transform:translateX(-50%)}
+.gt-txt{padding:18px 22px 4px;text-align:center}
+.gt-txt small{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gp)}
+.gt-txt h4{font-family:var(--disp);font-size:26px;font-weight:500;line-height:1.15;margin-top:4px;animation:gIn .45s both}
+.gt-txt p{font-size:13.5px;color:var(--mute);line-height:1.6;margin-top:6px;min-height:44px;animation:gIn .45s .08s both}
+.gt-nav{display:flex;gap:10px;padding:14px 22px 20px}
+.gt-nav button{flex:1;height:46px;border-radius:999px;font-family:var(--body);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--mute);transition:.2s}
+.gt-nav button.pri{background:var(--gp);border-color:var(--gp);color:#fff}
+.gt-nav button.pri:hover{background:var(--gp-ink)}
+.gt-nav button[disabled]{opacity:.35;pointer-events:none}
+/* canh minh hoa */
+.sc *{animation-fill-mode:both}
+.s-card{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid var(--gp-line);background:#F3F7F1;font-size:11px;position:relative}
+.s-card .ic{width:26px;height:26px;border-radius:8px;background:var(--gp);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.s-card .ic svg{width:15px;height:15px}
+.s-card b{font-weight:500;display:block;font-size:11.5px}
+.s-card small{font-size:8.5px;color:var(--mute)}
+.s-hand{position:absolute;width:26px;height:33px;z-index:5;filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
+.s-hand svg{width:100%;height:100%}
+.s-in{margin-top:9px;height:30px;border-radius:8px;border:1.5px solid var(--gp);background:#fff;display:flex;align-items:center;padding:0 9px;font-size:11.5px;
+  box-shadow:0 0 0 3px var(--gp-soft)}
+.s-in span{display:inline-block;overflow:hidden;white-space:nowrap;width:0}
+.s-in i{width:1.5px;height:14px;background:var(--gp);margin-left:1px;animation:sBlink .8s steps(1) infinite}
+@keyframes sBlink{50%{opacity:0}}
+.s-lbl{font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-top:10px}
+.s-btn{margin-top:9px;height:30px;border-radius:999px;background:var(--gp);color:#fff;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:5px;position:relative}
+.s-code{display:flex;gap:4px;justify-content:center;margin-top:4px}
+.s-code span{width:30px;height:36px;border-radius:7px;background:var(--gp-soft);border:1px solid var(--gp-line);font-family:var(--disp);font-size:21px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;color:var(--gp-ink)}
+.s-apps{display:flex;justify-content:center;gap:12px;margin-top:16px}
+.s-app{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:8.5px;color:var(--mute)}
+.s-app i{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-style:normal;font-size:15px}
+.s-fly{position:absolute;left:50%;top:84px;width:62px;height:20px;margin-left:-31px;border-radius:6px;background:#fff;border:1px solid var(--gp-line);
+  font-size:7px;display:flex;align-items:center;justify-content:center;color:var(--gp-ink);box-shadow:0 4px 10px -4px rgba(0,0,0,.3)}
+.s-ok{position:absolute;left:0;right:0;margin:0 auto;width:max-content;bottom:14px;white-space:nowrap;background:var(--gp-ink);color:#fff;font-size:9px;padding:5px 10px;border-radius:999px}
+.s-mem{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px dotted var(--line);font-size:10px}
+.s-mem .a{width:22px;height:22px;border-radius:50%;color:#fff;font-size:9px;font-weight:500;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.s-mem .n{flex:1;font-weight:500}
+.s-mem .it{font-size:8.5px;background:var(--gp-soft);color:var(--gp-ink);border-radius:999px;padding:2px 6px}
+.s-tot{margin-top:9px;border-radius:9px;background:linear-gradient(135deg,var(--gp-ink),var(--gp));color:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
+.s-tot small{font-size:7px;letter-spacing:.16em;text-transform:uppercase;opacity:.75}
+.s-tot .v{position:relative;height:20px;width:80px;text-align:right}
+.s-tot .v span{position:absolute;right:0;top:0;font-family:var(--disp);font-size:17px;line-height:20px}
+.s-done{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FDF8EF;gap:8px}
+.s-done .c{width:46px;height:46px;border-radius:50%;background:#1F6B4A;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center}
+.s-done b{font-family:var(--disp);font-size:18px;font-weight:500}
+.s-done small{font-size:9px;color:var(--mute)}
+.s-dot{position:absolute;width:6px;height:6px;border-radius:2px;left:50%;top:44%}
+@keyframes sFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes sPop{0%{opacity:0;transform:scale(.3)}70%{transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes sType{to{width:var(--w)}}
+@keyframes sPress{0%,100%{transform:scale(1)}50%{transform:scale(.93)}}
+@keyframes sShow{from{opacity:0}to{opacity:1}}
+@keyframes sHide{to{opacity:0}}
+@keyframes sFlash{0%,20%{opacity:0}30%,55%{opacity:1}65%,100%{opacity:0}}
+@keyframes sFlashEnd{0%,60%{opacity:0}70%,100%{opacity:1}}
+@keyframes sH1{0%{left:150px;top:205px;opacity:0}8%{opacity:1}17%{left:118px;top:30px;transform:none}19%{transform:scale(.85)}21%{transform:none}33%{left:138px;top:112px}70%{left:138px;top:112px}77%{left:96px;top:166px;transform:none}79%{transform:scale(.85)}81%{transform:none}100%{left:96px;top:166px;opacity:1}}
+@keyframes sH2{0%{left:150px;top:205px;opacity:0}8%{opacity:1}20%{left:104px;top:116px;transform:none}23%{transform:scale(.85)}26%{transform:none}48%{left:104px;top:116px}58%{left:30px;top:178px;transform:none}61%{transform:scale(.85)}64%{transform:none}100%{left:30px;top:178px;opacity:1}}
+@keyframes sH4{0%{left:150px;top:205px;opacity:0}10%{opacity:1}26%{left:100px;top:150px;transform:none}29%{transform:scale(.85)}32%{transform:none}38%{opacity:1}42%{opacity:0}100%{opacity:0;left:100px;top:150px}}
+@keyframes sFlyK{0%{opacity:0;transform:none}15%{opacity:1}80%{opacity:1;transform:translate(-52px,78px) scale(.4)}100%{opacity:0;transform:translate(-52px,78px) scale(.3)}}
+@keyframes sFlashStart{0%,25%{opacity:1}35%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.g-tap svg,.g-tap::before,.g-how .pl{animation:none!important}}
+
 @media (prefers-reduced-motion:reduce){
   .g-start,.g-start::after,.g-bar,.g-bar::after,.g-mem,.g-ava,.g-av .a,.gb-code b span,.gm .tiles span,.gm .steps li,.g-mode i,.gb-live i,.g-dots i,.g-start .ic svg{animation:none!important}
   .g-wipe,.g-conf{display:none!important}
@@ -1105,15 +1416,26 @@ body.g-locked .g-note{display:none!important}
     grp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.2c2.3.2 4 1.7 4.5 4.3"/></svg>',
     share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a3 3 0 1 0-2.8-4"/><path d="M8.6 10.7l6.8-3.4M8.6 13.3l6.8 3.4"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/></svg>',
     list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
-    link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>'
+    link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+    exit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9 16l-4-4 4-4M5 12h11"/></svg>',
+    pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>',
+    hand:'<svg viewBox="0 0 32 40"><path d="M12 4.5c0-1.7 1.3-3 3-3s3 1.3 3 3V16l1-.2c1.5-.3 2.9.5 3.3 1.9l.1.4.7-.1c1.5-.2 2.8.7 3.1 2.1l.1.5.5-.1c1.6-.2 3 .9 3.2 2.5l.6 5.4c.4 3.6-.6 7.1-2.9 9.8l-.4.5c-.6.7-1.4 1.1-2.3 1.1H14.6c-1 0-1.9-.5-2.5-1.3L5.3 28.6c-1-1.4-.8-3.3.5-4.4 1.2-1 3-1 4.1.1L12 26.4V4.5z" fill="#fff" stroke="#11302A" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 16v7M22.4 18.2V23M26.3 20.8V24" stroke="#11302A" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>'
   };
+  function setHand(el, on, dark){
+    if(!el) return;
+    const h = el.querySelector(':scope > .g-tap');
+    if(on && !h){ el.insertAdjacentHTML('beforeend', '<span class="g-tap' + (dark ? ' dk' : '') + '" aria-hidden="true">' + ICO.hand + '</span>'); }
+    else if(!on && h) h.remove();
+  }
   const hero = document.querySelector('.hero');
   hero.insertAdjacentHTML('afterbegin', '<div class="g-mode"><i></i>Chế độ đặt nhóm</div>');
   hero.insertAdjacentHTML('beforeend',
     '<button type="button" class="g-start" id="gStart"><span class="ic">' + ICO.grp + '</span><span><b>Đặt theo nhóm <em>MỚI</em></b>' +
     '<small>Gửi link cho bạn bè · mỗi người tự chọn món · gửi đơn một lần</small></span><span class="ar">→</span></button>' +
+    '<button type="button" class="g-how" id="gHow"><span class="pl">▶</span><u>Xem cách đặt theo nhóm</u> · 20 giây</button>' +
     '<div class="g-bar" id="gBar">' +
-      '<div class="gb-top"><span class="gb-live"><i></i><span id="gbLive">Đang mở · tự lưu</span></span><span class="gb-role" id="gbRole"></span></div>' +
+      '<div class="gb-top"><span class="gb-live"><i></i><span id="gbLive">Đang mở · tự lưu</span></span><span><span class="gb-role" id="gbRole"></span><button type="button" class="gb-help" id="gbHelp" aria-label="Hướng dẫn">?</button></span></div>' +
+      '<div class="gb-name"><b id="gbName"></b><button type="button" class="gb-ren" id="gbRename"></button></div>' +
       '<div class="gb-main"><div class="gb-code"><small>Mã nhóm</small><b id="gbCode"></b></div>' +
         '<div class="g-av" id="gbAv"></div>' +
         '<div class="gb-sum"><b id="gbTotal">0đ</b><small id="gbInfo"></small></div></div>' +
@@ -1145,22 +1467,59 @@ body.g-locked .g-note{display:none!important}
     return '';
   }
   const top = (eye, title, ic) => '<div class="gm-top"><div class="gm-ic">' + (ic || ICO.grp) + '</div><div class="eye">' + eye + '</div><h3 id="gmH">' + title + '</h3></div>';
-  function askName(title, sub, btn, cb, steps){
+  const NAME_SUGG = ['Văn phòng', 'Hội bạn thân', 'Gia đình', 'Team dự án', 'Lớp học'];
+  const chipsHtml = cur => '<div class="chips">' + NAME_SUGG.map(t=>'<button type="button"' + (t === cur ? ' class="on"' : '') + '>' + t + '</button>').join('') + '</div>';
+  function bindChips(input){
+    $('#gmBody').querySelectorAll('.chips button').forEach(b=>b.addEventListener('click', ()=>{
+      input.value = b.textContent; $('#gmBody').querySelectorAll('.chips button').forEach(x=>x.classList.toggle('on', x === b));
+      setHand(input.parentNode, false); input.focus();
+    }));
+    input.addEventListener('input', ()=>setHand(input.parentNode, false));
+  }
+  function askName(title, sub, btn, cb, steps, withGroup){
     modal(top('Đặt theo nhóm', title) + '<div class="in">' +
       (steps ? '<ul class="steps">' + steps.map((t,i)=>'<li><i>' + (i+1) + '</i><span>' + t + '</span></li>').join('') + '</ul>' : '<p>' + sub + '</p>') +
+      (withGroup ? '<label class="lbl" for="gmName">Tên của bạn</label>' : '') +
       '<input id="gmName" maxlength="30" placeholder="Tên của bạn — ví dụ: Lan" value="' + esc(defaultName()) + '">' +
-      '<div class="row"><button type="button" id="gmNo">Để sau</button><button type="button" class="pri" id="gmOk">' + btn + '</button></div></div>');
+      (withGroup ? '<label class="lbl" for="gmGroup">Tên nhóm <em>(không bắt buộc)</em></label>' +
+        '<div class="fwrap"><input id="gmGroup" maxlength="40" placeholder="Ví dụ: Phòng Kế toán"></div>' + chipsHtml('') : '') +
+      '<div class="row"><button type="button" id="gmNo">Để sau</button><button type="button" class="pri" id="gmOk">' + btn + '</button></div>' +
+      '<button type="button" class="how" id="gmHow">▶ Xem hướng dẫn 20 giây</button></div>');
+    const gi = $('#gmGroup');
+    if(gi){ setHand(gi.parentNode, true, true); bindChips(gi); }
     const go = ()=>{
       const v = $('#gmName').value.trim();
       if(!v){ $('#gmName').focus(); toast('Nhập tên để mọi người biết món nào của bạn'); return; }
-      $('#gmOk').disabled = true; $('#gmOk').textContent = 'Đang vào…'; cb(v);
+      $('#gmOk').disabled = true; $('#gmOk').textContent = 'Đang vào…'; cb(v, gi ? gi.value.trim() : '');
     };
     $('#gmOk').addEventListener('click', go);
-    $('#gmName').addEventListener('keydown', e=>{ if(e.key === 'Enter') go(); });
+    $('#gmName').addEventListener('keydown', e=>{ if(e.key === 'Enter') (gi && !gi.value ? gi.focus() : go()); });
+    if(gi) gi.addEventListener('keydown', e=>{ if(e.key === 'Enter') go(); });
+    $('#gmNo').addEventListener('click', closeModal);
+    $('#gmHow').addEventListener('click', ()=>{ closeModal(); openGuide(0); });
+  }
+  const gTitle = g => g.name || ('Nhóm của ' + g.host.name);
+  function renameModal(){
+    const g = G.group; if(!g) return;
+    modal(top('Tên nhóm', 'Đặt tên cho nhóm', ICO.pen) + '<div class="in">' +
+      '<p>Tên nhóm hiện trên link mời và trong đơn gửi quán — giúp mọi người nhận ra đúng nhóm.</p>' +
+      '<div class="fwrap"><input id="gmGroup" maxlength="40" placeholder="Ví dụ: Phòng Kế toán" value="' + esc(g.name || '') + '"></div>' + chipsHtml(g.name) +
+      '<div class="row"><button type="button" id="gmNo">Huỷ</button><button type="button" class="pri" id="gmOk">Lưu tên</button></div></div>');
+    const gi = $('#gmGroup'); bindChips(gi); setTimeout(()=>gi.select(), 260);
+    const go = async ()=>{
+      const v = gi.value.trim();
+      $('#gmOk').disabled = true; $('#gmOk').textContent = 'Đang lưu…';
+      const r = await api({ a:'rename', code:G.code, mid:G.mid, tok:G.tok, gname:v });
+      if(!r.ok){ $('#gmOk').disabled = false; $('#gmOk').textContent = 'Lưu tên'; toast(r.err || 'Chưa lưu được'); return; }
+      G.group = r.group; paint(); closeModal(); toast(v ? 'Đã đặt tên nhóm “' + v + '”' : 'Đã bỏ tên nhóm');
+    };
+    $('#gmOk').addEventListener('click', go);
+    gi.addEventListener('keydown', e=>{ if(e.key === 'Enter') go(); });
     $('#gmNo').addEventListener('click', closeModal);
   }
   function shareModal(){
     modal(top('Nhóm đã sẵn sàng', 'Mời mọi người cùng chọn', ICO.share) + '<div class="in">' +
+      (G.group ? '<div class="gname"><small>' + (G.group.name ? 'Nhóm' : 'Mã nhóm') + '</small>' + esc(G.group.name || 'Nhóm của ' + G.group.host.name) + '</div>' : '') +
       '<div class="tiles">' + G.code.split('').map(c=>'<span>' + c + '</span>').join('') + '</div>' +
       '<div class="link">' + esc(groupLink().replace(/^https?:\/\//,'')) + '</div>' +
       '<p>Gửi link qua Zalo / Messenger. Ai mở link sẽ tự chọn món của mình — bạn thấy ngay trong đơn nhóm.</p>' +
@@ -1170,9 +1529,13 @@ body.g-locked .g-note{display:none!important}
       try{ await navigator.clipboard.writeText(groupLink()); toast('Đã sao chép link nhóm'); $('#gmCopy').innerHTML = '✓ Đã chép'; }catch(e){ toast(groupLink()); }
     });
     const s = $('#gmShare');
+    setHand(s || $('#gmCopy'), true);
+    const gn = G.group && G.group.name ? '“' + G.group.name + '” ' : '';
     if(s) s.addEventListener('click', ()=>{
-      navigator.share({ title:'Đặt nước cùng nhóm — The Curator', text:G.name + ' mời bạn chọn món cùng nhóm ' + G.code, url:groupLink() }).catch(()=>{});
+      setHand(s, false);
+      navigator.share({ title:'Đặt nước cùng nhóm — The Curator', text:G.name + ' mời bạn chọn món cùng nhóm ' + gn + '(mã ' + G.code + ')', url:groupLink() }).catch(()=>{});
     });
+    $('#gmCopy').addEventListener('click', ()=>setHand($('#gmCopy'), false));
     const d = $('#gmDone'); if(d) d.addEventListener('click', closeModal);
   }
 
@@ -1228,7 +1591,9 @@ body.g-locked .g-note{display:none!important}
     setUrl(G.code);
     document.body.classList.add('g-on');
     const me = group.members.find(m => m.mid === G.mid);
-    if(me){ Object.keys(cart).forEach(k=>delete cart[k]); Object.keys(me.cart).forEach(k=>{ if(ITEMS[k]) cart[k] = me.cart[k]; }); }
+    if(me){ Object.keys(cart).forEach(k=>delete cart[k]); Object.keys(NOTES).forEach(k=>delete NOTES[k]);
+      Object.keys(me.cart).forEach(k=>{ if(ITEMS[k]) cart[k] = me.cart[k]; });
+      Object.keys(me.notes || {}).forEach(k=>{ if(cart[k]) NOTES[k] = me.notes[k].slice(); }); }
     G.dirty = false; G.seen = null; sync(); _render(); paint();
     clearInterval(G.poll); G.poll = setInterval(refresh, POLL_MS);
   }
@@ -1240,13 +1605,13 @@ body.g-locked .g-note{display:none!important}
     document.body.classList.remove('g-on','g-member','g-locked');
     sumH.textContent = H0; sumP.textContent = P0; totLb.textContent = T0;
     const sb = $('#btnSend'); if(!sb.disabled) sb.textContent = 'Gửi đơn hàng';
-    if(clearCart){ Object.keys(cart).forEach(k=>delete cart[k]); }
+    if(clearCart){ Object.keys(cart).forEach(k=>delete cart[k]); Object.keys(NOTES).forEach(k=>delete NOTES[k]); }
     sync(); _render();
   }
 
   $('#gStart').addEventListener('click', ()=>{
-    askName('Tạo nhóm đặt nước', 'Bạn là trưởng nhóm — mọi người chọn món, bạn điền thông tin nhận và gửi đơn một lần.', 'Tạo nhóm', async name=>{
-      const r = await api({ a:'create', name, cart });
+    askName('Tạo nhóm đặt nước', 'Bạn là trưởng nhóm — mọi người chọn món, bạn điền thông tin nhận và gửi đơn một lần.', 'Tạo nhóm', async (name, gname)=>{
+      const r = await api({ a:'create', name, gname, cart, notes:NOTES });
       if(!r.ok){ closeModal(); toast(r.err || 'Không tạo được nhóm'); return; }
       closeModal();
       wipe(r.code, $('#gStart'), ()=>{
@@ -1255,17 +1620,48 @@ body.g-locked .g-note{display:none!important}
         window.scrollTo({top:0});
         setTimeout(shareModal, 900);
       });
-    }, ['Bạn tạo nhóm và gửi link cho mọi người', 'Mỗi người tự chọn món trên máy mình — đơn tự cập nhật', 'Bạn điền thông tin nhận và gửi đơn một lần']);
+    }, ['Bạn tạo nhóm và gửi link cho mọi người', 'Mỗi người tự chọn món trên máy mình — đơn tự cập nhật', 'Bạn điền thông tin nhận và gửi đơn một lần'], true);
   });
   $('#gbShare').addEventListener('click', shareModal);
+  $('#gbRename').addEventListener('click', renameModal);
+  $('#gbHelp').addEventListener('click', ()=>openGuide(0));
+  $('#gHow').addEventListener('click', ()=>openGuide(0));
   $('#gbView').addEventListener('click', ()=> $('#summary').scrollIntoView({behavior:'smooth', block:'start'}));
-  $('#gExit').addEventListener('click', async ()=>{
-    const isHost = G.group && G.group.host.mid === G.mid;
-    const open = G.group && G.group.status === 'open';
-    if(open && !confirm(isHost ? 'Thoát chế độ nhóm? Nhóm vẫn giữ trong 6 giờ, mở lại link để quay về.' : 'Rời nhóm? Món bạn đã chọn sẽ bị xoá khỏi đơn nhóm.')) return;
-    if(open && !isHost) await api({ a:'leave', code:G.code, mid:G.mid, tok:G.tok });
-    leave(true);
-  });
+  /* nut thoat / giai tan co dinh duoi man hinh */
+  document.body.insertAdjacentHTML('beforeend', '<button type="button" class="g-fab" id="gFab"><span class="ic">' + ICO.exit + '</span><span id="gFabT">Rời nhóm</span></button>');
+  $('#mbar').insertAdjacentHTML('afterbegin', '<button type="button" class="mb-exit" id="mbExit" aria-label="Rời hoặc giải tán nhóm">' + ICO.exit + '<span id="mbExitT">Rời</span></button>');
+  function exitFlow(){
+    const g = G.group; if(!g) return leave(true);
+    const isHost = g.host.mid === G.mid;
+    if(g.status !== 'open'){ leave(true); return; }
+    if(isHost){
+      modal(top('Trưởng nhóm', 'Kết thúc nhóm “' + esc(gTitle(g)) + '”?', ICO.exit) + '<div class="in">' +
+        '<div class="opts">' +
+          '<button type="button" class="opt danger" id="gxDis"><b>Giải tán nhóm</b><small>Xoá nhóm cho cả ' + g.members.length + ' người · đơn nhóm sẽ không được gửi</small></button>' +
+          '<button type="button" class="opt" id="gxLeave"><b>Chỉ thoát trên máy này</b><small>Nhóm vẫn giữ 6 giờ · mở lại link để quay về</small></button>' +
+        '</div><div class="row"><button type="button" id="gmNo">Ở lại nhóm</button></div></div>');
+      $('#gxDis').addEventListener('click', async ()=>{
+        const b = $('#gxDis'); b.disabled = true; b.querySelector('b').textContent = 'Đang giải tán…';
+        const r = await api({ a:'disband', code:G.code, mid:G.mid, tok:G.tok });
+        if(!r.ok){ b.disabled = false; b.querySelector('b').textContent = 'Giải tán nhóm'; toast(r.err || 'Chưa giải tán được'); return; }
+        closeModal(); leave(true); toast('Đã giải tán nhóm — mọi người sẽ nhận được thông báo');
+      });
+      $('#gxLeave').addEventListener('click', ()=>{ closeModal(); leave(true); toast('Đã thoát — nhóm vẫn giữ 6 giờ'); });
+    } else {
+      modal(top('Thành viên', 'Rời nhóm “' + esc(gTitle(g)) + '”?', ICO.exit) + '<div class="in">' +
+        '<p>Món bạn đã chọn sẽ được xoá khỏi đơn nhóm. Bạn có thể vào lại bằng link mời nếu nhóm còn mở.</p>' +
+        '<div class="row"><button type="button" id="gmNo">Ở lại</button><button type="button" class="pri danger" id="gxOut">Rời nhóm</button></div></div>');
+      $('#gxOut').addEventListener('click', async ()=>{
+        $('#gxOut').disabled = true;
+        await api({ a:'leave', code:G.code, mid:G.mid, tok:G.tok });
+        closeModal(); leave(true); toast('Đã rời nhóm');
+      });
+    }
+    $('#gmNo').addEventListener('click', closeModal);
+  }
+  $('#gExit').addEventListener('click', exitFlow);
+  $('#gFab').addEventListener('click', exitFlow);
+  $('#mbExit').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); exitFlow(); });
 
   /* ---------- luu & dong bo ---------- */
   function queueSave(){
@@ -1276,7 +1672,7 @@ body.g-locked .g-note{display:none!important}
   async function save(){
     if(!G.dirty || G.saving) return;
     G.saving = true; G.dirty = false;
-    const r = await api({ a:'save', code:G.code, mid:G.mid, tok:G.tok, cart });
+    const r = await api({ a:'save', code:G.code, mid:G.mid, tok:G.tok, cart, notes:NOTES });
     G.saving = false;
     if(r.ok){ G.group = r.group; paint(); }
     else if(r.gone){ toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
@@ -1288,6 +1684,7 @@ body.g-locked .g-note{display:none!important}
     if(!G.code || document.hidden || G.saving || G.dirty) return;
     const r = await api();
     if(!r.ok){ if(r.err && /tồn tại|hết hạn/.test(r.err)){ toast('Nhóm đã hết hạn'); leave(false); } return; }
+    if(r.group.status === 'closed'){ if(r.group.host.mid !== G.mid) toast('Trưởng nhóm đã giải tán nhóm ' + gTitle(r.group)); leave(false); return; }
     if(!r.group.members.some(m => m.mid === G.mid)){ toast('Bạn đã bị xoá khỏi nhóm'); leave(false); return; }
     G.group = r.group; paint();
   }
@@ -1303,11 +1700,20 @@ body.g-locked .g-note{display:none!important}
     g.members.forEach(m => { const c = cartOf(m), n = lineCnt(c); total += lineSum(c); count += n; if(n) ready++; });
     // phat hien thanh vien moi / thay doi mon
     const first = !G.seen, prev = G.seen || {}, now = {};
-    g.members.forEach(m => { now[m.mid] = JSON.stringify(m.cart || {}); });
+    g.members.forEach(m => { now[m.mid] = JSON.stringify([m.cart || {}, m.notes || {}]); });
     if(!first) g.members.forEach(m => { if(!(m.mid in prev) && m.mid !== G.mid) toast(m.name + ' vừa vào nhóm'); });
     G.seen = now;
 
-    sumH.textContent = 'Đơn nhóm ' + g.code;
+    sumH.textContent = g.name ? 'Đơn nhóm · ' + g.name : 'Đơn nhóm ' + g.code;
+    const nmEl = $('#gbName'); nmEl.textContent = gTitle(g); nmEl.classList.toggle('empty', !g.name);
+    const rb = $('#gbRename'), rKey = g.name ? 'i' : 't';
+    if(rb.dataset.k !== rKey){ rb.dataset.k = rKey; rb.className = 'gb-ren' + (g.name ? ' icon' : '');
+      rb.innerHTML = g.name ? ICO.pen : ICO.pen + 'Đặt tên nhóm'; rb.setAttribute('aria-label', 'Đổi tên nhóm'); }
+    setHand(rb, isHost && !sent && !g.name);
+    setHand($('#gbShare'), isHost && !sent && g.members.length === 1);
+    const xt = sent ? 'Đóng nhóm' : (isHost ? 'Thoát / giải tán nhóm' : 'Rời nhóm');
+    $('#gFabT').textContent = xt; $('#mbExitT').textContent = sent ? 'Đóng' : (isHost ? 'Thoát' : 'Rời');
+    $('#gExit').textContent = xt;
     sumP.textContent = isHost ? 'Bạn là trưởng nhóm · điền thông tin nhận rồi gửi một lần.' : 'Trưởng nhóm: ' + g.host.name + ' · món của bạn tự lưu';
     totLb.textContent = 'Phần của bạn';
     const codeEl = $('#gbCode');
@@ -1327,7 +1733,7 @@ body.g-locked .g-note{display:none!important}
     $('#gTotSub').textContent = ready + '/' + g.members.length + ' người đã chọn';
     const L = $('#gList'); L.innerHTML = '';
     g.members.forEach((m, i)=>{
-      const mine = m.mid === G.mid, c = cartOf(m);
+      const mine = m.mid === G.mid, c = cartOf(m), nts = mine ? NOTES : (m.notes || {});
       const keys = Object.keys(c).filter(k => ITEMS[k]), sub = lineSum(c);
       const d = document.createElement('div');
       d.className = 'g-mem' + (mine ? ' me' : '') + (first || !(m.mid in prev) ? ' is-new' : (!mine && prev[m.mid] !== now[m.mid] ? ' is-upd' : ''));
@@ -1336,7 +1742,7 @@ body.g-locked .g-note{display:none!important}
         (m.mid === g.host.mid ? '<span class="tag">★ Trưởng nhóm</span>' : '') + '</span>' +
         '<span class="st">' + (keys.length ? vnd(sub) : '') + '</span>' +
         (isHost && !mine && !sent ? '<button type="button" class="x" aria-label="Xoá ' + esc(m.name) + '">×</button>' : '') + '</div>' +
-        (keys.length ? '<ul>' + keys.map(k => '<li><span>' + esc(ITEMS[k].n) + ' <b>× ' + c[k] + '</b></span></li>').join('') + '</ul>' +
+        (keys.length ? '<ul>' + keys.map(k => { const t = noteText(k, nts); return '<li><span>' + esc(ITEMS[k].n) + ' <b>× ' + c[k] + '</b>' + (t ? '<em class="g-nt">✎ ' + esc(t) + '</em>' : '') + '</span></li>'; }).join('') + '</ul>' +
                        '<div class="g-bar-s"><i style="width:' + (total ? Math.max(4, Math.round(sub/total*100)) : 0) + '%"></i></div>'
                      : '<div class="wait">' + (mine ? 'Bấm dấu cộng ở menu để chọn món' : '<span class="g-dots"><i></i><i></i><i></i></span> Đang chọn món') + '</div>') + '</div>';
       const x = d.querySelector('.x');
@@ -1357,7 +1763,7 @@ body.g-locked .g-note{display:none!important}
       clearInterval(G.poll); G.poll = null;
     }
     const sb = $('#btnSend'); if(isHost && !sb.disabled) sb.textContent = 'Gửi đơn nhóm · ' + vnd(total);
-    $('#mbLb').textContent = 'Nhóm ' + g.code + ' · ' + g.members.length + ' người';
+    $('#mbLb').textContent = (g.name || 'Nhóm ' + g.code) + ' · ' + g.members.length + ' người';
     $('#mbVal').textContent = vnd(total);
   }
 
@@ -1377,6 +1783,7 @@ body.g-locked .g-note{display:none!important}
     const btn = e.target.closest && e.target.closest('#btnSend');
     if(!btn || !G.code) return;
     e.stopPropagation(); e.preventDefault();
+    if(G.group && G.group.host.mid !== G.mid){ toast('Chỉ trưởng nhóm gửi đơn — món của bạn đã nằm trong đơn nhóm'); return; }
     const miss = [['#name','tên'],['#phone','số điện thoại']].filter(([s])=>{
       const el = $(s), bad = !el.value.trim(); el.classList.toggle('err', bad); return bad; });
     if(miss.length){ toast('Vui lòng điền ' + miss.map(m=>m[1]).join(' và ')); $(miss[0][0]).focus(); return; }
@@ -1385,16 +1792,16 @@ body.g-locked .g-note{display:none!important}
     const r = await api({ a:'send', code:G.code, mid:G.mid, tok:G.tok });
     if(!r.ok){ btn.disabled = false; btn.textContent = 'Gửi đơn nhóm'; paint(); toast(r.err || 'Chưa gửi được'); return; }
     G.group = r.group;
-    const g = r.group, code = 'NHOM-' + g.code, D = ['Mã đơn: ' + code + ' (' + g.members.length + ' người)'];
+    const g = r.group, code = 'NHOM-' + g.code, D = ['Mã đơn: ' + code + (g.name ? ' · ' + g.name : '') + ' (' + g.members.length + ' người)'];
     let total = 0, count = 0;
     g.members.forEach(m=>{
       const keys = Object.keys(m.cart).filter(k => ITEMS[k]); if(!keys.length) return;
       D.push('— ' + m.name + ':');
-      keys.forEach(k=>{ D.push('  ' + ITEMS[k].n + ' x ' + m.cart[k] + ' = ' + vnd(ITEMS[k].p * m.cart[k])); total += ITEMS[k].p * m.cart[k]; count += m.cart[k]; });
+      keys.forEach(k=>{ const t = noteText(k, m.notes || {}); D.push('  ' + ITEMS[k].n + ' x ' + m.cart[k] + ' = ' + vnd(ITEMS[k].p * m.cart[k]) + (t ? ' — ' + t : '')); total += ITEMS[k].p * m.cart[k]; count += m.cart[k]; });
     });
     const ship = document.querySelector('input[name=ship]:checked').value;
     const data = {};
-    data[GFORM.f.name] = $('#name').value.trim() + ' (trưởng nhóm ' + g.code + ')';
+    data[GFORM.f.name] = $('#name').value.trim() + ' (trưởng nhóm ' + g.code + (g.name ? ' · ' + g.name : '') + ')';
     data[GFORM.f.phone] = $('#phone').value.trim();
     data[GFORM.f.detail] = D.join('\n');
     data[GFORM.f.total] = count + ' món — ' + vnd(total) + ' — ĐƠN NHÓM ' + g.members.length + ' người';
@@ -1415,6 +1822,83 @@ body.g-locked .g-note{display:none!important}
   // "Dat don khac" sau khi gui nhom -> thoat che do nhom
   $('#btnAgain').addEventListener('click', ()=>{ if(G.code) leave(true); });
 
+
+  /* ---------- huong dan dong ---------- */
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="gt-bg" id="gtBg"></div><div class="gt" id="gt" role="dialog" aria-modal="true" aria-label="Hướng dẫn đặt theo nhóm">' +
+    '<div class="gt-head"><div class="gt-bars" id="gtBars"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>' +
+    '<button type="button" class="gt-x" id="gtX" aria-label="Đóng">×</button><div class="gt-stage" id="gtStage"></div></div>' +
+    '<div class="gt-txt"><small id="gtStep"></small><h4 id="gtH"></h4><p id="gtP"></p></div>' +
+    '<div class="gt-nav"><button type="button" id="gtPrev">‹ Trước</button><button type="button" class="pri" id="gtNext">Tiếp ›</button></div></div>');
+  const HANDS = (anim, extra) => '<span class="s-hand" style="animation:' + anim + ' 5s ease-in-out both' + (extra||'') + '">' + ICO.hand + '</span>';
+  const dl = (anim, d, t) => 'style="animation:' + anim + ' ' + (t||'.45s') + ' ' + d + 's both"';
+  const GUIDE = [
+    { t:'Tạo nhóm & đặt tên', p:'Bấm <b>Đặt theo nhóm</b>, nhập tên bạn và tên nhóm — ví dụ “Phòng Kế toán”.',
+      sc:()=> '<div class="ph sc"><div class="s-card" ' + dl('sFade',0) + '><span class="ic">' + ICO.grp + '</span><span><b>Đặt theo nhóm</b><small>Mỗi người tự chọn món</small></span></div>' +
+        '<div ' + dl('sFade',1.1) + '><div class="s-lbl">Tên nhóm</div><div class="s-in"><span style="--w:84px;animation:sType 1.3s steps(13) 1.6s both">Phòng Kế toán</span><i></i></div></div>' +
+        '<div class="s-btn" style="animation:sFade .4s 3s both,sPress .3s 3.9s">Tạo nhóm</div>' + HANDS('sH1') + '</div>' },
+    { t:'Gửi link mời', p:'Bấm <b>Chia sẻ</b> để gửi link qua Zalo, Messenger… Ai mở link là vào nhóm ngay.',
+      sc:()=> '<div class="ph sc"><div style="text-align:center;font-family:var(--disp);font-size:15px;color:var(--gp-ink)" ' + dl('sFade',0) + '>Phòng Kế toán</div>' +
+        '<div class="s-code">' + 'KZ9F'.split('').map((c,i)=>'<span ' + dl('sPop', .15 + i*.1) + '>' + c + '</span>').join('') + '</div>' +
+        '<div class="s-btn" style="animation:sFade .4s .5s both,sPress .3s 1.15s">' + ICO.share.replace('<svg','<svg width="11" height="11"') + ' Chia sẻ</div>' +
+        '<div class="s-apps" ' + dl('sFade',1.5) + '><span class="s-app"><i style="background:#1A73E8">Z</i>Zalo</span><span class="s-app"><i style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">M</i>Messenger</span><span class="s-app"><i style="background:#2E6B55">✉</i>Tin nhắn</span></div>' +
+        '<div class="s-fly" style="animation:sFlyK 1.1s 3.1s both">🔗 nhom=KZ9F</div>' +
+        '<div class="s-ok" ' + dl('sFade',4.1,'.35s') + '>✓ Đã gửi link vào nhóm chat</div>' + HANDS('sH2') + '</div>' },
+    { t:'Mỗi người tự chọn món', p:'Mọi người chọn món trên điện thoại của mình. Đơn nhóm <b>tự cập nhật</b> cho cả nhóm thấy.',
+      sc:()=> {
+        const M = [['H','Huy','#2E6B55','Bạc xỉu ×2'],['L','Lan','#A2546E','Matcha latte'],['A','Minh Anh','#4A6FA5','Trà vải']];
+        return '<div class="ph sc"><div style="font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gp)" ' + dl('sFade',0) + '>Thành viên · Phòng Kế toán</div>' +
+          M.map((m,i)=>'<div class="s-mem" ' + dl('sFade', .3 + i*.8) + '><span class="a" style="background:' + m[2] + ';animation:sPop .45s ' + (.35 + i*.8) + 's both">' + m[0] + '</span><span class="n">' + m[1] + '</span><span class="it" ' + dl('sPop', .8 + i*.8) + '>' + m[3] + '</span></div>').join('') +
+          '<div class="s-tot" ' + dl('sFade',.2) + '><small>Tổng cả nhóm</small><span class="v">' +
+          '<span style="animation:sShow .2s .8s both,sHide .2s 1.6s forwards">70.000đ</span><span style="animation:sShow .2s 1.6s both,sHide .2s 2.4s forwards">102.000đ</span><span style="animation:sShow .2s 2.4s both">131.000đ</span></span></div></div>'; } },
+    { t:'Trưởng nhóm gửi đơn', p:'Khi cả nhóm chọn xong, trưởng nhóm điền SĐT, giờ nhận rồi <b>gửi một lần</b>. Quán gọi lại xác nhận.',
+      sc:()=> '<div class="ph sc"><div class="s-tot" ' + dl('sFade',0) + '><small>3 người · 4 món</small><span class="v"><span>131.000đ</span></span></div>' +
+        '<div class="s-lbl">Số điện thoại</div><div class="s-in" style="box-shadow:none;border-color:var(--line)">0905 123 456</div>' +
+        '<div class="s-btn" style="margin-top:14px;animation:sPress .3s 1.35s">Gửi đơn nhóm · 131.000đ</div>' + HANDS('sH4') +
+        '<div class="s-done" ' + dl('sShow',1.9,'.35s') + '><span class="c" ' + dl('sPop',2) + '>✓</span><b ' + dl('sFade',2.2) + '>Đã gửi đơn nhóm</b><small ' + dl('sFade',2.35) + '>Quán sẽ gọi lại xác nhận</small>' +
+        Array.from({length:14},(_,i)=>{ const a = i/14*Math.PI*2, d = 50 + (i%3)*18; return '<i class="s-dot" style="background:' + ['#EFC15C','#7AD6A0','#2E6B55','#9C3226'][i%4] + ';--dx:' + Math.round(Math.cos(a)*d) + 'px;--dy:' + Math.round(Math.sin(a)*d) + 'px;--r:' + (i*50) + 'deg;animation:gConf 1.1s ' + (2.05 + (i%4)*.03) + 's both"></i>'; }).join('') +
+        '</div></div>' }
+  ];
+  const GT = { i:0, timer:null };
+  const STEP_MS = 5600;
+  function guideShow(i){
+    GT.i = i; clearTimeout(GT.timer);
+    const st = GUIDE[i];
+    $('#gtStage').innerHTML = st.sc();
+    $('#gtStep').textContent = 'Bước ' + (i+1) + ' / ' + GUIDE.length;
+    const h = $('#gtH'), pp = $('#gtP');
+    h.textContent = st.t; pp.innerHTML = st.p;
+    [h, pp].forEach(el=>{ el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; });
+    $('#gtBars').querySelectorAll('i').forEach((b,k)=>{ b.className = k < i ? 'done' : ''; b.style.setProperty('--d', STEP_MS + 'ms'); });
+    const cur = $('#gtBars').children[i]; void cur.offsetWidth; cur.className = 'run';
+    $('#gtPrev').disabled = i === 0;
+    const last = i === GUIDE.length - 1;
+    $('#gtNext').textContent = last ? (G.code ? 'Đã hiểu' : 'Bắt đầu đặt nhóm') : 'Tiếp ›';
+    if(!last) GT.timer = setTimeout(()=>guideShow(i+1), STEP_MS);
+  }
+  function openGuide(i){
+    closeModal();
+    $('#gt').classList.add('on'); $('#gtBg').classList.add('on');
+    guideShow(i || 0);
+  }
+  function closeGuide(){ clearTimeout(GT.timer); $('#gt').classList.remove('on'); $('#gtBg').classList.remove('on'); setTimeout(()=>{ if(!$('#gt').classList.contains('on')) $('#gtStage').innerHTML = ''; }, 400); }
+  $('#gtX').addEventListener('click', closeGuide);
+  $('#gtBg').addEventListener('click', closeGuide);
+  $('#gtPrev').addEventListener('click', ()=>guideShow(Math.max(0, GT.i - 1)));
+  $('#gtStage').addEventListener('click', ()=>{ if(GT.i < GUIDE.length - 1) guideShow(GT.i + 1); });
+  $('#gtNext').addEventListener('click', ()=>{
+    if(GT.i < GUIDE.length - 1) return guideShow(GT.i + 1);
+    closeGuide();
+    if(!G.code) setTimeout(()=>$('#gStart').click(), 300);
+  });
+  document.addEventListener('keydown', e=>{
+    if(!$('#gt').classList.contains('on')) return;
+    if(e.key === 'Escape') closeGuide();
+    else if(e.key === 'ArrowRight') $('#gtNext').click();
+    else if(e.key === 'ArrowLeft' && GT.i > 0) guideShow(GT.i - 1);
+  });
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden && $('#gt').classList.contains('on')) clearTimeout(GT.timer); });
+
   /* ---------- khoi dong ---------- */
   (async function boot(){
     const q = new URLSearchParams(location.search).get('nhom');
@@ -1425,6 +1909,7 @@ body.g-locked .g-note{display:none!important}
     const r = await api();
     if(!r.ok){ G.code = ''; if(q){ toast(r.err || 'Nhóm không còn'); setUrl(''); } if(saved && saved.code === code) store.del(); return; }
     const g = r.group;
+    if(g.status === 'closed'){ G.code = ''; store.del(); setUrl(''); toast('Nhóm ' + code + ' đã được giải tán'); return; }
     if(saved && saved.code === code && g.members.some(m => m.mid === saved.mid)){
       enter(saved, g);
       return;
@@ -1432,16 +1917,18 @@ body.g-locked .g-note{display:none!important}
     G.code = '';
     if(!q) { store.del(); return; }
     if(g.status !== 'open'){ toast('Nhóm ' + code + ' đã gửi đơn'); setUrl(''); return; }
-    askName(esc(g.host.name) + ' mời bạn đặt nước cùng nhóm',
+    askName(esc(g.host.name) + (g.name ? ' mời bạn vào nhóm “' + esc(g.name) + '”' : ' mời bạn đặt nước cùng nhóm'),
       '<span class="g-av" style="justify-content:center;margin-bottom:10px">' + g.members.slice(0,6).map(m=>avatar(m,'a')).join('') + '</span><br>' +
       'Nhóm <b>' + code + '</b> · ' + g.members.length + ' người. Nhập tên rồi chọn món — trưởng nhóm sẽ gửi đơn một lần cho cả nhóm.',
       'Vào nhóm', async name=>{
-        const j = await api({ a:'join', code, name, cart });
+        const j = await api({ a:'join', code, name, cart, notes:NOTES });
         if(!j.ok){ closeModal(); toast(j.err || 'Không vào được nhóm'); return; }
         closeModal();
         wipe(code, null, ()=>{
           enter({ code, mid:j.mid, tok:j.tok, name }, j.group);
-          setTimeout(()=>toast('Chọn món của bạn nhé — đơn nhóm tự lưu'), 900);
+          let seen = false; try{ seen = !!localStorage.getItem('tcGuide'); localStorage.setItem('tcGuide','1'); }catch(e){}
+          if(!seen) setTimeout(()=>openGuide(2), 1200);
+          else setTimeout(()=>toast('Chọn món của bạn nhé — đơn nhóm tự lưu'), 900);
         });
       });
   })();
