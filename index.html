@@ -49,6 +49,43 @@ body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(-
 .hero h1{font-family:var(--disp);font-weight:500;font-size:clamp(38px,6vw,54px);line-height:1.04}
 
 
+/* ---- ban moi: dai uu dai, trang thai, ban chay ---- */
+.promo{background:var(--ink);color:#EADCC0;font-size:12px}
+.promo-in{max-width:1080px;margin:0 auto;padding:7px 16px;display:flex;gap:8px;justify-content:center;align-items:center;white-space:nowrap;overflow-x:auto;scrollbar-width:none}
+.promo-in::-webkit-scrollbar{display:none}
+.promo b{color:#E2C27A;font-weight:500}
+.promo i{font-style:normal;opacity:.5}
+.promo button{border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(226,194,122,.5)}
+.hero{padding-top:18px}
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.hero .hero-top h1{font-size:clamp(30px,5vw,42px);line-height:1}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--mute);background:#FFFDF8;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+.status i{width:8px;height:8px;border-radius:50%;background:#B9A88F;flex:0 0 8px}
+.status.open i{background:#2E9A5B;box-shadow:0 0 0 3px rgba(46,154,91,.18)}
+.status.open b{color:#22764A;font-weight:500}
+.status.closed b{color:var(--red);font-weight:500}
+.g-start .g-cta{font-size:12px!important;font-weight:500;background:var(--gp);color:#fff!important;border-radius:999px;padding:8px 14px;white-space:nowrap}
+.bs-wrap{margin-top:18px}
+.bs-hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.bs-hd h2{font-family:var(--disp);font-weight:500;font-size:26px;line-height:1.1}
+.bs-new{border:0;background:none;color:var(--gold-soft);font-family:var(--body);font-size:12.5px;cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.bs-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;--pad:max(20px,calc((100vw - 1040px)/2));padding:10px var(--pad) 6px;scroll-padding-inline:var(--pad);scrollbar-width:none}
+.bs-rail::-webkit-scrollbar{display:none}
+.bs{flex:0 0 150px;scroll-snap-align:start;background:#FFFDF8;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.bs .bph{aspect-ratio:1/1;background:var(--cream-2);position:relative;overflow:hidden;display:grid;place-items:center;font-family:var(--disp);font-size:34px;color:rgba(42,29,22,.25)}
+.bs .bph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bs .tg{position:absolute;top:8px;left:8px;z-index:1;font-family:var(--body);font-size:8px;letter-spacing:.1em;font-weight:500;color:#fff;background:var(--red);border-radius:3px;padding:3px 6px}
+.bs .bd{padding:9px 10px 10px;display:flex;flex-direction:column;gap:6px;flex:1}
+.bs .nm{font-size:13px;line-height:1.3;flex:1}
+.bs .rw{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.bs .pr{font-size:13px;font-weight:500}
+.bs .ad{width:32px;height:32px;border-radius:50%;border:0;background:var(--ink);color:#FDF8EF;font-size:18px;line-height:1;cursor:pointer;flex:0 0 32px}
+.bs .ad.ok{background:var(--gp)}
+body.g-on .bs-wrap{display:none}
+.cats{margin-top:14px}
+@media(max-width:900px){.cats::after{content:"";position:absolute;right:0;top:0;bottom:1px;width:36px;pointer-events:none;background:linear-gradient(90deg,rgba(253,248,239,0),var(--cream))}}
+@media(min-width:901px){.bs{flex-basis:180px}}
+@media(max-width:430px){.g-start b em{display:none}}
 .cats{position:sticky;top:48px;z-index:50;background:rgba(253,248,239,.96);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);margin-top:20px}
 .cats-in{display:flex;gap:8px;overflow-x:auto;padding:11px 20px;max-width:1080px;margin:0 auto;
@@ -82,6 +119,13 @@ body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(-
   padding:34px 10px;line-height:1.7}
 
 .mi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:12px}
+.mi.has-img{padding-top:0;overflow:hidden}
+.mi-img{order:-1;margin:0 -13px 4px;aspect-ratio:1/1;background:var(--cream-2);overflow:hidden}
+.mi-img img{width:100%;height:100%;object-fit:cover;display:block}
+.mi.so{opacity:.55}
+@media(min-width:901px){.mi-img{aspect-ratio:4/3}}
+@media(max-width:900px){.mi.has-img{padding-top:0}.mi-img{margin:0 -11px 3px}}
+.so-tag{font-size:11px;letter-spacing:.06em;color:var(--red);border:1px solid var(--red);border-radius:6px;padding:7px 10px}
 .mi{display:flex;flex-direction:column;gap:6px;background:#FFFDF8;
   border:1px solid var(--line);border-radius:8px;padding:13px 13px 12px}
 .mi-name{font-size:14.5px;font-weight:400;line-height:1.3;display:flex;
@@ -255,14 +299,20 @@ footer a{color:var(--ink)}
 </head>
 <body>
 
+<div class="promo" id="promo"><div class="promo-in">
+  <span><b>Freeship</b> dưới 5km</span><i>·</i><span><b>Túi giữ nhiệt</b> từ 2 ly</span><i>·</i><button type="button" id="promoG"><b>Đặt nhóm −5%</b> →</button>
+</div></div>
+
 <nav class="nav"><div class="nav-in">
   <a class="brand" href="/"><b>THE CURATOR</b><span>FINE COFFEE &amp; CURIOS</span></a>
   <a class="nav-back nav-tt" href="/trungthu">🌕 Trung Thu 2026</a>
 </div></nav>
 
 <header class="hero wrap">
-  <p class="eyebrow">Order online · mang đi</p>
-  <h1>Đặt nước</h1>
+  <div class="hero-top">
+    <h1>Đặt nước</h1>
+    <p class="status" id="shopStatus"><i></i><span>Nhận đơn 06:00–21:45</span></p>
+  </div>
   <div class="search" id="searchBox">
     <span class="ic">⌕</span>
     <input id="q" type="text" placeholder="Tìm món — ví dụ: bạc xỉu, matcha, croissant…" autocomplete="off">
@@ -270,6 +320,11 @@ footer a{color:var(--ink)}
   </div>
   
 </header>
+
+<section class="bs-wrap" id="bsWrap" hidden>
+  <div class="bs-hd wrap"><h2>Bán chạy</h2><button type="button" class="bs-new" id="bsNew">Món mới: kem trứng →</button></div>
+  <div class="bs-rail" id="bsRail"></div>
+</section>
 
 <div class="cats"><div class="cats-in" id="cats"></div></div>
 
@@ -334,7 +389,7 @@ footer a{color:var(--ink)}
 </main>
 
 <div class="mbar" id="mbar">
-  <div class="t"><div class="lb" id="mbLb">Từ</div><div class="vl" id="mbVal">24.000đ / món</div></div>
+  <div class="t"><div class="lb" id="mbLb">Đơn của bạn</div><div class="vl" id="mbVal">Chưa chọn món</div></div>
   <a class="go" id="mbBtn" href="#summary">Xem đơn</a>
 </div>
 
@@ -366,8 +421,14 @@ footer a{color:var(--ink)}
   <p><a href="/trungthu">Đặt bánh Trung Thu 2026 →</a></p>
 </footer>
 
+<script src="/menu-default.js"></script>
+<script src="/api/menu?js=1"></script>
 <script>
-const DATA = [{"cat": "Cafe Phin", "sub": "Vietnamese Filter Coffee", "items": [{"id": "bacxiumuoi", "n": "Bạc xỉu muối", "p": 35000, "d": "Cafe phin · sữa đặc · sữa tươi · kem muối", "b": ""}, {"id": "bacxiuphin", "n": "Bạc xỉu phin", "p": 30000, "d": "Cafe phin · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedua", "n": "Cafe dừa", "p": 39000, "d": "Cafe phin · cốt dừa · sữa tươi · sữa đặc", "b": "must"}, {"id": "cafedenphin", "n": "Cafe đen phin", "p": 24000, "d": "Cafe phin", "b": ""}, {"id": "cafedensaigon", "n": "Cafe đen Sài Gòn", "p": 25000, "d": "Cafe phin · đường", "b": ""}, {"id": "cafemuoi", "n": "Cafe muối", "p": 32000, "d": "Cafe phin · sữa đặc · kem muối", "b": "best"}, {"id": "cafesuaphin", "n": "Cafe sữa phin", "p": 28000, "d": "Cafe phin · sữa đặc", "b": ""}, {"id": "cafesuasaigon", "n": "Cafe sữa Sài Gòn", "p": 30000, "d": "Cafe phin · sữa đặc", "b": ""}]}, {"cat": "Espresso", "sub": "Espresso-based · Đổi hạt Liberica +8k", "items": [{"id": "americano", "n": "Americano", "p": 29000, "d": "Espresso", "b": ""}, {"id": "americanococo", "n": "Americano Coco", "p": 45000, "d": "Espresso · nước dừa", "b": ""}, {"id": "bacxiumay", "n": "Bạc xỉu máy", "p": 32000, "d": "Espresso · sữa đặc · sữa tươi", "b": ""}, {"id": "cafedensaigonphamay", "n": "Cafe đen Sài Gòn pha máy", "p": 25000, "d": "Espresso · syrup đường", "b": ""}, {"id": "cafesuamay", "n": "Cafe sữa máy", "p": 29000, "d": "Espresso · sữa đặc", "b": "best"}, {"id": "cafesuasaigonphamay", "n": "Cafe sữa Sài Gòn pha máy", "p": 30000, "d": "Espresso · sữa đặc", "b": ""}, {"id": "cappuccinodanong", "n": "Cappuccino đá / nóng", "p": 35000, "d": "Espresso · sữa tươi · foam", "b": ""}, {"id": "espresso", "n": "Espresso", "p": 25000, "d": "Double shot · không sữa", "b": "must"}, {"id": "lattedanong", "n": "Latte đá / nóng", "p": 35000, "d": "Espresso · sữa tươi", "b": ""}, {"id": "longblack", "n": "Long Black", "p": 32000, "d": "Espresso", "b": ""}]}, {"cat": "Liberica Cold Brew", "sub": "Slow-Brewed Specialty", "items": [{"id": "coldbrewblack", "n": "Cold Brew Black", "p": 35000, "d": "Liberica ủ lạnh", "b": "best"}, {"id": "coldbrewbuoi", "n": "Cold Brew Bưởi", "p": 45000, "d": "Cold brew · mứt bưởi hồng", "b": "must"}, {"id": "coldbrewcam", "n": "Cold Brew Cam", "p": 39000, "d": "Cold brew · cam tươi", "b": "must"}, {"id": "coldbrewdua", "n": "Cold Brew Dừa", "p": 45000, "d": "Cold brew Liberica · cốt dừa", "b": "new"}, {"id": "coldbrewvai", "n": "Cold Brew Vải", "p": 45000, "d": "Cold brew · mứt vải", "b": ""}]}, {"cat": "Matcha", "sub": "Premium Japanese Tea", "items": [{"id": "cocomatcha", "n": "CoCo Matcha", "p": 59000, "d": "Matcha · nước dừa · kem béo · oatmilk", "b": ""}, {"id": "matchacoldwhisk", "n": "Matcha Cold Whisk", "p": 35000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchadaudo", "n": "Matcha đậu đỏ", "p": 52000, "d": "Matcha · oatmilk · sữa đặc · kem muối · đậu đỏ ngâm đường", "b": "new"}, {"id": "matchaicecream", "n": "Matcha Ice Cream", "p": 59000, "d": "Matcha · kem tươi · oatmilk", "b": "must,new"}, {"id": "matchalatte", "n": "Matcha Latte", "p": 32000, "d": "Matcha · oatmilk · sữa đặc", "b": "best"}, {"id": "matchameden", "n": "Matcha mè đen", "p": 39000, "d": "Matcha · mè đen rang · oatmilk · sữa đặc", "b": "must"}, {"id": "matchamuoi", "n": "Matcha muối", "p": 39000, "d": "Matcha · oatmilk · kem muối", "b": "best"}, {"id": "matchaoreo", "n": "Matcha Oreo", "p": 59000, "d": "Matcha · oreo · oatmilk · sữa đặc", "b": "must,new"}, {"id": "senxanh", "n": "Sen Xanh", "p": 47000, "d": "Trà lài · nước dừa · hạt sen · kem matcha", "b": "must"}]}, {"cat": "Trà", "sub": "Base · Trà lài", "items": [{"id": "traatiso", "n": "Trà atiso", "p": 32000, "d": "Trà lài · siro atiso đỏ", "b": "best"}, {"id": "trabuoi", "n": "Trà bưởi", "p": 31000, "d": "Trà lài · mứt bưởi hồng", "b": "best"}, {"id": "trabuoimatong", "n": "Trà bưởi mật ong", "p": 35000, "d": "Trà ô long · mứt bưởi · mật ong", "b": "must,new"}, {"id": "tradautam", "n": "Trà dâu tằm", "p": 32000, "d": "Trà lài · siro dâu tằm", "b": "best"}, {"id": "traduanhai", "n": "Trà dứa nhài", "p": 30000, "d": "Trà lài · mứt dứa", "b": ""}, {"id": "tranhaioihong", "n": "Trà nhài ổi hồng", "p": 29000, "d": "Trà lài · mứt ổi hồng", "b": ""}, {"id": "travai", "n": "Trà vải", "p": 29000, "d": "Trà lài · mứt vải", "b": "best"}]}, {"cat": "Đồ Uống Nóng", "sub": "Served Hot", "items": [{"id": "caphetrung", "n": "Cà phê trứng", "p": 35000, "d": "Espresso · kem trứng", "b": "new"}, {"id": "caphetrungdua", "n": "Cà phê trứng dừa", "p": 52000, "d": "Espresso · cốt dừa · kem trứng · dừa sấy", "b": "new"}, {"id": "cacaomuoinong", "n": "Cacao Muối Nóng", "p": 42000, "d": "Cacao · cốt cafe · sữa đặc · sữa tươi · kem muối", "b": "new"}, {"id": "cacaotrung", "n": "Cacao trứng", "p": 49000, "d": "Cacao nguyên chất · sữa đặc · sữa tươi · kem trứng", "b": "new"}, {"id": "hotcoconutlatte", "n": "Hot Coconut Latte", "p": 45000, "d": "Espresso · cốt dừa · sữa nóng", "b": "new"}, {"id": "hothoneylatte", "n": "Hot Honey Latte", "p": 42000, "d": "Espresso · mật ong · sữa nóng", "b": "new"}, {"id": "matchalattenong", "n": "Matcha Latte Nóng", "p": 35000, "d": "Matcha · sữa nóng · sữa đặc", "b": "new"}, {"id": "matchatrung", "n": "Matcha trứng", "p": 52000, "d": "Matcha · oatmilk · kem trứng", "b": "new"}, {"id": "tragung", "n": "Trà Gừng", "p": 39000, "d": "Gừng tươi · mật ong", "b": "new"}]}, {"cat": "Nước Ép Tươi", "sub": "Fresh Juice — không thêm đường", "items": [{"id": "nuocepcam", "n": "Nước ép cam", "p": 39000, "d": "Cam tươi · ép", "b": ""}, {"id": "nuocepduahau", "n": "Nước ép dưa hấu", "p": 32000, "d": "Dưa hấu tươi · ép", "b": ""}, {"id": "nuocepoi", "n": "Nước ép ổi", "p": 35000, "d": "Ổi đỏ tươi · ép", "b": ""}, {"id": "nuocepthom", "n": "Nước ép thơm", "p": 35000, "d": "Thơm tươi · ép", "b": ""}]}, {"cat": "Bánh", "sub": "Pastries — Daily Fresh Bake", "items": [{"id": "croissanthanhnhan", "n": "Croissant Hạnh Nhân", "p": 45000, "d": "Almond croissant", "b": ""}, {"id": "croissantkemdau", "n": "Croissant Kem Dâu", "p": 45000, "d": "Strawberry cream", "b": ""}, {"id": "croissantkemsocola", "n": "Croissant Kem Socola", "p": 45000, "d": "Chocolate cream", "b": ""}, {"id": "croissantkimsa", "n": "Croissant Kim Sa", "p": 42000, "d": "Lava custard", "b": ""}, {"id": "croissantsignature", "n": "Croissant Signature", "p": 35000, "d": "Signature croissant", "b": ""}, {"id": "croissantsocola", "n": "Croissant Socola", "p": 39000, "d": "Chocolate croissant", "b": ""}, {"id": "croissantsothatdieu", "n": "Croissant Sốt Hạt Điều", "p": 42000, "d": "Cashew sauce", "b": ""}, {"id": "croissanttrungmuoi", "n": "Croissant Trứng Muối", "p": 45000, "d": "Salted egg yolk", "b": "best"}, {"id": "danmachtrungmuoi", "n": "Đan Mạch Trứng Muối", "p": 39000, "d": "Danish salted egg yolk", "b": ""}, {"id": "hanhnhandua", "n": "Hạnh Nhân Dừa", "p": 39000, "d": "Almond coconut pastry", "b": ""}]}, {"cat": "Khác", "sub": "Other Drinks", "items": [{"id": "cacaodanong", "n": "Cacao đá / nóng", "p": 35000, "d": "Cacao · sữa tươi · sữa đặc", "b": ""}, {"id": "cacaomuoi", "n": "Cacao muối", "p": 42000, "d": "Cacao · cốt cafe · sữa đặc · sữa tươi · kem muối", "b": "new"}]}];
+const DATA = (function(){
+  const src = (window.__MENU && Array.isArray(window.__MENU.cats) && window.__MENU.cats.length) ? window.__MENU.cats : (window.DEFAULT_MENU || []);
+  return src.filter(g => g && !g.h).map(g => Object.assign({}, g, { items: (g.items || []).filter(i => i && !i.h) })).filter(g => g.items.length);
+})();
+const isLib = g => g.lib === true || (g.lib === undefined && g.cat === 'Espresso');
 const GFORM = {
   id: "1FAIpQLSfdi_XJormbVIv4YYC83kJTDfkvB-WXS0v6lSwJfK3d_ZR45Q",
   f: { name:"entry.900486539", phone:"entry.727313384", detail:"entry.1930983760",
@@ -378,7 +439,7 @@ const $ = s => document.querySelector(s);
 const vnd = n => new Intl.NumberFormat('vi-VN').format(Math.round(n)) + "đ";
 const ITEMS = {}; DATA.forEach(g => g.items.forEach(i => ITEMS[i.id] = i));
 const LIB_UP = 8000;
-DATA.filter(g => g.cat === 'Espresso').forEach(g => g.items.forEach(i => {
+DATA.filter(isLib).forEach(g => g.items.forEach(i => {
   ITEMS[i.id + '~lib'] = { id: i.id + '~lib', n: i.n + ' — hạt Liberica', p: i.p + LIB_UP, d: i.d, b: '' };
 }));
 const cart = {};
@@ -430,6 +491,12 @@ DATA.forEach((g, gi)=>{
       nm.appendChild(s);
     });
     const de = document.createElement('div'); de.className = 'mi-desc'; de.textContent = it.d;
+    if(it.img){
+      const fig = document.createElement('div'); fig.className = 'mi-img';
+      const im = document.createElement('img'); im.src = it.img; im.alt = it.n; im.loading = 'lazy'; im.decoding = 'async';
+      im.addEventListener('error', ()=> fig.remove());
+      fig.appendChild(im); row.appendChild(fig); row.classList.add('has-img');
+    }
     function mkStp(id, label){
       const stp = document.createElement('div'); stp.className = 'stp'; stp.dataset.id = id;
       const bm = document.createElement('button'); bm.type='button'; bm.textContent='−';
@@ -443,12 +510,18 @@ DATA.forEach((g, gi)=>{
       return stp;
     }
     row.appendChild(nm); row.appendChild(de);
-    if(g.cat === 'Espresso'){
+    if(it.so){
+      row.classList.add('so');
+      const side = document.createElement('div'); side.className = 'mi-side';
+      const pr = document.createElement('span'); pr.className = 'mi-price'; pr.textContent = vnd(it.p);
+      const sx = document.createElement('span'); sx.className = 'so-tag'; sx.textContent = 'Tạm hết';
+      side.appendChild(pr); side.appendChild(sx); row.appendChild(side);
+    }else if(isLib(g)){
       const side = document.createElement('div'); side.className = 'mi-side';
       const pw = document.createElement('div');
       const pr = document.createElement('span'); pr.className = 'mi-price'; pr.textContent = vnd(it.p);
       const nt = document.createElement('div'); nt.className = 'mi-note'; nt.textContent = 'Liberica +8k';
-      pw.appendChild(pr); pw.appendChild(nt);
+      pw.appendChild(pr);
       const add = document.createElement('button'); add.type = 'button';
       add.className = 'addbtn'; add.dataset.esp = it.id;
       add.innerHTML = '+ Chọn <span class="ct">0</span>';
@@ -565,8 +638,8 @@ function render(){
   });
   $('#cartEmpty').hidden = c.count > 0;
   $('#grand').textContent = vnd(c.total);
-  $('#mbVal').textContent = c.count ? vnd(c.total) : '24.000đ / món';
-  $('#mbLb').textContent = c.count ? 'Tổng cộng ('+c.count+' món)' : 'Từ';
+  $('#mbVal').textContent = c.count ? vnd(c.total) : 'Chưa chọn món';
+  $('#mbLb').textContent = c.count ? 'Tổng cộng ('+c.count+' món)' : 'Đơn của bạn';
 }
 
 /* giao tan noi */
@@ -912,9 +985,6 @@ body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
 (function(){
   /* hien moi lan mo web (1 lan / phien) cho den khi khach bam "Dung nhac lai" */
   const KEY = 'tc-popup-uudai-off', SKEY = 'tc-popup-uudai-s';
-  try{ if(localStorage.getItem(KEY) || sessionStorage.getItem(SKEY)) return; }catch(e){ return; }
-  if(/[?&]nhom=/i.test(location.search)) return;
-  window.__pmUudai = true;   // bao popup mon moi nhuong lan nay
   const bg = document.getElementById('pmBg'), box = document.getElementById('pm');
   function close(){ bg.classList.remove('on'); box.classList.remove('on'); document.removeEventListener('keydown', esc); }
   function esc(e){ if(e.key === 'Escape') close(); }
@@ -930,8 +1000,7 @@ body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
   bg.addEventListener('click', close);
   document.getElementById('pmGo').addEventListener('click', ()=>{ close(); const s = document.getElementById('gStart'); if(s) setTimeout(()=>s.click(), 350); });
   const img = box.querySelector('img');
-  const go = () => setTimeout(open, 900);
-  if(img.complete) go(); else { img.addEventListener('load', go); img.addEventListener('error', ()=>{}); }
+  window.__openPromo = open;   /* khong tu bat nua — mo tu dai uu dai tren dau trang */
 })();
 </script>
 
@@ -1042,7 +1111,7 @@ body.g-on .ns-ft button.pri{background:var(--gp);border-color:var(--gp)}
     const sec = document.getElementById('cat' + gi);
     if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
   });
-  setTimeout(open, 900);
+  window.__openNew = open;   /* khong tu bat — mo tu nut "Mon moi" */
 })();
 </script>
 
@@ -1524,8 +1593,8 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   const hero = document.querySelector('.hero');
   hero.insertAdjacentHTML('afterbegin', '<div class="g-mode"><i></i>Chế độ đặt nhóm</div>');
   hero.insertAdjacentHTML('beforeend',
-    '<button type="button" class="g-start" id="gStart"><span class="ic">' + ICO.grp + '</span><span><b>Đặt theo nhóm <em>MỚI</em></b>' +
-    '<small>Gửi link cho bạn bè · mỗi người tự chọn món · <b style="color:var(--gp);font-weight:500">giảm 5% cả đơn</b></small></span><span class="ar">→</span></button>' +
+    '<button type="button" class="g-start" id="gStart"><span class="ic">' + ICO.grp + '</span><span><b>Đặt nhóm — giảm 5% <em>MỚI</em></b>' +
+    '<small>Gửi link, mỗi người tự chọn món</small></span><span class="ar g-cta">Tạo nhóm</span></button>' +
     '<button type="button" class="g-how" id="gHow"><span class="pl">▶</span><u>Xem cách đặt theo nhóm</u> · 20 giây</button>' +
     '<div class="g-bar" id="gBar">' +
       '<div class="gb-top"><span class="gb-live"><i></i><span id="gbLive">Đang mở · tự lưu</span></span><span><span class="gb-role" id="gbRole"></span><button type="button" class="gb-help" id="gbHelp" aria-label="Hướng dẫn">?</button></span></div>' +
@@ -2375,6 +2444,53 @@ body.g-on .o-back,body.g-on #oLive{display:none}
   // cap nhat nut quay lai nhom moi khi ra / vao che do nhom
   new MutationObserver(()=>{ if(!document.body.classList.contains('g-on')) setTimeout(paintBack, 300); })
     .observe(document.body, { attributes:true, attributeFilter:['class'] });
+})();
+</script>
+<script>
+/* ---- ban moi: trang thai quan, dai uu dai, hang Ban chay ---- */
+(function(){
+  const st = document.getElementById('shopStatus');
+  function tick(){
+    const d = new Date(), m = d.getHours()*60 + d.getMinutes(), open = m >= 360 && m < 1305;
+    st.className = 'status ' + (open ? 'open' : 'closed');
+    st.innerHTML = '<i></i><span>' + (open ? '<b>Đang nhận đơn</b> · đến 21:45' : '<b>Đã nghỉ</b> · đặt trước, nhận từ 06:00') + '</span>';
+  }
+  tick(); setInterval(tick, 60000);
+  document.getElementById('promoG').addEventListener('click', ()=>{
+    const s = document.getElementById('gStart');
+    if(s){ s.scrollIntoView({behavior:'smooth', block:'center'}); setTimeout(()=> s.click(), 400); }
+  });
+  const nb = document.getElementById('bsNew');
+  if(window.__openNew) nb.addEventListener('click', ()=> window.__openNew()); else nb.hidden = true;
+
+  const rail = document.getElementById('bsRail'), wrap = document.getElementById('bsWrap');
+  const list = [];
+  DATA.forEach(g => g.items.forEach(it => { if(!it.so && /(^|,)best(,|$)/.test(it.b || '')) list.push({ g, it }); }));
+  list.sort((a, b) => (b.it.img ? 1 : 0) - (a.it.img ? 1 : 0));
+  list.slice(0, 10).forEach(({ g, it }) => {
+    const c = document.createElement('div'); c.className = 'bs';
+    const ph = document.createElement('div'); ph.className = 'bph';
+    const tg = document.createElement('span'); tg.className = 'tg'; tg.textContent = 'BEST SELLER'; ph.appendChild(tg);
+    if(it.img){ const im = document.createElement('img'); im.src = it.img; im.alt = it.n; im.loading = 'lazy'; ph.appendChild(im); }
+    else ph.appendChild(document.createTextNode(it.n.trim().charAt(0)));
+    const bd = document.createElement('div'); bd.className = 'bd';
+    const nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = it.n;
+    const rw = document.createElement('div'); rw.className = 'rw';
+    const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = vnd(it.p);
+    const ad = document.createElement('button'); ad.type = 'button'; ad.className = 'ad'; ad.textContent = '+';
+    ad.setAttribute('aria-label', 'Thêm ' + it.n);
+    ad.addEventListener('click', ()=>{
+      if(isLib(g)) { openHat(it); return; }
+      bump(it.id, 1);
+      ad.classList.add('ok'); ad.textContent = '✓';
+      clearTimeout(ad.t); ad.t = setTimeout(()=>{ ad.classList.remove('ok'); ad.textContent = '+'; }, 1200);
+    });
+    rw.append(pr, ad); bd.append(nm, rw); c.append(ph, bd); rail.appendChild(c);
+  });
+  if(list.length) wrap.hidden = false;
+  /* an hang Ban chay khi dang tim mon */
+  const q = document.getElementById('q');
+  if(q) q.addEventListener('input', ()=>{ wrap.style.display = q.value.trim() ? 'none' : ''; });
 })();
 </script>
 </body>

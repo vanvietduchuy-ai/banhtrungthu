@@ -27,3 +27,9 @@ API: `api/nhom.js` (Vercel Function) lưu trên Upstash Redis — cần biến m
 Thiếu biến → nút nhóm báo "chưa được bật", đặt lẻ vẫn chạy bình thường.
 Nhóm tự xoá sau 6 giờ · tối đa 30 người · chỉ trưởng nhóm gửi đơn/xoá thành viên.
 Đơn nhóm về cùng Google Form, mã `NHOM-XXXX`, chi tiết ghi theo từng người.
+
+Quản trị menu (/admin)
+
+Đăng nhập 1 tài khoản để sửa ảnh, giá, tên, mô tả, nhãn (Best seller / Must try / New), Tạm hết, Ẩn; thêm/xoá/sắp xếp món và loại; bật "đổi hạt Liberica +8k" cho từng loại. Bấm Lưu menu → trang đặt nước cập nhật sau vài giây. Có nút Hoàn tác về lần lưu trước.
+Cần biến môi trường trên Vercel: ADMIN_PASSWORD (bắt buộc), ADMIN_USER (mặc định admin), và Upstash Redis như đặt nhóm.
+Dữ liệu: key menu, menu:prev, mimg:<id> (ảnh tải lên). Chưa lưu lần nào → trang dùng menu-default.js (menu gốc). Ảnh mẫu trong img/menu/ lấy từ Unsplash, nên thay bằng ảnh chụp thật.
