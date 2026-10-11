@@ -39,35 +39,99 @@ button{font-family:var(--body);cursor:pointer}
 .field input:focus{outline:none;border-color:var(--ink)}
 .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .orders{margin-top:18px;display:flex;flex-direction:column;gap:12px}
-.card{background:#FFFDF8;border:1px solid var(--line);border-left:5px solid var(--gold);
-  border-radius:10px;padding:15px 16px;transition:.25s}
+.card{background:#FFFDF8;border:1px solid var(--line);border-left:6px solid var(--gold);
+  border-radius:12px;padding:16px 18px;transition:.25s}
 .card.banh{border-left-color:var(--red)}
-.card.done{opacity:.45}
+.card.done{opacity:.5}
+.card.done .c-items,.card.done .c-note{display:none}
 .card.fresh{box-shadow:0 0 0 3px rgba(184,145,47,.35);animation:pop .5s ease}
 @keyframes pop{0%{transform:scale(.97)}60%{transform:scale(1.01)}100%{transform:scale(1)}}
-.c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-.tag{font-size:9.5px;letter-spacing:.14em;border-radius:4px;padding:3px 8px;color:#fff;font-weight:500}
+.c-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.tag{font-size:11px;letter-spacing:.14em;border-radius:5px;padding:4px 9px;color:#fff;font-weight:600}
 .tag.nuoc{background:var(--gold)}.tag.banh{background:var(--red)}
-.c-name{font-weight:600;font-size:16px}
-.c-time{font-size:11.5px;color:var(--mute);margin-left:auto;white-space:nowrap}
-.c-detail{white-space:pre-wrap;font-size:13.5px;background:var(--cream);border:1px dashed var(--line);
-  border-radius:7px;padding:9px 12px;margin:8px 0;line-height:1.5}
-.c-meta{font-size:13px;color:var(--mute);line-height:1.6}
-.c-meta b{color:var(--ink);font-weight:500}
-.c-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
-.c-act a,.c-act button{border-radius:999px;padding:9px 15px;font-size:11.5px;letter-spacing:.08em;
+.tag.st{background:var(--ink)}.tag.st.wait{background:#C0392B}
+.c-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--mute);letter-spacing:.02em}
+.c-name{font-weight:600;font-size:18px}
+.c-time{font-size:12.5px;color:var(--mute);margin-left:auto;white-space:nowrap}
+.c-pick{display:flex;flex-wrap:wrap;gap:8px 18px;background:var(--cream);border-radius:9px;padding:10px 13px;margin-bottom:10px;font-size:14px}
+.c-pick span{white-space:nowrap}
+.c-pick small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.c-pick b{font-weight:600;font-size:16px}
+.c-pick .when b{color:var(--red);font-size:18px}
+.c-items{border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:10px}
+.c-grp{background:#F3EAD8;font-weight:600;font-size:13px;padding:6px 13px;letter-spacing:.02em}
+.it{display:grid;grid-template-columns:52px 1fr auto;gap:0 12px;align-items:baseline;padding:10px 13px;border-top:1px solid var(--line)}
+.c-items>.it:first-child,.c-grp+.it{border-top:0}
+.it .q{font-size:22px;font-weight:600;color:var(--ink);text-align:center;line-height:1.1;background:#F3EAD8;border-radius:7px;padding:3px 0}
+.it .n{font-size:17px;font-weight:500;line-height:1.35}
+.it .p{font-size:13.5px;color:var(--mute);white-space:nowrap}
+.it .nt{grid-column:2/4;margin-top:6px;background:#FFF2B8;border:1px solid #E8C94A;border-radius:7px;
+  padding:7px 11px;font-size:18px;font-weight:600;color:#7A1F12;line-height:1.4}
+.it .nt::before{content:"✎ ";font-weight:400}
+.c-extra{font-size:13.5px;color:var(--mute);padding:8px 13px;border-top:1px dashed var(--line);background:#FCF7EC;white-space:pre-wrap}
+.c-raw{white-space:pre-wrap;font-size:15px;padding:10px 13px}
+.c-note{background:#FFF2B8;border:2px solid #E0B92E;border-radius:9px;padding:11px 14px;margin-bottom:10px;
+  font-size:19px;font-weight:600;color:#7A1F12;line-height:1.45;white-space:pre-wrap}
+.c-note small{display:block;font-size:10.5px;letter-spacing:.16em;color:#8A6A12;font-weight:600;margin-bottom:3px}
+.c-meta{font-size:14px;color:var(--mute);line-height:1.6}
+.c-meta b{color:var(--ink);font-weight:600}
+.c-tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px;color:var(--mute)}
+.c-tot b{font-size:20px;color:var(--ink);font-weight:600}
+.c-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.c-act a,.c-act button{border-radius:999px;padding:10px 16px;font-size:12px;letter-spacing:.08em;
   text-transform:uppercase;text-decoration:none;border:1px solid var(--ink);color:var(--ink);background:transparent}
+.c-act .pr{background:var(--ink);color:#FDF8EF;font-weight:600}
+.c-act .pr.did{background:transparent;color:var(--ink)}
 .c-act .zl{background:#0068FF;border-color:#0068FF;color:#fff}
 .c-act .ok{background:var(--green);border-color:var(--green);color:#fff}
 .card.done .c-act .ok{background:transparent;color:var(--green)}
 .c-st{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);align-items:center}
 .c-st .lb{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-right:4px}
-.c-st button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 11px;font-size:12px;color:var(--ink)}
+.c-st button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;color:var(--ink)}
 .c-st button.on{background:var(--ink);border-color:var(--ink);color:#fff}
 .c-st button.on.ready,.c-st button.on.ship{background:var(--green);border-color:var(--green)}
 .c-st button.on.cancel{background:var(--red);border-color:var(--red)}
 .c-st button.cancel{color:var(--red)}
 .c-st .na{font-size:11.5px;color:var(--mute)}
+/* thong ke + bo loc */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.stat{background:#FFFDF8;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.stat b{display:block;font-size:24px;font-weight:600;line-height:1.25;font-variant-numeric:tabular-nums}
+.stat.hot b{color:#C0392B}
+.stat em{font-style:normal;font-size:11.5px;color:var(--mute)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.tabs button{border:1px solid var(--line);background:#FFFDF8;border-radius:999px;padding:8px 14px;font-size:13px;color:var(--ink)}
+.tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.tabs button i{font-style:normal;opacity:.7;margin-left:3px}
+.tabs label{margin-left:auto;font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:6px;cursor:pointer}
+.sec{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin:8px 2px -2px;font-weight:500}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.it{grid-template-columns:44px 1fr auto}.it .q{font-size:19px}}
+#bill{display:none}
+@media print{
+  body>*:not(#bill){display:none!important}
+  body{background:#fff}
+  #bill{display:block;color:#000;font-family:Arial,Helvetica,sans-serif;font-weight:400}
+}
+.bl{width:100%;font-size:12pt;line-height:1.3;color:#000;break-after:page;page-break-after:always}
+.bl:last-child{break-after:auto;page-break-after:auto}
+.bl .h{text-align:center;font-weight:700;font-size:13pt;letter-spacing:.04em}
+.bl .h2{text-align:center;font-size:10pt;margin-bottom:2mm}
+.bl .big{font-size:15pt;font-weight:700;text-align:center;border:2px solid #000;padding:1mm;margin:1.5mm 0}
+.bl .r{display:flex;justify-content:space-between;gap:2mm;font-size:10.5pt}
+.bl hr{border:0;border-top:1px dashed #000;margin:2mm 0}
+.bl .g{font-weight:700;font-size:10.5pt;margin-top:1.5mm;text-decoration:underline}
+.bl .i{display:grid;grid-template-columns:auto 1fr auto;gap:0 2mm;align-items:baseline;margin-top:1.2mm}
+.bl .i .q{font-weight:700;font-size:14pt}
+.bl .i .n{font-weight:700;font-size:12.5pt}
+.bl .i .p{font-size:10pt;white-space:nowrap}
+.bl .i .nt{grid-column:2/4;font-size:12.5pt;font-weight:700;border:1.5px solid #000;padding:.5mm 1.5mm;margin-top:.5mm}
+.bl .nb{border:2px solid #000;padding:1.5mm;font-size:12.5pt;font-weight:700;margin:1.5mm 0;white-space:pre-wrap}
+.bl .x{font-size:10pt;white-space:pre-wrap}
+.bl .kv{font-size:11pt}
+.bl .kv div{display:flex;justify-content:space-between;gap:2mm}
+.bl .tt{font-size:13pt;font-weight:700}
+.bl .ft{text-align:center;font-size:9pt;margin-top:2mm}
 .empty{text-align:center;color:var(--mute);padding:44px 10px;font-size:14px;line-height:1.7}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:#FDF8EF;
   padding:11px 22px;border-radius:999px;font-size:13px;opacity:0;visibility:hidden;transition:.3s;z-index:50}
@@ -110,15 +174,35 @@ button{font-family:var(--body);cursor:pointer}
     </div>
   </section>
 
+  <div id="dash" hidden>
+    <div class="stats">
+      <div class="stat hot"><small>Chờ xác nhận</small><b id="sWait">0</b><em id="sWaitSub">&nbsp;</em></div>
+      <div class="stat"><small>Đơn hôm nay</small><b id="sToday">0</b><em id="sTodaySub">&nbsp;</em></div>
+      <div class="stat"><small>Món nước hôm nay</small><b id="sCups">0</b><em id="sCupsSub">&nbsp;</em></div>
+      <div class="stat"><small>Doanh thu web hôm nay</small><b id="sRev">0</b><em>theo tổng trên đơn</em></div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button data-f="wait" class="on">Chờ xác nhận<i id="tWait"></i></button>
+      <button data-f="today">Hôm nay<i id="tToday"></i></button>
+      <button data-f="nuoc">Nước<i id="tNuoc"></i></button>
+      <button data-f="banh">Bánh<i id="tBanh"></i></button>
+      <button data-f="all">Tất cả<i id="tAll"></i></button>
+      <label title="Trình duyệt sẽ mở hộp thoại in ngay khi có đơn mới. Mở Chrome với tham số --kiosk-printing để in thẳng không cần bấm."><input type="checkbox" id="autoPrint"> Tự in đơn mới</label>
+    </div>
+  </div>
   <div class="orders" id="orders"></div>
   <p class="empty" id="empty" hidden>Đang theo dõi… Chưa có đơn nào.<br>Đơn mới sẽ tự hiện kèm chuông báo — cứ để tab này mở.</p>
 
   <p class="foot">Tự làm mới mỗi 10 giây · giữ tab mở và bật loa ·
-    <button id="btnReset">Đổi liên kết Sheet</button></p>
+    <button id="btnReset">Đổi liên kết Sheet</button> ·
+    Khổ giấy in: <select id="paper" style="font:inherit;font-size:11.5px;background:none;border:1px solid var(--line);border-radius:5px;padding:1px 4px;color:var(--mute)">
+      <option value="80">80 mm</option><option value="58">58 mm</option><option value="a5">A5</option></select></p>
 </div>
 
 <iframe name="gsink" style="display:none" title="đồng bộ" aria-hidden="true"></iframe>
 <div class="toast" id="toast"></div>
+<div id="bill"></div>
+<style id="pageStyle"></style>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -376,66 +460,235 @@ async function pollInner(first){
   render(fresh.map(f=>f.k));
   if(fresh.length){
     alarm(alarmMsg(fresh));
+    if(autoPrint) printBills(fresh.slice().sort((a,b)=> tsVal(a.ts) - tsVal(b.ts)));
     document.title = '(' + fresh.length + ' mới) Quầy đơn hàng';
     setTimeout(()=>document.title='Quầy đơn hàng', 30000);
   }
 }
 
-function render(freshKeys){
-  const box=$('#orders'); box.innerHTML='';
-  const chuaXong = orders.filter(o=>!isDone(o.k)).length;
-  $('#count').textContent = chuaXong;
-  $('#countPill').hidden = false;
-  $('#empty').hidden = orders.length > 0;
-  orders.slice(0,80).forEach(o=>{
-    const card=document.createElement('div');
-    card.className='card '+o.loai+(isDone(o.k)?' done':'')+((freshKeys||[]).includes(o.k)?' fresh':'');
-    const top=document.createElement('div'); top.className='c-top';
-    const tag=document.createElement('span'); tag.className='tag '+o.loai;
-    tag.textContent = o.loai==='nuoc'?'NƯỚC':'BÁNH';
-    const nm=document.createElement('span'); nm.className='c-name'; nm.textContent=o.name;
-    const tm=document.createElement('span'); tm.className='c-time'; tm.textContent=o.ts;
-    top.append(tag,nm,tm);
-    const dt=document.createElement('div'); dt.className='c-detail'; dt.textContent=o.detail;
-    const meta=document.createElement('div'); meta.className='c-meta';
-    meta.innerHTML = '<b>'+o.total+'</b> · '+o.ship+' · '+(o.loai==='nuoc'?'lúc ':'ngày ')+o.time
-      + (o.addr ? '<br>Địa chỉ: <b>'+o.addr.replace(/</g,'&lt;')+'</b>' : '')
-      + (o.note ? '<br>Ghi chú: '+o.note.replace(/</g,'&lt;') : '')
-      + '<br>SĐT: <b>'+o.phone+'</b>';
-    const act=document.createElement('div'); act.className='c-act';
-    const zl=document.createElement('a'); zl.className='zl'; zl.textContent='💬 Zalo';
-    zl.href='https://zalo.me/'+phoneClean(o.phone); zl.target='_blank'; zl.rel='noopener';
-    zl.addEventListener('click', ()=>{ navigator.clipboard && navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận — dán vào Zalo'); });
-    const cp=document.createElement('button'); cp.textContent='📋 Chép tin';
-    cp.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận'); }catch(e){ toast('Không chép được'); } });
-    const tel=document.createElement('a'); tel.textContent='📞 Gọi'; tel.href='tel:'+phoneClean(o.phone);
-    const ok=document.createElement('button'); ok.className='ok';
-    ok.textContent = isDone(o.k) ? '↩ Chưa xong' : '✓ Đã xác nhận';
-    ok.addEventListener('click', ()=>{
-      const moi = !isDone(o.k);
-      moi ? done.add(o.k) : done.delete(o.k);
-      localStorage.setItem(DONE_KEY, JSON.stringify([...done].slice(-600)));
-      pushSync(o.k, moi ? 'done' : 'undo');
-      const oc = codeOf(o); if(moi && oc && stMap[oc] === 'new') setStatus(oc, 'ok');
-      render();
-    });
-    act.append(zl,cp,tel,ok);
-    card.append(top,dt,meta,act);
-    const oc = o.loai === 'nuoc' ? codeOf(o) : '';
-    if(oc && pin){
-      const row = document.createElement('div'); row.className = 'c-st';
-      row.innerHTML = '<span class="lb">Báo khách</span>';
-      if(stMap[oc]){
-        const giao = /giao/i.test(o.ship);
-        ['ok','make', giao ? 'ship' : 'ready','done','cancel'].forEach(s=>{
-          const b = document.createElement('button'); b.textContent = ST_LBL[s]; b.className = s + (stMap[oc] === s ? ' on' : '');
-          b.addEventListener('click', ()=> setStatus(oc, s)); row.appendChild(b);
-        });
-      } else row.insertAdjacentHTML('beforeend', '<span class="na">' + (stErr ? stErr : 'Đơn này không có trên hệ thống theo dõi (đơn cũ)') + '</span>');
-      card.appendChild(row);
+/* ---------- tach chi tiet don thanh tung mon ---------- */
+const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money = t => { const m = /([\d.]{3,})\s*đ/.exec(t || ''); return m ? +m[1].replace(/\./g,'') : 0; };
+const fmt = n => new Intl.NumberFormat('vi-VN').format(Math.round(n));
+const IT_RE = /^\s*-?\s*(.+?)\s+[x×]\s+(\d+)(\s*set)?\s*=\s*([\d.,]+\s*đ?)\s*(.*)$/;
+function parseDetail(text){
+  const out = { code:'', groups:[], extra:[], ok:false };
+  let g = { who:'', items:[] }; out.groups.push(g);
+  (text || '').split(/\r?\n/).forEach(line=>{
+    const t = line.trim(); if(!t) return;
+    let m;
+    if((m = /^Mã đơn:\s*(.+)$/.exec(t))){ out.code = m[1]; return; }
+    if(/^ĐẶT NƯỚC/.test(t)) return;
+    if((m = /^[—–-]\s*(.+):$/.exec(t))){ g = { who:m[1], items:[] }; out.groups.push(g); return; }
+    if((m = IT_RE.exec(line))){
+      let note = (m[5] || '').trim().replace(/^[—–-]\s*/, '');
+      if(/^\(.*\)$/.test(note)) note = note.slice(1, -1);
+      g.items.push({ n:m[1].trim(), q:+m[2], unit:m[3] ? ' set' : '', p:m[4].trim(), note });
+      out.ok = true; return;
     }
-    box.appendChild(card);
+    out.extra.push(t);
   });
+  out.groups = out.groups.filter(x => x.items.length);
+  return out;
+}
+/* gop mon trung ten (don nhom) — nhap KiotViet nhanh */
+function sumItems(P){
+  const m = new Map();
+  P.groups.forEach(g => g.items.forEach(it=>{
+    const r = m.get(it.n) || { n:it.n, q:0, v:0, unit:it.unit };
+    r.q += it.q; r.v += money(it.p + 'đ'); m.set(it.n, r);
+  }));
+  return [...m.values()];
+}
+function isToday(o){ const v = tsVal(o.ts); if(!v) return false; const a = new Date(v), b = new Date();
+  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function cupsOf(o){ const P = parseDetail(o.detail); return P.groups.reduce((s,g)=>s+g.items.reduce((x,i)=>x+i.q,0),0); }
+
+/* ---------- thong ke + bo loc ---------- */
+let filter = 'wait';
+try{ filter = localStorage.getItem('tcCashierFilter') || 'wait'; }catch(e){}
+$('#tabs').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  filter = b.dataset.f; try{ localStorage.setItem('tcCashierFilter', filter); }catch(e){}
+  render();
+});
+function passFilter(o){
+  if(filter === 'wait') return !isDone(o.k);
+  if(filter === 'today') return isToday(o);
+  if(filter === 'nuoc' || filter === 'banh') return o.loai === filter;
+  return true;
+}
+function renderStats(){
+  const wait = orders.filter(o => !isDone(o.k));
+  const today = orders.filter(isToday);
+  const tn = today.filter(o => o.loai === 'nuoc');
+  const cups = tn.reduce((s,o)=>s+cupsOf(o),0);
+  const rev = today.reduce((s,o)=>s+money(o.total),0);
+  $('#sWait').textContent = wait.length;
+  $('#sWaitSub').textContent = wait.length ? wait.filter(o=>o.loai==='nuoc').length + ' nước · ' + wait.filter(o=>o.loai==='banh').length + ' bánh' : 'Đã xử lý hết';
+  $('#sToday').textContent = today.length;
+  $('#sTodaySub').textContent = tn.length + ' nước · ' + (today.length - tn.length) + ' bánh';
+  $('#sCups').textContent = cups;
+  $('#sCupsSub').textContent = tn.length ? 'TB ' + (cups / tn.length).toFixed(1) + ' món/đơn' : ' ';
+  $('#sRev').textContent = fmt(rev) + 'đ';
+  $('#tWait').textContent = wait.length; $('#tToday').textContent = today.length;
+  $('#tNuoc').textContent = orders.filter(o=>o.loai==='nuoc').length;
+  $('#tBanh').textContent = orders.filter(o=>o.loai==='banh').length;
+  $('#tAll').textContent = orders.length;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.f === filter));
+}
+
+/* ---------- in bill (pha che + nhap KiotViet) ---------- */
+const PRINTED_KEY = 'tcCashierPrinted';
+let printed = new Set(); try{ printed = new Set(JSON.parse(localStorage.getItem(PRINTED_KEY) || '[]')); }catch(e){}
+let paper = '80'; try{ paper = localStorage.getItem('tcCashierPaper') || '80'; }catch(e){}
+$('#paper').value = paper;
+function applyPaper(){
+  const size = paper === 'a5' ? 'A5' : paper + 'mm auto';
+  $('#pageStyle').textContent = '@page{size:' + size + ';margin:' + (paper === 'a5' ? '10mm' : '2mm') + '}'
+    + (paper === '58' ? '.bl{font-size:10.5pt}.bl .i .n,.bl .i .nt,.bl .nb{font-size:11pt}.bl .big{font-size:13pt}' : '')
+    + (paper === 'a5' ? '.bl{max-width:110mm;margin:0 auto}' : '');
+}
+applyPaper();
+$('#paper').addEventListener('change', e=>{ paper = e.target.value; try{ localStorage.setItem('tcCashierPaper', paper); }catch(x){} applyPaper(); });
+function billHTML(o){
+  const P = parseDetail(o.detail), code = P.code || codeOf(o) || '';
+  const now = new Date(), p2 = x => String(x).padStart(2,'0');
+  const H = [];
+  H.push('<div class="bl">');
+  H.push('<div class="h">THE CURATOR CAFE</div>');
+  H.push('<div class="h2">' + (o.loai === 'nuoc' ? 'PHIẾU PHA CHẾ · ĐƠN WEB' : 'PHIẾU ĐƠN BÁNH TRUNG THU') + '</div>');
+  if(code) H.push('<div class="r"><span>Mã đơn</span><b>' + esc(code) + '</b></div>');
+  H.push('<div class="r"><span>Đặt lúc</span><span>' + esc(o.ts) + '</span></div>');
+  H.push('<div class="r"><span>Khách</span><b>' + esc(o.name) + '</b></div>');
+  H.push('<div class="r"><span>SĐT</span><b>' + esc(o.phone) + '</b></div>');
+  H.push('<div class="big">' + esc(o.ship || 'Nhận') + ' · ' + esc(o.time || 'sớm nhất') + '</div>');
+  if(o.addr) H.push('<div class="x"><b>Giao tới:</b> ' + esc(o.addr) + '</div>');
+  H.push('<hr>');
+  if(P.ok){
+    P.groups.forEach(g=>{
+      if(g.who) H.push('<div class="g">' + esc(g.who) + '</div>');
+      g.items.forEach(it=>{
+        H.push('<div class="i"><span class="q">' + it.q + '×</span><span class="n">' + esc(it.n) + '</span><span class="p">' + esc(it.p) + '</span>'
+          + (it.note ? '<span class="nt">» ' + esc(it.note) + '</span>' : '') + '</div>');
+      });
+    });
+    if(P.extra.length) H.push('<div class="x" style="margin-top:1.5mm">' + esc(P.extra.join('\n')) + '</div>');
+  } else H.push('<div class="x" style="font-size:11.5pt">' + esc(o.detail) + '</div>');
+  if(o.note) H.push('<div class="nb">GHI CHÚ: ' + esc(o.note) + '</div>');
+  H.push('<hr>');
+  /* khoi nhap KiotViet: ten mon gop lai + so luong + thanh tien */
+  if(P.ok){
+    const S = sumItems(P);
+    H.push('<div class="g" style="text-decoration:none">NHẬP KIOTVIET (' + S.reduce((s,x)=>s+x.q,0) + ' món)</div><div class="kv">');
+    S.forEach(x => H.push('<div><span>' + esc(x.n) + ' <b>× ' + x.q + x.unit + '</b></span><span>' + fmt(x.v) + '</span></div>'));
+    H.push('</div><hr>');
+  }
+  H.push('<div class="r tt"><span>TỔNG</span><span>' + esc(o.total) + '</span></div>');
+  H.push('<div class="ft">In lúc ' + p2(now.getHours()) + ':' + p2(now.getMinutes()) + ' ' + p2(now.getDate()) + '/' + p2(now.getMonth()+1) + '</div>');
+  H.push('</div>');
+  return H.join('');
+}
+function printBills(list){
+  if(!list.length) return;
+  $('#bill').innerHTML = list.map(billHTML).join('');
+  list.forEach(o => printed.add(o.k));
+  try{ localStorage.setItem(PRINTED_KEY, JSON.stringify([...printed].slice(-600))); }catch(e){}
+  setTimeout(()=>{ window.print(); render(); }, 60);
+}
+let autoPrint = false; try{ autoPrint = localStorage.getItem('tcCashierAutoPrint') === '1'; }catch(e){}
+$('#autoPrint').checked = autoPrint;
+$('#autoPrint').addEventListener('change', e=>{ autoPrint = e.target.checked; try{ localStorage.setItem('tcCashierAutoPrint', autoPrint ? '1' : '0'); }catch(x){}
+  toast(autoPrint ? 'Đơn mới sẽ tự mở hộp thoại in' : 'Đã tắt tự in'); });
+
+function cardFor(o, freshKeys){
+  const card = document.createElement('div');
+  const dn = isDone(o.k), P = parseDetail(o.detail);
+  card.className = 'card ' + o.loai + (dn ? ' done' : '') + ((freshKeys||[]).includes(o.k) ? ' fresh' : '');
+  const code = P.code || codeOf(o);
+  const oc = o.loai === 'nuoc' ? codeOf(o) : '';
+  const st = oc && stMap[oc] ? ST_LBL[stMap[oc]] : '';
+  let h = '<div class="c-top"><span class="tag ' + o.loai + '">' + (o.loai === 'nuoc' ? 'NƯỚC' : 'BÁNH') + '</span>'
+    + (dn ? '' : '<span class="tag st wait">CHỜ XÁC NHẬN</span>')
+    + (st ? '<span class="tag st">' + esc(st) + '</span>' : '')
+    + '<span class="c-name">' + esc(o.name) + '</span>'
+    + (code ? '<span class="c-code">' + esc(code) + '</span>' : '')
+    + '<span class="c-time">' + esc(o.ts) + '</span></div>';
+  h += '<div class="c-pick"><span class="when"><small>' + (o.loai === 'nuoc' ? 'Giờ nhận' : 'Ngày nhận') + '</small><b>' + esc(o.time || 'Sớm nhất') + '</b></span>'
+    + '<span><small>Cách nhận</small><b>' + esc(o.ship || '—') + '</b></span>'
+    + '<span><small>SĐT</small><b>' + esc(o.phone) + '</b></span>'
+    + (o.addr ? '<span style="white-space:normal"><small>Địa chỉ giao</small><b>' + esc(o.addr) + '</b></span>' : '') + '</div>';
+  if(P.ok){
+    h += '<div class="c-items">';
+    P.groups.forEach(g=>{
+      if(g.who) h += '<div class="c-grp">' + esc(g.who) + '</div>';
+      g.items.forEach(it=>{
+        h += '<div class="it"><span class="q">' + it.q + '</span><span class="n">' + esc(it.n) + '</span><span class="p">' + esc(it.p) + '</span>'
+          + (it.note ? '<span class="nt">' + esc(it.note) + '</span>' : '') + '</div>';
+      });
+    });
+    if(P.extra.length) h += '<div class="c-extra">' + esc(P.extra.join('\n')) + '</div>';
+    h += '</div>';
+  } else h += '<div class="c-items"><div class="c-raw">' + esc(o.detail) + '</div></div>';
+  if(o.note) h += '<div class="c-note"><small>GHI CHÚ CỦA KHÁCH</small>' + esc(o.note) + '</div>';
+  h += '<div class="c-tot"><span>Tổng thanh toán</span><b>' + esc(o.total) + '</b></div>';
+  card.innerHTML = h;
+
+  const act = document.createElement('div'); act.className = 'c-act';
+  const pr = document.createElement('button'); pr.className = 'pr' + (printed.has(o.k) ? ' did' : '');
+  pr.textContent = printed.has(o.k) ? '🖨 In lại' : '🖨 In bill';
+  pr.addEventListener('click', ()=> printBills([o]));
+  const zl = document.createElement('a'); zl.className = 'zl'; zl.textContent = '💬 Zalo';
+  zl.href = 'https://zalo.me/' + phoneClean(o.phone); zl.target = '_blank'; zl.rel = 'noopener';
+  zl.addEventListener('click', ()=>{ navigator.clipboard && navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận — dán vào Zalo'); });
+  const cp = document.createElement('button'); cp.textContent = '📋 Chép tin';
+  cp.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(msgFor(o)); toast('Đã chép tin xác nhận'); }catch(e){ toast('Không chép được'); } });
+  const tel = document.createElement('a'); tel.textContent = '📞 Gọi'; tel.href = 'tel:' + phoneClean(o.phone);
+  const ok = document.createElement('button'); ok.className = 'ok';
+  ok.textContent = dn ? '↩ Chưa xong' : '✓ Đã xác nhận';
+  ok.addEventListener('click', ()=>{
+    const moi = !isDone(o.k);
+    moi ? done.add(o.k) : done.delete(o.k);
+    localStorage.setItem(DONE_KEY, JSON.stringify([...done].slice(-600)));
+    pushSync(o.k, moi ? 'done' : 'undo');
+    if(moi && oc && stMap[oc] === 'new') setStatus(oc, 'ok');
+    render();
+  });
+  act.append(pr, ok, zl, cp, tel);
+  card.appendChild(act);
+  if(oc && pin){
+    const row = document.createElement('div'); row.className = 'c-st';
+    row.innerHTML = '<span class="lb">Báo khách</span>';
+    if(stMap[oc]){
+      const giao = /giao/i.test(o.ship);
+      ['ok','make', giao ? 'ship' : 'ready','done','cancel'].forEach(s=>{
+        const b = document.createElement('button'); b.textContent = ST_LBL[s]; b.className = s + (stMap[oc] === s ? ' on' : '');
+        b.addEventListener('click', ()=> setStatus(oc, s)); row.appendChild(b);
+      });
+    } else row.insertAdjacentHTML('beforeend', '<span class="na">' + (stErr ? esc(stErr) : 'Đơn này không có trên hệ thống theo dõi (đơn cũ)') + '</span>');
+    card.appendChild(row);
+  }
+  return card;
+}
+
+function render(freshKeys){
+  const box = $('#orders'); box.innerHTML = '';
+  $('#count').textContent = orders.filter(o=>!isDone(o.k)).length;
+  $('#countPill').hidden = false;
+  $('#dash').hidden = false;
+  renderStats();
+  /* chua xac nhan len tren (don cu nhat truoc — lam truoc), da xong xuong duoi */
+  const list = orders.filter(passFilter).slice(0, 120);
+  const wait = list.filter(o => !isDone(o.k)).sort((a,b)=> tsVal(a.ts) - tsVal(b.ts));
+  const fin = list.filter(o => isDone(o.k));
+  if(wait.length && fin.length) box.insertAdjacentHTML('beforeend', '<p class="sec">Chờ xác nhận · ' + wait.length + '</p>');
+  wait.forEach(o => box.appendChild(cardFor(o, freshKeys)));
+  if(fin.length) box.insertAdjacentHTML('beforeend', '<p class="sec">Đã xác nhận · ' + fin.length + '</p>');
+  fin.slice(0, 80).forEach(o => box.appendChild(cardFor(o, freshKeys)));
+  $('#empty').hidden = list.length > 0;
+  $('#empty').innerHTML = orders.length
+    ? (filter === 'wait' ? 'Không còn đơn chờ xác nhận. 👍<br>Đơn mới sẽ tự hiện kèm chuông báo.' : 'Không có đơn nào trong mục này.')
+    : 'Đang theo dõi… Chưa có đơn nào.<br>Đơn mới sẽ tự hiện kèm chuông báo — cứ để tab này mở.';
 }
 
 let soundOn = false;
