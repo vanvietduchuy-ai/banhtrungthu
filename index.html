@@ -104,6 +104,25 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 .gust{position:absolute;z-index:1;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;pointer-events:none;
   border:1px solid rgba(255,226,170,.35);animation:gust .7s ease-out forwards}
 @keyframes gust{from{transform:scale(.2);opacity:.9}to{transform:scale(1.6);opacity:0}}
+/* nhân vật barista (chibi 3D): sau 4 giây khách chưa kéo dây thì nhảy lên chụp dây kéo giúp */
+.mascot{position:absolute;z-index:3;left:0;top:0;width:0;height:0;pointer-events:none;opacity:0;transition:opacity .35s}
+.mascot.on{opacity:1}
+.mascot .m-body{position:absolute;left:-40px;bottom:0;width:80px;height:95px;transform-origin:50% 100%}
+.mascot svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.mascot .m-shadow{position:absolute;left:-26px;top:-6px;width:52px;height:12px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0))}
+.m-armUp{opacity:0}
+.mascot.up .m-armUp{opacity:1}
+.mascot.up .m-armDn{opacity:0}
+.m-eye{transform-box:fill-box;transform-origin:center;animation:mBlink 3.2s infinite}
+@keyframes mBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.m-pup{transition:transform .2s}
+.mascot.look-l .m-pup{transform:translate(-1.4px,0)}
+.mascot.look-up .m-pup{transform:translate(0,-1.6px)}
+.m-spark{position:absolute;left:40px;bottom:96px;width:0;height:0}
+.m-spark i{position:absolute;width:7px;height:7px;margin:-3.5px;background:#F2C978;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0}
+.mascot.yay .m-spark i{animation:mSpark .8s ease-out forwards}
+.m-spark i:nth-child(1){--dx:-30px;--dy:-14px}.m-spark i:nth-child(2){--dx:0;--dy:-30px;animation-delay:.08s}.m-spark i:nth-child(3){--dx:30px;--dy:-12px;animation-delay:.16s}
+@keyframes mSpark{0%{opacity:0;transform:translate(0,0) scale(.4)}30%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2) rotate(40deg)}}
 #cord{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 #pull{position:absolute;width:112px;height:190px;margin:-135px 0 0 -56px;border:0;padding:0;background:transparent;cursor:grab;touch-action:none;border-radius:56px;-webkit-tap-highlight-color:transparent}
 #pull:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
@@ -158,6 +177,57 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
     <div class="beam"></div><div class="halo h3"></div><div class="core c1"></div><div class="core c2"></div><div class="halo h2"></div><div class="halo h1"></div><div class="ember e1"></div><div class="ember e2"></div><div class="ember e3"></div>
   <svg id="cord" aria-hidden="true"><defs><linearGradient id="tasG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7E1F16"/><stop offset=".45" stop-color="#C23A2A"/><stop offset="1" stop-color="#6E1A12"/></linearGradient><radialGradient id="beadG" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#F3D99A"/><stop offset=".6" stop-color="#C9A35A"/><stop offset="1" stop-color="#7A5A22"/></radialGradient><linearGradient id="ropeFade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="100"><stop offset="0" stop-color="#fff" stop-opacity=".04"/><stop offset=".35" stop-color="#fff" stop-opacity=".3"/><stop offset=".75" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="ropeMask" maskUnits="userSpaceOnUse" x="-4000" y="-4000" width="10000" height="10000"><rect x="-4000" y="-4000" width="10000" height="10000" fill="url(#ropeFade)"/></mask></defs><g fill="none" stroke-linecap="butt" stroke-linejoin="round" mask="url(#ropeMask)"><path class="rp" stroke="rgba(0,0,0,.55)" stroke-width="5.2" stroke-linecap="round"/><path class="rp" id="cLine" stroke="#9C7238" stroke-width="3.6" stroke-linecap="round"/><path class="rp" stroke="#E2BE78" stroke-width="3.6" stroke-dasharray="2.4 3"/><path class="rp" stroke="#5E3F1C" stroke-width="1.1" stroke-dasharray="1.1 4.3" stroke-dashoffset="2.6"/><path class="rp" stroke="rgba(255,240,205,.55)" stroke-width=".7" stroke-dasharray="1.6 3.8" stroke-dashoffset="1"/></g><g id="cTas"><circle cy="1" r="4.6" fill="url(#beadG)"/><path d="M-4.2 5 Q0 3.4 4.2 5 L5.6 11.5 Q0 13 -5.6 11.5Z" fill="url(#tasG)"/><path d="M-5.2 9.2 Q0 10.6 5.2 9.2" stroke="#E2BE78" stroke-width="1.1" fill="none"/><g stroke="url(#tasG)" stroke-width="1.6" stroke-linecap="round" fill="none"><path d="M-5 11 L-6.8 30.0"/><path d="M-3.5 11 L-4.7 27.8"/><path d="M-2 11 L-2.7 30.0"/><path d="M-0.7 11 L-0.9 28.1"/><path d="M0.7 11 L0.9 28.1"/><path d="M2 11 L2.7 30.0"/><path d="M3.5 11 L4.7 27.8"/><path d="M5 11 L6.8 30.0"/></g><g stroke="rgba(255,150,120,.35)" stroke-width=".6" fill="none"><path d="M-2 12 L-2.8 26"/><path d="M1.4 12 L1.9 27"/></g></g></svg>
   <button id="pull" type="button" aria-pressed="false" aria-label="Kéo dây để bật đèn"></button>
+  <div class="mascot" id="mascot" aria-hidden="true"><div class="m-shadow"></div><div class="m-body"><span class="m-spark"><i></i><i></i><i></i></span><svg viewBox="0 0 64 76">
+    <defs>
+      <radialGradient id="mSkin" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#FFEBDC"/><stop offset=".55" stop-color="#F6C3A0"/><stop offset="1" stop-color="#D98F68"/></radialGradient>
+      <radialGradient id="mSkin2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFE6D3"/><stop offset="1" stop-color="#E0A07A"/></radialGradient>
+      <linearGradient id="mHair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A4330"/><stop offset=".55" stop-color="#3E2519"/><stop offset="1" stop-color="#24140D"/></linearGradient>
+      <linearGradient id="mShirt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E9DFCF"/><stop offset=".4" stop-color="#FFFBF4"/><stop offset="1" stop-color="#D8CBB6"/></linearGradient>
+      <linearGradient id="mApron" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#B58A3E"/><stop offset=".45" stop-color="#E4C27E"/><stop offset="1" stop-color="#A47A30"/></linearGradient>
+      <linearGradient id="mPants" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A2A22"/><stop offset=".5" stop-color="#5A4236"/><stop offset="1" stop-color="#2E211B"/></linearGradient>
+      <radialGradient id="mShoe" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#7A5340"/><stop offset="1" stop-color="#2C1A12"/></radialGradient>
+      <radialGradient id="mEye" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#5A3A28"/><stop offset=".7" stop-color="#1E120C"/><stop offset="1" stop-color="#0E0806"/></radialGradient>
+    </defs>
+    <!-- chân + giày -->
+    <rect x="24" y="57" width="6.6" height="12" rx="3" fill="url(#mPants)"/>
+    <rect x="33.4" y="57" width="6.6" height="12" rx="3" fill="url(#mPants)"/>
+    <ellipse cx="26.8" cy="70.6" rx="5" ry="3" fill="url(#mShoe)"/><ellipse cx="37.2" cy="70.6" rx="5" ry="3" fill="url(#mShoe)"/>
+    <ellipse cx="25.6" cy="69.6" rx="1.6" ry=".7" fill="rgba(255,255,255,.35)"/><ellipse cx="36" cy="69.6" rx="1.6" ry=".7" fill="rgba(255,255,255,.35)"/>
+    <!-- tay (xoay quanh vai) -->
+    <g class="m-armDn"><g><path d="M17.6 42.5q-2.4 6 -1.6 12" stroke="#E9DFCF" stroke-width="5.6" stroke-linecap="round" fill="none"/><path d="M17.6 42.5q-2.4 6 -1.6 12" stroke="url(#mShirt)" stroke-width="4.4" stroke-linecap="round" fill="none"/><circle cx="16.1" cy="56.4" r="3.1" fill="url(#mSkin2)"/></g>
+    <g><path d="M46.4 42.5q2.4 6 1.6 12" stroke="#E9DFCF" stroke-width="5.6" stroke-linecap="round" fill="none"/><path d="M46.4 42.5q2.4 6 1.6 12" stroke="url(#mShirt)" stroke-width="4.4" stroke-linecap="round" fill="none"/><circle cx="47.9" cy="56.4" r="3.1" fill="url(#mSkin2)"/></g></g>
+    <!-- thân áo + tạp dề -->
+    <path d="M20 41.5q12-5 24 0l1.6 15.5q-13.6 4-27.2 0Z" fill="url(#mShirt)"/>
+    <path d="M23.5 44.5h17l1.4 13.2q-9.9 2.8-19.8 0Z" fill="url(#mApron)"/>
+    <path d="M24.6 44.6l-1.8-3.6M39.4 44.6l1.8-3.6" stroke="#A47A30" stroke-width="1.3" stroke-linecap="round"/>
+    <text x="32" y="53.6" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-size="6" font-weight="600" fill="#5A3A1E" letter-spacing=".4">TC</text>
+    <path d="M28.6 39.6l3.4 2.6 3.4-2.6" fill="#B5382A"/><circle cx="32" cy="42.3" r=".9" fill="#8E2A1F"/>
+    <!-- cổ + bóng dưới cằm -->
+    <rect x="29" y="36.5" width="6" height="4.5" rx="2" fill="#E3A781"/>
+    <!-- tai -->
+    <ellipse cx="16.6" cy="26" rx="2.6" ry="3.4" fill="url(#mSkin2)"/><ellipse cx="47.4" cy="26" rx="2.6" ry="3.4" fill="url(#mSkin2)"/>
+    <!-- đầu -->
+    <circle cx="32" cy="23.5" r="15.6" fill="url(#mSkin)"/>
+    <!-- tóc -->
+    <path d="M16.2 24.5q-1.2-14 13-17.2q12-2.4 17.8 6.6q3 5 1.8 11.2q-2.6-6.4-7.2-8.2q-1 4.2-6.4 4.6q2-2.2 1.4-4.4q-4.4 5.2-12.2 5q2.6-1.6 3-3.8q-4.8 2.2-6.4 6.2q-1.6-.6-4.8 0Z" fill="url(#mHair)"/>
+    <path d="M30 6.4q2.6-3.6 6.2-2.2q-3 .2-4 3.4Z" fill="#3E2519"/>
+    <path d="M22 11.4q5-4.2 12-4" stroke="rgba(255,220,190,.35)" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+    <!-- mắt -->
+    <g class="m-eye"><ellipse cx="26.2" cy="26.2" rx="2.7" ry="3.4" fill="url(#mEye)"/><circle class="m-pup" cx="27.1" cy="24.9" r="1.05" fill="#fff"/><circle cx="25.4" cy="27.6" r=".45" fill="rgba(255,255,255,.7)"/></g>
+    <g class="m-eye"><ellipse cx="37.8" cy="26.2" rx="2.7" ry="3.4" fill="url(#mEye)"/><circle class="m-pup" cx="38.7" cy="24.9" r="1.05" fill="#fff"/><circle cx="37" cy="27.6" r=".45" fill="rgba(255,255,255,.7)"/></g>
+    <path d="M23.6 21.4q2.6-1.4 5 0M35.4 21.4q2.6-1.4 5 0" stroke="#3E2519" stroke-width=".9" stroke-linecap="round" fill="none"/>
+    <!-- má, mũi, miệng -->
+    <ellipse cx="21.8" cy="31" rx="3" ry="1.8" fill="#F28C8C" opacity=".45"/><ellipse cx="42.2" cy="31" rx="3" ry="1.8" fill="#F28C8C" opacity=".45"/>
+    <path d="M31.4 29.6q.6.5 1.2 0" stroke="#C97E5C" stroke-width=".8" stroke-linecap="round" fill="none"/>
+    <path d="M29.4 32q2.6 2.6 5.2 0q-2.6 1.2-5.2 0Z" fill="#8E3A2A" stroke="#7A2E20" stroke-width=".6" stroke-linejoin="round"/>
+    <!-- ánh sáng trên trán -->
+    <ellipse cx="27" cy="15.8" rx="4.4" ry="2" fill="rgba(255,255,255,.18)" transform="rotate(-18 27 15.8)"/>
+    <!-- tay giơ cao (khi nhảy chụp dây) -->
+    <g class="m-armUp">
+      <path d="M18.4 42q-6.4-13 -1-33" stroke="#D8CBB6" stroke-width="5.8" stroke-linecap="round" fill="none"/><path d="M18.4 42q-6.4-13 -1-33" stroke="url(#mShirt)" stroke-width="4.4" stroke-linecap="round" fill="none"/><circle cx="17.6" cy="6.6" r="3.2" fill="url(#mSkin2)"/>
+      <path d="M45.6 42q6.4-13 1-33" stroke="#D8CBB6" stroke-width="5.8" stroke-linecap="round" fill="none"/><path d="M45.6 42q6.4-13 1-33" stroke="url(#mShirt)" stroke-width="4.4" stroke-linecap="round" fill="none"/><circle cx="46.4" cy="6.6" r="3.2" fill="url(#mSkin2)"/>
+    </g>
+  </svg></div></div>
   <div class="tap" id="tap" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#FBF5EA" stroke="#16100C" stroke-width=".6" stroke-linejoin="round" d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg></div>
   <p class="hint" id="hint">Kéo nhẹ<i></i></p>
   <div class="lamp-hd" id="lampHd"><p>The Curator Cafe</p><h1 id="lampH">Quý khách giúp quán kéo dây bật đèn nhé</h1></div>
@@ -200,7 +270,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   // bàn tay hướng dẫn sau 4 giây chưa bật đèn
   const tap=document.getElementById('tap');let idleT;
-  function idle(start){clearTimeout(idleT);tap.classList.remove('on');if(start)idleT=setTimeout(()=>{if(!sec.classList.contains('is-on'))tap.classList.add('on')},4000)}
+  function idle(start){clearTimeout(idleT);tap.classList.remove('on');if(start)idleT=setTimeout(()=>{if(sec.classList.contains('is-on'))return;if(!mascotStart())tap.classList.add('on')},4000)}
   idle(true);
   // dây: chuỗi 16 điểm mô phỏng Verlet — có trọng lực, quán tính, tua nặng hơn nên dây mềm và văng tự nhiên
   const NP=16;let P=[],seg=8,drag=false,on=false,tripped=false,dragX=0,dragY=0,offX=0,offY=0,downX=0,downY=0,restY=0,acc=0,lastT=0;
@@ -268,7 +338,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(RM)k=target;
   }
   const local=e=>{const r=sec.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};
-  pull.addEventListener('pointerdown',e=>{idle(false);drag=true;tripped=false;const [x,y]=local(e),t=P[NP-1];offX=x-t.x;offY=y-t.y;downX=x;downY=y;dragX=t.x;dragY=t.y;pull.setPointerCapture(e.pointerId)});
+  pull.addEventListener('pointerdown',e=>{mascotStop();idle(false);drag=true;tripped=false;const [x,y]=local(e),t=P[NP-1];offX=x-t.x;offY=y-t.y;downX=x;downY=y;dragX=t.x;dragY=t.y;pull.setPointerCapture(e.pointerId)});
   pull.addEventListener('pointermove',e=>{if(!drag)return;const [x,y]=local(e);let tx=x-offX,ty=y-offY;
     const dx=tx-ax,dy=ty-ay,d=Math.hypot(dx,dy),max=len+70;if(d>max){tx=ax+dx/d*max;ty=ay+dy/d*max}
     dragX=tx;dragY=ty;if(ty-restY>50&&!tripped){tripped=true;set(!on)}});
@@ -282,6 +352,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function tug(){kick(16,(Math.random()<.5?-1:1)*(5+Math.random()*3));set(!on)}
   // chạm vào chỗ khác trên màn hình: như một cơn gió thổi dây bay ra xa điểm chạm
   sec.addEventListener('pointerdown',e=>{
+    mascotStop();
     if(e.target.closest('#pull,.card,.nav'))return;
     const [x,y]=local(e),t=P[NP-1],dx=t.x-x,dy=t.y-y,d=Math.hypot(dx,dy)||1;
     const f=Math.max(4,18*Math.exp(-d/380)),sx=dx>=0?1:-1;
@@ -294,6 +365,49 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function tick(){const d=new Date(),m=d.getHours()*60+d.getMinutes(),o=m>=360&&m<1305;st.classList.toggle('off',!o);
     st.lastChild.textContent=o?'Đang nhận đơn · đến 21:45':'Đã nghỉ · đặt trước, nhận từ 06:00'}
   tick();setInterval(tick,60000);
+  // ===== nhân vật ly cà phê nhảy chụp dây =====
+  const mas=document.getElementById('mascot'),mBody=mas.querySelector('.m-body'),mShadow=mas.querySelector('.m-shadow');
+  const M={used:false,run:false,raf:0,t0:0,x:0,grab:false};
+  const easeOut=t=>1-(1-t)*(1-t),easeIn=t=>t*t;
+  function mascotStop(){if(!M.run)return;M.run=false;cancelAnimationFrame(M.raf);if(M.grab){drag=false;M.grab=false;kick(-2,3)}mas.classList.remove('on','up','yay')}
+  function mascotStart(){
+    if(M.used||RM||sec.classList.contains('is-on'))return false;
+    M.used=true;M.run=true;M.grab=false;M.t0=performance.now();M.x=sec.clientWidth+50;
+    mas.classList.add('on','look-l');mas.classList.remove('up','yay','look-up');
+    M.raf=requestAnimationFrame(mtick);return true;
+  }
+  function mtick(now){
+    if(!M.run)return;
+    const t=now-M.t0,W=sec.clientWidth,H=sec.clientHeight,tas=P[NP-1];
+    const ground=Math.min(H-24,restY+150),REACH=88,hMax=Math.max(40,ground-REACH-restY);
+    let y=0,sx=1,sy=1,tx=tas.x;
+    if(t<1200){ // nhảy lò cò vào từ mép phải
+      const k=t/1200;M.x=(W+50)+(tx-(W+50))*easeOut(k);y=Math.abs(Math.sin(k*Math.PI*4))*12;
+    }else{
+      M.x+=(tx-M.x)*.12;mas.classList.remove('look-l');mas.classList.add('look-up');
+      const J=[[1450,520,.5],[2080,560,.78]];
+      for(const [st,du,f] of J){if(t>=st&&t<st+du){const k=(t-st)/du;y=hMax*f*4*k*(1-k);mas.classList.toggle('up',k<.85)}
+        else if(t>=st+du&&t<st+du+90){sy=.86;sx=1.1}else if(t>=st-110&&t<st){sy=.84;sx=1.12}}
+      if(t>=2760&&t<2860){sy=.8;sx=1.14;mas.classList.remove('up')}
+      if(t>=2860&&t<3160){const k=(t-2860)/300;y=hMax*easeOut(k);mas.classList.add('up')}
+      if(t>=3160&&t<3900){ // chụp được tua, đu xuống kéo dây
+        const k=(t-3160)/740;y=hMax*(1-easeIn(k));mas.classList.add('up');
+        if(!M.grab){M.grab=true;drag=true;tripped=false}
+        dragX=M.x;dragY=ground-y-REACH;
+        if(dragY-restY>50&&!tripped){tripped=true;set(true)}
+      }
+      if(t>=3900&&M.grab){M.grab=false;drag=false;kick(-3,(Math.random()<.5?-1:1)*5);sy=.8;sx=1.15}
+      if(t>=3900&&t<3990){sy=.82;sx=1.14}
+      if(t>=4000&&t<4420){const k=(t-4000)/420;y=26*4*k*(1-k);mas.classList.add('yay','up')}
+      if(t>=4420)mas.classList.remove('up');
+      if(t>=4900&&mas.classList.contains('on'))mas.classList.remove('on');
+      if(t>=5400){M.run=false;mas.classList.remove('yay','look-up');return}
+    }
+    mas.style.transform='translate('+M.x.toFixed(1)+'px,'+ground.toFixed(1)+'px)';
+    mBody.style.transform='translateY('+(-y).toFixed(1)+'px) scale('+sx+','+sy+')';
+    const sh=Math.max(.45,1-y/160);mShadow.style.transform='scale('+sh+')';mShadow.style.opacity=sh;
+    M.raf=requestAnimationFrame(mtick);
+  }
   addEventListener('resize',place);place();requestAnimationFrame(step);requestAnimationFrame(light);
 })();
 

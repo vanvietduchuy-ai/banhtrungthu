@@ -1324,7 +1324,7 @@ body.g-locked .g-note{display:none!important}
 .g-wipe.on{clip-path:circle(150% at var(--x,50%) var(--y,50%))}
 .g-wipe.out{opacity:0}
 .g-wipe small{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#BFE3CD;opacity:0;transition:.4s .35s}
-.g-wipe b{font-family:var(--disp);font-size:56px;font-weight:500;letter-spacing:.18em;opacity:0;transform:translateY(10px);transition:.5s .4s}
+.g-wipe b{font-family:var(--disp);font-size:clamp(32px,9vw,54px);font-weight:500;letter-spacing:.01em;line-height:1.1;text-align:center;max-width:88vw;padding:0 16px;opacity:0;transform:translateY(10px);transition:.5s .4s}
 .g-wipe.on small,.g-wipe.on b{opacity:1;transform:none}
 .g-conf{position:fixed;z-index:210;width:8px;height:12px;border-radius:2px;pointer-events:none;animation:gConf 1.3s cubic-bezier(.2,.7,.3,1) forwards}
 
@@ -1744,11 +1744,11 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       el.textContent = vnd(Math.round((from + (to-from)*e)/1000)*1000); if(k < 1) el._raf = requestAnimationFrame(step); else el.textContent = vnd(to); };
     el._raf = requestAnimationFrame(step);
   }
-  function wipe(code, fromEl, done){
+  function wipe(title, fromEl, done){
     if(RM){ done(); return; }
     const w = document.createElement('div'); w.className = 'g-wipe';
     if(fromEl){ const r = fromEl.getBoundingClientRect(); w.style.setProperty('--x', (r.left + r.width/2) + 'px'); w.style.setProperty('--y', (r.top + r.height/2) + 'px'); }
-    w.innerHTML = '<small>Chào mừng vào nhóm</small><b>' + esc(code) + '</b>';
+    w.innerHTML = '<small>Chào mừng quý khách vào nhóm</small><b>' + esc(title) + '</b>';
     document.body.appendChild(w);
     requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')));
     setTimeout(done, 650);
@@ -1806,7 +1806,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       const r = await api({ a:'create', name, gname, cart, notes:NOTES });
       if(!r.ok){ closeModal(); toast(r.err || 'Không tạo được nhóm'); return; }
       closeModal();
-      wipe(r.code, $('#gStart'), ()=>{
+      wipe(gTitle(r.group), $('#gStart'), ()=>{
         enter({ code:r.code, mid:r.mid, tok:r.tok, name }, r.group);
         if(!$('#name').value.trim()) $('#name').value = name;
         window.scrollTo({top:0});
@@ -2127,15 +2127,15 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     joinFlow(code, g);
   })();
   function joinFlow(code, g){
-    if(g.status !== 'open'){ toast('Nhóm ' + code + ' đã gửi đơn'); setUrl(''); return; }
+    if(g.status !== 'open'){ toast('Nhóm “' + gTitle(g) + '” đã gửi đơn'); setUrl(''); return; }
     askName(esc(g.host.name) + (g.name ? ' mời bạn vào nhóm “' + esc(g.name) + '”' : ' mời bạn đặt nước cùng nhóm'),
       '<span class="g-av" style="justify-content:center;margin-bottom:10px">' + g.members.slice(0,6).map(m=>avatar(m,'a')).join('') + '</span><br>' +
-      'Nhóm <b>' + code + '</b> · ' + g.members.length + ' người. Nhập tên rồi chọn món — trưởng nhóm sẽ gửi đơn một lần cho cả nhóm.',
+      '<b>' + esc(gTitle(g)) + '</b> · ' + g.members.length + ' người. Nhập tên rồi chọn món — trưởng nhóm sẽ gửi đơn một lần cho cả nhóm.',
       'Vào nhóm', async name=>{
         const j = await api({ a:'join', code, name, cart, notes:NOTES });
         if(!j.ok){ closeModal(); toast(j.err || 'Không vào được nhóm'); return; }
         closeModal();
-        wipe(code, null, ()=>{
+        wipe(gTitle(j.group || g), null, ()=>{
           enter({ code, mid:j.mid, tok:j.tok, name }, j.group);
           let seen = false; try{ seen = !!localStorage.getItem('tcGuide'); localStorage.setItem('tcGuide','1'); }catch(e){}
           if(!seen) setTimeout(()=>openGuide(2), 1200);
@@ -2148,11 +2148,11 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     if(G.code) leave(false);
     const e = gl.all().find(x => x.code === code);
     G.code = code; const r = await api(); G.code = '';
-    if(!r.ok){ gl.del(code); toast('Nhóm ' + code + ' đã hết hạn'); return false; }
+    if(!r.ok){ gl.del(code); toast('Nhóm này đã hết hạn'); return false; }
     const g = r.group;
-    if(g.status === 'closed'){ gl.del(code); toast('Nhóm ' + code + ' đã được giải tán'); return false; }
+    if(g.status === 'closed'){ gl.del(code); toast('Nhóm “' + gTitle(g) + '” đã được giải tán'); return false; }
     if(e && g.members.some(m => m.mid === e.mid)){
-      wipe(code, null, ()=>{ enter({ code, mid:e.mid, tok:e.tok, name:e.name }, g); window.scrollTo({top:0}); });
+      wipe(gTitle(g), null, ()=>{ enter({ code, mid:e.mid, tok:e.tok, name:e.name }, g); window.scrollTo({top:0}); });
       return true;
     }
     setUrl(code); joinFlow(code, g); return true;
