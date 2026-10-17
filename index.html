@@ -97,7 +97,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   border:1px solid rgba(255,226,170,.35);animation:gust .7s ease-out forwards}
 @keyframes gust{from{transform:scale(.2);opacity:.9}to{transform:scale(1.6);opacity:0}}
 #cord{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
-#pull{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border:0;padding:0;background:transparent;cursor:grab;touch-action:none;border-radius:50%}
+#pull{position:absolute;width:112px;height:190px;margin:-135px 0 0 -56px;border:0;padding:0;background:transparent;cursor:grab;touch-action:none;border-radius:56px;-webkit-tap-highlight-color:transparent}
+#pull:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 #pull:active{cursor:grabbing}
 .hint{position:absolute;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(251,245,234,.6);white-space:nowrap;transform:translate(calc(-100% - 20px),-6px);pointer-events:none;transition:opacity .5s;display:flex;gap:8px;align-items:center}
 .hint i{display:inline-block;width:18px;height:1px;background:currentColor;animation:hintx 1.6s infinite}
