@@ -1703,9 +1703,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   }
   function shareModal(){
     modal(top('Nhóm đã sẵn sàng', 'Mời mọi người cùng chọn', ICO.share) + '<div class="in">' +
-      (G.group ? '<div class="gname"><small>' + (G.group.name ? 'Nhóm' : 'Mã nhóm') + '</small>' + esc(G.group.name || 'Nhóm của ' + G.group.host.name) + '</div>' : '') +
-      '<div class="tiles">' + G.code.split('').map(c=>'<span>' + c + '</span>').join('') + '</div>' +
-      '<div class="link">' + esc(groupLink().replace(/^https?:\/\//,'')) + '</div>' +
+      (G.group ? '<div class="gname"><small>Nhóm</small>' + esc(G.group.name || 'Nhóm của ' + G.group.host.name) + '</div>' : '') +
       '<p>Gửi link qua Zalo / Messenger. Ai mở link sẽ tự chọn món của mình — bạn thấy ngay trong đơn nhóm.</p>' +
       '<div class="row"><button type="button" id="gmCopy">' + ICO.link + 'Sao chép</button>' +
       (navigator.share ? '<button type="button" class="pri" id="gmShare">' + ICO.share + 'Chia sẻ</button>' : '<button type="button" class="pri" id="gmDone">Xong</button>') + '</div></div>');
@@ -1717,7 +1715,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     const gn = G.group && G.group.name ? '“' + G.group.name + '” ' : '';
     if(s) s.addEventListener('click', ()=>{
       setHand(s, false);
-      navigator.share({ title:'Đặt nước cùng nhóm — The Curator', text:G.name + ' mời bạn chọn món cùng nhóm ' + gn + '(mã ' + G.code + ')', url:groupLink() }).catch(()=>{});
+      navigator.share({ title:'Đặt nước cùng nhóm — The Curator', text:G.name + ' mời bạn chọn món cùng nhóm ' + (gn || '') + 'tại The Curator', url:groupLink() }).catch(()=>{});
     });
     $('#gmCopy').addEventListener('click', ()=>setHand($('#gmCopy'), false));
     const d = $('#gmDone'); if(d) d.addEventListener('click', closeModal);
@@ -1983,7 +1981,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     btn.disabled = true; btn.textContent = 'Đang gửi…';
     clearTimeout(G.timer); G.dirty = true; await save();
     const nowD = new Date(), p2 = x => String(x).padStart(2,'0');
-    const ordCode = 'NHOM-' + G.code + '-' + p2(nowD.getDate()) + p2(nowD.getMonth()+1) + '-' + p2(nowD.getHours()) + p2(nowD.getMinutes());
+    const ordCode = 'NHOM-' + p2(nowD.getDate()) + p2(nowD.getMonth()+1) + '-' + p2(nowD.getHours()) + p2(nowD.getMinutes()) + '-' + (Math.floor(Math.random()*900)+100); // không lộ mã nhóm cho khách
     const r = await api({ a:'send', code:G.code, mid:G.mid, tok:G.tok, ord:ordCode });
     if(!r.ok){ btn.disabled = false; btn.textContent = 'Gửi đơn nhóm'; paint(); toast(r.err || 'Chưa gửi được'); return; }
     G.group = r.group;
@@ -2111,7 +2109,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     const r = await api();
     if(!r.ok){ G.code = ''; if(q){ toast(r.err || 'Nhóm không còn'); setUrl(''); } if(saved && saved.code === code) store.del(); return; }
     const g = r.group;
-    if(g.status === 'closed'){ G.code = ''; store.del(); setUrl(''); toast('Nhóm ' + code + ' đã được giải tán'); return; }
+    if(g.status === 'closed'){ G.code = ''; store.del(); setUrl(''); toast('Nhóm này đã được giải tán'); return; }
     if(saved && saved.code === code && g.members.some(m => m.mid === saved.mid)){
       enter(saved, g);
       return;
@@ -2364,11 +2362,12 @@ body.g-on .o-back,body.g-on #oLive{display:none}
       if(!g || g.status === 'closed'){ TCG.forget(e.code); return ''; }
       const mine = g.members.some(m => m.mid === e.mid);
       const nm = g.name || ('Nhóm của ' + g.host.name);
+      const initials = t => t.replace(/^Nhóm (của )?/i,'').trim().split(/\s+/).slice(-2).map(w=>w[0]||'').join('').toUpperCase() || 'N';
       const sub = (g.host.mid === e.mid ? 'Trưởng nhóm' : 'Thành viên') + ' · ' + g.members.length + ' người · ' + (g.status === 'sent' ? 'đã gửi đơn' : 'đang mở');
       const btn = cur === e.code ? '<button class="go ghost" disabled>Đang xem</button>'
         : (mine || g.status === 'open') ? '<button class="go" data-g="' + e.code + '">↩ Quay lại nhóm</button>' : '';
       const trk = g.status === 'sent' && g.ord ? '<button class="go ghost" data-o="' + esc(g.ord) + '" data-gc="' + e.code + '" data-gn="' + esc(nm) + '">Tình trạng</button>' : '';
-      return '<div class="gc"><span class="av">' + e.code + '</span><div class="t"><b>' + esc(nm) + '</b><small>' + sub + '</small></div>' + (trk || btn ? '<div class="acts">' + trk + btn + '</div>' : '') + '</div>';
+      return '<div class="gc"><span class="av">' + esc(initials(nm)) + '</span><div class="t"><b>' + esc(nm) + '</b><small>' + sub + '</small></div>' + (trk || btn ? '<div class="acts">' + trk + btn + '</div>' : '') + '</div>';
     }).join('');
     return out || '<div class="op-empty"><span class="ic">👥</span>Các nhóm gần đây đã hết hạn.</div>';
   }
