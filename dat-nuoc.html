@@ -231,6 +231,16 @@ body.g-on .bs-wrap{display:none}
   min-width:16px;border:1.5px solid var(--mute);border-radius:50%;background:#fff;cursor:pointer}
 .radios input[type=radio]:checked{border-color:var(--red);border-width:5px}
 .ship-note{font-size:12px;color:var(--mute);margin-top:9px;line-height:1.55}
+.geo-btn{display:inline-flex;align-items:center;gap:7px;margin-top:8px;border:1px solid var(--line);border-radius:999px;background:#FFFDF8;
+  padding:7px 13px;font-family:var(--body);font-size:12.5px;color:var(--ink);cursor:pointer;transition:.2s}
+.geo-btn:hover{border-color:var(--ink)}
+.geo-btn svg{width:15px;height:15px;fill:none;stroke:var(--red);stroke-width:1.8;stroke-linecap:round}
+.geo-btn svg circle:first-child{fill:var(--red);stroke:none}
+.geo-btn.busy{opacity:.6;pointer-events:none}
+.geo-btn.busy svg{animation:geoSpin 1s linear infinite}
+@keyframes geoSpin{to{transform:rotate(360deg)}}
+.geo-note{font-size:11.5px;color:var(--mute);margin-top:6px;line-height:1.5}
+.geo-note a{color:var(--ink)}
 .btn{display:flex;align-items:center;justify-content:center;width:100%;border-radius:999px;
   padding:15px 20px;font-family:var(--body);font-size:12.5px;letter-spacing:.16em;
   text-transform:uppercase;cursor:pointer;text-decoration:none;transition:.25s;margin-top:10px;
@@ -359,9 +369,11 @@ footer a{color:var(--ink)}
         <div class="two">
           <div class="field"><label for="time">Giờ nhận</label>
             <input id="time" type="time" min="06:00" max="21:45"></div>
-          <div class="field" id="addrField" hidden><label for="addr">Địa chỉ giao</label>
-            <input id="addr" type="text" placeholder="Số nhà, đường, phường"></div>
         </div>
+        <div class="field" id="addrField" hidden><label for="addr">Địa chỉ giao</label>
+          <input id="addr" type="text" autocomplete="street-address" placeholder="Số nhà, đường, phường">
+          <button type="button" class="geo-btn" id="geoBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/></svg><span id="geoTx">Dùng vị trí hiện tại</span></button>
+          <p class="geo-note" id="geoNote" hidden></p></div>
 
         <div class="field"><label for="note">Ghi chú</label>
           <textarea id="note" rows="2" placeholder="Ví dụ: latte ít ngọt, cappuccino nóng, thêm ống hút giấy."></textarea></div>
@@ -726,7 +738,7 @@ function orderText(code){
   L.push('');
   if(name || phone) L.push('👤 ' + [name, phone].filter(Boolean).join(' · '));
   L.push((ship === 'Giao tận nơi' ? '🛵 Giao tận nơi' : '🏪 Nhận tại quầy') + ' · ' + ($('#time').value || 'sớm nhất'));
-  if(ship === 'Giao tận nơi') L.push('📍 ' + (addr || '(chưa có địa chỉ)'));
+  if(ship === 'Giao tận nơi'){ L.push('📍 ' + (addr || '(chưa có địa chỉ)')); if(GEO) L.push('🗺 ' + mapLink()); }
   L.push('');
   L.push('🧾 MÓN (' + c.count + ')');
   Object.keys(cart).forEach((k, i)=>{
@@ -757,7 +769,7 @@ function sendOrder(code){
   data[GFORM.f.total] = c.count + ' món — ' + vnd(c.total);
   data[GFORM.f.ship] = ship;
   data[GFORM.f.time] = $('#time').value;
-  data[GFORM.f.addr] = ship === 'Giao tận nơi' ? $('#addr').value.trim() : '';
+  data[GFORM.f.addr] = ship === 'Giao tận nơi' ? addrFull() : '';
   data[GFORM.f.note] = $('#note').value.trim();
   const f = document.createElement('form');
   f.action = 'https://docs.google.com/forms/d/e/' + GFORM.id + '/formResponse';
@@ -1992,7 +2004,7 @@ body.g-on .mbar .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     data[GFORM.f.total] = count + ' món — ' + vnd(fin) + ' (đã giảm 5% từ ' + vnd(total) + ') — ĐƠN NHÓM ' + g.members.length + ' người';
     data[GFORM.f.ship] = ship;
     data[GFORM.f.time] = $('#time').value;
-    data[GFORM.f.addr] = ship === 'Giao tận nơi' ? $('#addr').value.trim() : '';
+    data[GFORM.f.addr] = ship === 'Giao tận nơi' ? addrFull() : '';
     data[GFORM.f.note] = $('#note').value.trim();
     try{ postForm(data); saveCust(); navigator.clipboard && navigator.clipboard.writeText(D.join('\n')).catch(()=>{}); }catch(err){}
     if(window.TCO){
@@ -2499,6 +2511,43 @@ body.g-on .o-back,body.g-on #oLive{display:none}
   /* an hang Ban chay khi dang tim mon */
   const q = document.getElementById('q');
   if(q) q.addEventListener('input', ()=>{ wrap.style.display = q.value.trim() ? 'none' : ''; });
+})();
+</script>
+<script>
+/* ===== VỊ TRÍ HIỆN TẠI: điền sẵn địa chỉ giao + gửi kèm link bản đồ cho quán ===== */
+var GEO = null;
+function mapLink(){ return GEO ? 'https://maps.google.com/?q=' + GEO.lat.toFixed(6) + ',' + GEO.lng.toFixed(6) : ''; }
+function addrFull(){ const a = $('#addr').value.trim(); return GEO ? (a ? a + ' · ' : '') + 'Bản đồ: ' + mapLink() : a; }
+(function(){
+  const btn = $('#geoBtn'), tx = $('#geoTx'), note = $('#geoNote'), inp = $('#addr');
+  if(!('geolocation' in navigator)){ btn.hidden = true; return; }
+  function shortAddr(j){
+    const a = j.address || {};
+    const street = [a.house_number, a.road].filter(Boolean).join(' ');
+    const area = a.quarter || a.neighbourhood || a.suburb || a.village || a.hamlet;
+    const city = a.city || a.town || a.county || a.state_district;
+    const parts = [street, area, city].filter(Boolean);
+    return parts.length >= 2 ? parts.join(', ') : (j.display_name || '').split(',').slice(0, 4).join(',').trim();
+  }
+  function done(msg){ btn.classList.remove('busy'); tx.textContent = 'Dùng vị trí hiện tại'; if(msg){ note.hidden = false; note.innerHTML = msg; } }
+  btn.addEventListener('click', ()=>{
+    btn.classList.add('busy'); tx.textContent = 'Đang lấy vị trí…';
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      GEO = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      let addr = '';
+      try{
+        const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=vi&lat=' + GEO.lat + '&lon=' + GEO.lng);
+        if(r.ok) addr = shortAddr(await r.json());
+      }catch(e){}
+      if(addr){ inp.value = addr; inp.classList.remove('err'); }
+      done((addr ? 'Đã điền địa chỉ gần đúng — quý khách thêm số nhà/căn hộ nếu cần. ' : 'Đã lấy vị trí. ') +
+           'Quán nhận kèm <a href="' + mapLink() + '" target="_blank" rel="noopener">vị trí trên bản đồ</a>.');
+      if(!addr) inp.focus();
+    }, err=>{
+      done(err.code === 1 ? 'Máy chưa cho phép lấy vị trí — quý khách bật quyền Vị trí cho trình duyệt hoặc nhập địa chỉ.' : 'Chưa lấy được vị trí, quý khách thử lại hoặc nhập địa chỉ.');
+    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+  });
+  inp.addEventListener('input', ()=>{ if(!inp.value.trim() && GEO){ GEO = null; note.hidden = true; } });
 })();
 </script>
 <script>

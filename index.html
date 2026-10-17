@@ -93,6 +93,9 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 @keyframes tapHand{0%{transform:translate(34px,46px) rotate(-12deg);opacity:0}15%{opacity:1}35%{transform:translate(0,0) rotate(0)}42%{transform:translate(0,0) scale(.88)}75%{transform:translate(0,46px) scale(.88)}88%{transform:translate(0,46px) scale(1);opacity:1}100%{transform:translate(0,46px);opacity:0}}
 @keyframes tapRing{0%,38%{transform:scale(.4);opacity:0}42%{opacity:.9}62%{transform:scale(1.5);opacity:0}100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.tap.on svg,.tap.on::before{animation:none}}
+.gust{position:absolute;z-index:1;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(255,226,170,.35);animation:gust .7s ease-out forwards}
+@keyframes gust{from{transform:scale(.2);opacity:.9}to{transform:scale(1.6);opacity:0}}
 #cord{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 #pull{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border:0;padding:0;background:transparent;cursor:grab;touch-action:none;border-radius:50%}
 #pull:active{cursor:grabbing}
@@ -142,6 +145,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   .card.on{transform:translateY(-50%)}
 }
 #lamp.is-on .lamp-hd{opacity:0}
+@media (max-width:899px){.lamp-hd{top:auto;bottom:calc(17vh + env(safe-area-inset-bottom,0px));left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));max-width:none;text-align:center}.lamp-hd h1{font-size:clamp(28px,8vw,36px)}}
 @media (max-width:899px){.card{padding:16px 16px 14px;border-radius:18px}.card h2{font-size:26px}.card h2 em{font-size:19px}.card .info{margin-top:10px;padding-top:10px;gap:6px}.card .info li{font-size:12.5px;grid-template-columns:68px 1fr}.card .meta{margin-top:8px}}
 @media (prefers-reduced-motion:reduce){.hint i{animation:none}.card{transition:opacity .3s}}
 
@@ -161,7 +165,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   <button id="pull" type="button" aria-pressed="false" aria-label="Kéo dây để bật đèn"></button>
   <div class="tap" id="tap" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#FBF5EA" stroke="#16100C" stroke-width=".6" stroke-linejoin="round" d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg></div>
   <p class="hint" id="hint">Kéo nhẹ<i></i></p>
-  <div class="lamp-hd" id="lampHd"><p>The Curator Cafe</p><h1 id="lampH">Xin mời quý khách kéo nhẹ dây đèn</h1></div>
+  <div class="lamp-hd" id="lampHd"><p>The Curator Cafe</p><h1 id="lampH">Quý khách giúp quán kéo dây bật đèn nhé</h1></div>
   <div class="card" id="card" aria-hidden="true">
     <h2>Kính chào quý khách<em>Mời quý khách ghé The Curator</em></h2>
     <p class="st" id="lampSt"><i></i><span>Đang nhận đơn · đến 21:45</span></p>
@@ -272,7 +276,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     sec.classList.toggle('is-on',v);card.classList.toggle('on',v);card.setAttribute('aria-hidden',!v);
     card.querySelectorAll('a,input,button').forEach(e=>e.tabIndex=v?0:-1);
     pull.setAttribute('aria-pressed',v);pull.setAttribute('aria-label',v?'Kéo dây để tắt đèn':'Kéo dây để bật đèn');
-    hint.style.opacity=v?0:1;document.getElementById('lampH').textContent=v?'Kính chào quý khách':'Xin mời quý khách kéo nhẹ dây đèn';
+    hint.style.opacity=v?0:1;document.getElementById('lampH').textContent=v?'Kính chào quý khách':'Quý khách giúp quán kéo dây bật đèn nhé';
     if(RM)k=target;
   }
   const local=e=>{const r=sec.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};
@@ -288,6 +292,14 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     kick(-3,Math.max(-6,Math.min(6,vx*.6))+(Math.random()<.5?-2:2));};
   pull.addEventListener('pointerup',end);pull.addEventListener('pointercancel',end);
   function tug(){kick(16,(Math.random()<.5?-1:1)*(5+Math.random()*3));set(!on)}
+  // chạm vào chỗ khác trên màn hình: như một cơn gió thổi dây bay ra xa điểm chạm
+  sec.addEventListener('pointerdown',e=>{
+    if(e.target.closest('#pull,.card,.nav,.callsheet,.cs-bg'))return;
+    const [x,y]=local(e),t=P[NP-1],dx=t.x-x,dy=t.y-y,d=Math.hypot(dx,dy)||1;
+    const f=Math.max(4,18*Math.exp(-d/380)),sx=dx>=0?1:-1;
+    for(let i=1;i<NP;i++){const k=i/(NP-1);P[i].ox=P[i].x-sx*f*k*(.5+.5*k);P[i].oy=P[i].y-(dy/d)*f*.25*k}
+    const g=document.createElement('i');g.className='gust';g.style.left=x+'px';g.style.top=y+'px';sec.appendChild(g);setTimeout(()=>g.remove(),700);
+  });
   pull.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tug()}});
   // trạng thái giờ thật
   const st=document.getElementById('lampSt');
