@@ -147,7 +147,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   <img class="ph lit" id="lit" src="/img/home/bar.webp" alt="Quầy bar The Curator dưới ánh đèn lồng" decoding="async">
   <video class="vbg" id="bgv" poster="/img/home/poster.webp" muted loop playsinline preload="metadata" aria-hidden="true"><source src="/video/bar-loop.mp4" type="video/mp4"><source src="/video/bar-loop.webm" type="video/webm"></video>
     <div class="beam"></div><div class="halo h3"></div><div class="core c1"></div><div class="core c2"></div><div class="halo h2"></div><div class="halo h1"></div><div class="ember e1"></div><div class="ember e2"></div><div class="ember e3"></div>
-  <svg id="cord" aria-hidden="true"><path id="cLine" fill="none" stroke="#C9A35A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><g id="cTas"><circle r="5" fill="#B5382A"/><path d="M-5 3 L-7 22 L7 22 L5 3Z" fill="#B5382A"/><path d="M-6 22 h12" stroke="#7E1F16" stroke-width="2"/></g></svg>
+  <svg id="cord" aria-hidden="true"><defs><linearGradient id="tasG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7E1F16"/><stop offset=".45" stop-color="#C23A2A"/><stop offset="1" stop-color="#6E1A12"/></linearGradient><radialGradient id="beadG" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#F3D99A"/><stop offset=".6" stop-color="#C9A35A"/><stop offset="1" stop-color="#7A5A22"/></radialGradient></defs><g fill="none" stroke-linecap="butt" stroke-linejoin="round"><path class="rp" stroke="rgba(0,0,0,.55)" stroke-width="5.2" stroke-linecap="round"/><path class="rp" id="cLine" stroke="#9C7238" stroke-width="3.6" stroke-linecap="round"/><path class="rp" stroke="#E2BE78" stroke-width="3.6" stroke-dasharray="2.4 3"/><path class="rp" stroke="#5E3F1C" stroke-width="1.1" stroke-dasharray="1.1 4.3" stroke-dashoffset="2.6"/><path class="rp" stroke="rgba(255,240,205,.55)" stroke-width=".7" stroke-dasharray="1.6 3.8" stroke-dashoffset="1"/></g><g id="cTas"><circle cy="1" r="4.6" fill="url(#beadG)"/><path d="M-4.2 5 Q0 3.4 4.2 5 L5.6 11.5 Q0 13 -5.6 11.5Z" fill="url(#tasG)"/><path d="M-5.2 9.2 Q0 10.6 5.2 9.2" stroke="#E2BE78" stroke-width="1.1" fill="none"/><g stroke="url(#tasG)" stroke-width="1.6" stroke-linecap="round" fill="none"><path d="M-5 11 L-6.8 30.0"/><path d="M-3.5 11 L-4.7 27.8"/><path d="M-2 11 L-2.7 30.0"/><path d="M-0.7 11 L-0.9 28.1"/><path d="M0.7 11 L0.9 28.1"/><path d="M2 11 L2.7 30.0"/><path d="M3.5 11 L4.7 27.8"/><path d="M5 11 L6.8 30.0"/></g><g stroke="rgba(255,150,120,.35)" stroke-width=".6" fill="none"><path d="M-2 12 L-2.8 26"/><path d="M1.4 12 L1.9 27"/></g></g></svg>
   <button id="pull" type="button" aria-pressed="false" aria-label="Kéo dây để bật đèn"></button>
   <div class="tap" id="tap" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#FBF5EA" stroke="#16100C" stroke-width=".6" stroke-linejoin="round" d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg></div>
   <p class="hint" id="hint">Kéo nhẹ<i></i></p>
@@ -176,7 +176,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ===== 0 · ĐÈN LỒNG ===== */
 (function(){
   const sec=document.getElementById('lamp'),img=document.getElementById('lit'),pull=document.getElementById('pull'),hint=document.getElementById('hint'),card=document.getElementById('card');
-  const line=document.getElementById('cLine'),tas=document.getElementById('cTas');
+  const line=document.getElementById('cLine'),ropeParts=[...document.querySelectorAll('#cord .rp')],tas=document.getElementById('cTas');
   const NW=1080,NH=1920,LX=.587,LY=.361,LB=.404,LW=.116; // đèn lồng phải (có dây) trong ảnh
   const SRC=[[.587,.361],[.157,.354],[.487,.2875]]; // 1 đèn lồng phải · 2 đèn lồng trái · 3 đèn âm trần
   let ax=0,ay=0,lw=0,len=110;
@@ -219,7 +219,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     let d='M'+P[0].x.toFixed(1)+' '+P[0].y.toFixed(1);
     for(let i=1;i<NP-1;i++){const a=P[i],b=P[i+1];d+=' Q'+a.x.toFixed(1)+' '+a.y.toFixed(1)+' '+((a.x+b.x)/2).toFixed(1)+' '+((a.y+b.y)/2).toFixed(1)}
     const e=P[NP-1],q=P[NP-2];d+=' L'+e.x.toFixed(1)+' '+e.y.toFixed(1);
-    line.setAttribute('d',d);
+    ropeParts.forEach(p=>p.setAttribute('d',d));
     const ang=Math.atan2(e.x-q.x,e.y-q.y)*180/Math.PI;
     tas.setAttribute('transform','translate('+e.x.toFixed(1)+' '+e.y.toFixed(1)+') rotate('+(-ang).toFixed(1)+')');
     const x=e.x+'px',y=(e.y+10)+'px';
