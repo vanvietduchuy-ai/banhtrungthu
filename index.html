@@ -18,7 +18,7 @@
 if(/[?&]nhom=/i.test(location.search))location.replace('/dat-nuoc'+location.search+location.hash);</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;800&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 /* Layout: trang chủ 1 màn 100svh — đèn lồng thật ở quầy bar: kéo dây để bật, ánh sáng toả từ 2 đèn lồng + đèn âm trần,
    hiện thẻ đặt nước; 3 giây sau ảnh chuyển dần sang video quầy bar chạy lặp. Một màu nền tối duy nhất, chủ ý không đổi theo theme. */
@@ -39,9 +39,10 @@ h1,h2,h3{text-wrap:balance;margin:0} p{margin:0}
 .nav{position:fixed;z-index:50;top:calc(10px + env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));
   display:flex;align-items:center;justify-content:space-between;gap:10px;pointer-events:none}
 .nav>*{pointer-events:auto}
-.brand{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--cream);text-decoration:none;letter-spacing:.02em;
-  background:rgba(22,16,12,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:6px 14px;border-radius:999px}
-.nav a.order{font-size:12.5px;font-weight:600;letter-spacing:.04em;text-decoration:none;color:var(--ink);background:var(--cream);padding:9px 16px;border-radius:999px;white-space:nowrap}
+.brand{display:flex;flex-direction:column;align-items:flex-start;gap:3px;color:var(--cream);text-decoration:none;background:rgba(22,16,12,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:8px 14px 7px;border-radius:12px}
+.brand b{font-family:var(--serif);font-weight:500;font-size:16px;letter-spacing:.14em;line-height:1}
+.brand small{font-size:7px;letter-spacing:.3em;color:var(--mute);line-height:1}
+.nav a.order{font-size:12.5px;font-weight:500;letter-spacing:.04em;text-decoration:none;color:var(--ink);background:var(--cream);padding:9px 16px;border-radius:999px;white-space:nowrap}
 .bar{position:fixed;z-index:51;top:0;left:0;height:2px;background:var(--gold);width:0}
 a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 
@@ -100,25 +101,37 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 @keyframes hintx{0%,100%{transform:scaleX(.4);transform-origin:right}50%{transform:scaleX(1);transform-origin:right}}
 .lamp-hd{position:absolute;left:max(18px,env(safe-area-inset-left,0px));top:calc(74px + env(safe-area-inset-top,0px));max-width:min(420px,60vw);transition:opacity .6s}
 .lamp-hd p{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
-.lamp-hd h1{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(30px,5vw,48px);line-height:1.05;margin-top:8px;color:rgba(251,245,234,.85)}
+.lamp-hd h1{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(30px,5vw,48px);line-height:1.05;margin-top:8px;color:rgba(251,245,234,.85)}
 .card{position:absolute;right:max(18px,env(safe-area-inset-right,0px));left:max(18px,env(safe-area-inset-left,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));
   background:rgba(24,16,11,.62);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);border:1px solid rgba(255,214,140,.18);border-radius:20px;
   padding:20px 18px 18px;box-shadow:0 30px 70px -30px rgba(0,0,0,.8);opacity:0;transform:translateY(24px) scale(.98);filter:blur(6px);pointer-events:none;
   transition:opacity .6s .25s,transform .8s .25s cubic-bezier(.2,.8,.2,1),filter .6s .25s}
 .card.on{opacity:1;transform:none;filter:none;pointer-events:auto}
-.card h2{font-family:var(--disp);font-weight:800;letter-spacing:-.04em;font-size:30px;line-height:1}
-.card h2 em{display:block;font-family:var(--serif);font-weight:500;letter-spacing:0;font-size:28px;color:var(--gold);margin-top:2px}
+.card h2{font-family:var(--serif);font-weight:500;letter-spacing:.01em;font-size:30px;line-height:1.05}
+.card h2 em{display:block;font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;font-size:21px;color:var(--gold);margin-top:4px}
+.card .info{list-style:none;margin:14px 0 0;padding:12px 0 2px;border-top:1px solid rgba(251,245,234,.12);display:grid;gap:8px}
+.card .info li{display:grid;grid-template-columns:76px 1fr;gap:10px;font-size:13px;line-height:1.4}
+.card .info span{color:rgba(251,245,234,.5);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding-top:2px}
+.card .info b{font-weight:400;color:var(--cream);min-width:0}
+.card .info a{color:var(--gold);text-decoration:none;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.card .shake{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:9px;border:1px dashed rgba(217,181,106,.45);border-radius:12px;background:transparent;color:rgba(251,245,234,.8);font:400 12.5px var(--body);cursor:pointer}
+.card .shake[hidden]{display:none}
+.card .shake svg{width:18px;height:18px;color:var(--gold)}
+.card .shake.ready svg{animation:wig 2.6s ease-in-out infinite}
+@keyframes wig{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(-14deg)}78%{transform:rotate(12deg)}82%{transform:rotate(-10deg)}86%{transform:rotate(6deg)}}
+.cs-bg{position:absolute;inset:0;z-index:9;background:rgba(7,5,4,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.callsheet{position:absolute;z-index:10;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 36px));text-align:center;
+  background:rgba(28,19,13,.92);border:1px solid rgba(255,214,140,.22);border-radius:20px;padding:24px 20px 18px;box-shadow:0 30px 70px -20px rgba(0,0,0,.8);animation:csIn .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes csIn{from{opacity:0;transform:translate(-50%,-44%)}to{opacity:1;transform:translate(-50%,-50%)}}
+.callsheet .eb{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+.callsheet h3{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.15;margin:8px 0 6px}
+.callsheet .num{font-size:22px;letter-spacing:.06em;color:var(--gold);font-variant-numeric:tabular-nums;margin-bottom:14px}
+.callsheet .go{display:flex;align-items:center;justify-content:center;height:50px;border-radius:12px;background:linear-gradient(180deg,#F2C978,#D99E45);color:#1B120D;font:500 14px var(--body);letter-spacing:.04em;text-decoration:none}
+.callsheet .later{margin-top:8px;width:100%;height:44px;border:0;background:transparent;color:var(--mute);font:400 13px var(--body);cursor:pointer}
 .card .st{display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-size:12px;color:var(--mute)}
 .card .st i{width:8px;height:8px;border-radius:50%;background:#7AD6A0;box-shadow:0 0 0 3px rgba(122,214,160,.18)}
 .card .st.off i{background:#E07A6A;box-shadow:0 0 0 3px rgba(224,122,106,.18)}
-.card .srch{position:relative;margin-top:14px}
-.card .srch input{width:100%;height:46px;border-radius:12px;border:1px solid rgba(251,245,234,.16);background:rgba(251,245,234,.06);color:var(--cream);padding:0 14px 0 40px;font:300 15px var(--body)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.card .srch input::-webkit-search-cancel-button{display:none}
-.card .srch input::placeholder{color:rgba(251,245,234,.45)}
-.card .srch input:focus{outline:none;border-color:var(--gold)}
-.card .srch span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(251,245,234,.5)}
-.card .go{display:flex;align-items:center;justify-content:center;width:100%;height:50px;margin-top:10px;border-radius:12px;background:linear-gradient(180deg,#F2C978,#D99E45);color:#1B120D;font:600 14px var(--body);letter-spacing:.04em;text-decoration:none;box-shadow:0 10px 30px -10px rgba(242,180,80,.7)}
+.card .go{display:flex;align-items:center;justify-content:center;width:100%;height:50px;margin-top:10px;border-radius:12px;background:linear-gradient(180deg,#F2C978,#D99E45);color:#1B120D;font:500 14px var(--body);letter-spacing:.04em;text-decoration:none;box-shadow:0 10px 30px -10px rgba(242,180,80,.7)}
 .card .row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
 .card .row a{display:flex;align-items:center;justify-content:center;height:44px;border-radius:12px;border:1px solid rgba(251,245,234,.16);color:var(--cream);text-decoration:none;font-size:13px}
 .card .meta{font-size:11.5px;color:rgba(251,245,234,.5);margin-top:12px;line-height:1.5}
@@ -129,14 +142,14 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   .card.on{transform:translateY(-50%)}
 }
 #lamp.is-on .lamp-hd{opacity:0}
-@media (max-width:899px){.card{padding:16px 16px 14px;border-radius:18px}.card h2{font-size:26px}.card h2 em{font-size:24px}.card .srch{margin-top:12px}.card .meta{display:none}}
+@media (max-width:899px){.card{padding:16px 16px 14px;border-radius:18px}.card h2{font-size:26px}.card h2 em{font-size:19px}.card .info{margin-top:10px;padding-top:10px;gap:6px}.card .info li{font-size:12.5px;grid-template-columns:68px 1fr}.card .meta{margin-top:8px}}
 @media (prefers-reduced-motion:reduce){.hint i{animation:none}.card{transition:opacity .3s}}
 
 </style>
 
 </head>
 <body>
-<nav class="nav"><a class="brand" href="/">The Curator</a><a class="order" href="/dat-nuoc">Đặt nước</a></nav>
+<nav class="nav"><a class="brand" href="/" aria-label="The Curator Cafe"><b>THE CURATOR</b><small>FINE COFFEE &amp; CURIOS</small></a><a class="order" href="/dat-nuoc">Đặt nước</a></nav>
 
 <!-- 0 · ĐÈN LỒNG -->
 <section id="lamp" aria-label="Màn chào">
@@ -147,15 +160,28 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   <svg id="cord" aria-hidden="true"><path id="cLine" fill="none" stroke="#C9A35A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><g id="cTas"><circle r="5" fill="#B5382A"/><path d="M-5 3 L-7 22 L7 22 L5 3Z" fill="#B5382A"/><path d="M-6 22 h12" stroke="#7E1F16" stroke-width="2"/></g></svg>
   <button id="pull" type="button" aria-pressed="false" aria-label="Kéo dây để bật đèn"></button>
   <div class="tap" id="tap" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#FBF5EA" stroke="#16100C" stroke-width=".6" stroke-linejoin="round" d="M9 11.24V7.5a2.5 2.5 0 0 1 5 0v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/></svg></div>
-  <p class="hint" id="hint">Kéo dây đèn<i></i></p>
-  <div class="lamp-hd" id="lampHd"><p>The Curator Cafe · Nam Đông Hà</p><h1 id="lampH">Kéo dây bật đèn giúp tớ nhé.</h1></div>
+  <p class="hint" id="hint">Kéo nhẹ<i></i></p>
+  <div class="lamp-hd" id="lampHd"><p>The Curator Cafe</p><h1 id="lampH">Xin mời quý khách kéo nhẹ dây đèn</h1></div>
   <div class="card" id="card" aria-hidden="true">
-    <h2>Chào bạn.<em>Ghé quán một chút?</em></h2>
+    <h2>Kính chào quý khách<em>Mời quý khách ghé The Curator</em></h2>
     <p class="st" id="lampSt"><i></i><span>Đang nhận đơn · đến 21:45</span></p>
-    <form class="srch" action="/dat-nuoc" method="get" role="search"><label for="lampQ" class="sr">Tìm món</label><span>⌕</span><input id="lampQ" name="q" type="search" enterkeyhint="search" placeholder="Tìm món: bạc xỉu, matcha, croissant…" autocomplete="off" tabindex="-1"></form>
+    <ul class="info">
+      <li><span>Địa chỉ</span><b>HG02-02 Vincom Royal Park, Nam Đông Hà</b></li>
+      <li><span>Hotline</span><a href="tel:0846413314" tabindex="-1">0846 413 314</a></li>
+      <li><span>Mở cửa</span><b>6:00 – 22:00 mỗi ngày</b></li>
+    </ul>
     <a class="go" href="/dat-nuoc" tabindex="-1">Đặt nước ngay</a>
     <div class="row"><a href="/dat-nuoc#nhom" tabindex="-1">Đặt nhóm −5%</a></div>
-    <p class="meta">Freeship dưới 5km · Túi giữ nhiệt từ 2 ly · HG02-02 Vincom Royal Park</p>
+    <button class="shake" id="shakeBtn" type="button" tabindex="-1" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 8.5c-1 2-1 5 0 7M20.5 8.5c1 2 1 5 0 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span id="shakeTx">Lắc điện thoại để gọi quán</span></button>
+    <p class="meta">Miễn phí giao dưới 5km · Túi giữ nhiệt từ 2 ly</p>
+  </div>
+  <div class="cs-bg" id="csBg" hidden></div>
+  <div class="callsheet" id="callSheet" role="dialog" aria-modal="true" aria-labelledby="csH" hidden>
+    <p class="eb">The Curator Cafe</p>
+    <h3 id="csH">Quý khách muốn gọi cho quán?</h3>
+    <p class="num">0846 413 314</p>
+    <a class="go" href="tel:0846413314">Gọi ngay</a>
+    <button type="button" class="later" id="csNo">Để sau</button>
   </div>
 </section>
 
@@ -194,7 +220,8 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     for(let i=1;i<NP;i++){
       const p=P[i];if(drag&&i===last)continue;
       const vx=(p.x-p.ox)*.985,vy=(p.y-p.oy)*.985;p.ox=p.x;p.oy=p.y;
-      const wind=RM?0:Math.sin(t/1900+i*.4)*26*(i/NP);
+      // gió: khi đèn chưa bật dây đong đưa qua lại rõ (có cơn gió mạnh nhẹ xen nhau), bật đèn rồi chỉ khẽ lay
+      const gust=Math.sin(t/1500)+.45*Math.sin(t/640+1.3)+.25*Math.sin(t/310+i*.3),wind=RM?0:gust*(on?28:330)*(i/NP);
       p.x+=vx+wind*dt*dt;p.y+=vy+G*dt*dt;
     }
     if(drag){const e=P[last];e.ox=e.x;e.oy=e.y;e.x=dragX;e.y=dragY}
@@ -243,9 +270,9 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     clearTimeout(vt);if(v)vt=setTimeout(videoOn,RM?0:3000);else videoOff();
     on=v;target=v?1:0;if(v&&!RM)flick=24;
     sec.classList.toggle('is-on',v);card.classList.toggle('on',v);card.setAttribute('aria-hidden',!v);
-    card.querySelectorAll('a,input').forEach(e=>e.tabIndex=v?0:-1);
+    card.querySelectorAll('a,input,button').forEach(e=>e.tabIndex=v?0:-1);
     pull.setAttribute('aria-pressed',v);pull.setAttribute('aria-label',v?'Kéo dây để tắt đèn':'Kéo dây để bật đèn');
-    hint.style.opacity=v?0:1;document.getElementById('lampH').textContent=v?'Đèn sáng rồi. Mời vào.':'Kéo dây bật đèn giúp tớ nhé.';
+    hint.style.opacity=v?0:1;document.getElementById('lampH').textContent=v?'Kính chào quý khách':'Xin mời quý khách kéo nhẹ dây đèn';
     if(RM)k=target;
   }
   const local=e=>{const r=sec.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};
@@ -286,6 +313,30 @@ function videoOff(){
   setTimeout(()=>{if(!lampSec.classList.contains('vid')){bgv.pause();fbRun=false;lampSec.classList.remove('fb')}},1400);
 }
 function fallback(){ /* không phát được video: giữ nguyên ảnh quầy bar đã sáng đèn */ }
+
+/* ===== LẮC ĐỂ GỌI QUÁN: điện thoại có cảm biến; iOS cần khách chạm cho phép ===== */
+(function(){
+  const btn=document.getElementById('shakeBtn'),tx=document.getElementById('shakeTx'),sh=document.getElementById('callSheet'),bg=document.getElementById('csBg');
+  function openCall(){if(!sh.hidden)return;sh.hidden=false;bg.hidden=false;try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(e){}sh.querySelector('.go').focus()}
+  function closeCall(){sh.hidden=true;bg.hidden=true}
+  document.getElementById('csNo').addEventListener('click',closeCall);bg.addEventListener('click',closeCall);
+  addEventListener('keydown',e=>{if(e.key==='Escape')closeCall()});
+  const touch=matchMedia('(pointer:coarse)').matches&&'DeviceMotionEvent' in window;
+  if(!touch)return;
+  let on=false,last=null,spikes=[],cool=0;
+  function motion(e){const a=e.accelerationIncludingGravity;if(!a||a.x==null)return;
+    if(last){const d=Math.abs(a.x-last.x)+Math.abs(a.y-last.y)+Math.abs(a.z-last.z),now=Date.now();
+      if(d>24){spikes=spikes.filter(t=>now-t<1000);spikes.push(now);if(spikes.length>=3&&now>cool){cool=now+4000;spikes=[];openCall()}}}
+    last={x:a.x,y:a.y,z:a.z}}
+  function enable(){if(on)return;on=true;addEventListener('devicemotion',motion);btn.classList.add('ready');tx.textContent='Lắc điện thoại để gọi quán'}
+  const needAsk=typeof DeviceMotionEvent.requestPermission==='function';
+  btn.hidden=false;
+  if(needAsk)tx.textContent='Chạm để bật lắc điện thoại gọi quán';else enable();
+  btn.addEventListener('click',()=>{
+    if(on){openCall();return}
+    DeviceMotionEvent.requestPermission().then(r=>{if(r==='granted')enable();else tx.textContent='Chưa được phép dùng cảm biến lắc'}).catch(()=>{tx.textContent='Máy chưa hỗ trợ lắc để gọi'});
+  });
+})();
 })();
 </script>
 </body>
