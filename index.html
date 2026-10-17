@@ -118,6 +118,12 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 @keyframes dust{from{transform:translate(0,0) scale(.4);opacity:.9}to{transform:translate(var(--dx),var(--dy)) scale(2.2);opacity:0}}
 .speed{position:absolute;z-index:2;left:0;top:0;height:2px;border-radius:2px;pointer-events:none;background:linear-gradient(90deg,rgba(255,236,200,0),rgba(255,236,200,.7));animation:speed .35s ease-out forwards}
 @keyframes speed{from{opacity:.9;transform:translateX(0) scaleX(.6)}to{opacity:0;transform:translateX(24px) scaleX(1.2)}}
+.sweat{position:absolute;z-index:4;left:0;top:0;width:9px;height:13px;margin:-6px 0 0 -4px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;pointer-events:none;
+  background:linear-gradient(160deg,#E6F6FF,#7FC4F0);box-shadow:0 0 4px rgba(127,196,240,.6);animation:sweat .75s ease-in forwards}
+@keyframes sweat{0%{transform:translate(0,0) scale(.3);opacity:0}25%{transform:translate(calc(var(--dx)*.4),-6px) scale(1);opacity:1}100%{transform:translate(var(--dx),26px) scale(.8);opacity:0}}
+.shock{position:absolute;z-index:4;left:0;top:0;width:3px;height:14px;margin:-7px 0 0 -1.5px;border-radius:2px;pointer-events:none;background:#FFD27A;transform-origin:50% 100%;
+  animation:shock .5s ease-out forwards}
+@keyframes shock{0%{opacity:0;transform:rotate(var(--r)) translateY(0) scaleY(.3)}30%{opacity:1;transform:rotate(var(--r)) translateY(-10px) scaleY(1)}100%{opacity:0;transform:rotate(var(--r)) translateY(-22px) scaleY(.6)}}
 .steam{position:absolute;z-index:4;left:0;top:0;width:14px;height:14px;margin:-7px;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.75);animation:steam .8s ease-out forwards}
 @keyframes steam{from{transform:translate(0,0) scale(.3);opacity:.9}to{transform:translate(var(--dx),-34px) scale(1.4);opacity:0}}
 #cTas{transition:opacity .2s}
@@ -227,7 +233,7 @@ const SQ3=(()=>{
       ['legL',[112,450],[112,515],30],['legR',[232,450],[242,508],30],['tail1',[285,330],[315,260],40]]}};
   D.grip=Object.assign({},D.hold);
   const GX=16,GY=20;
-  let gl=null,prog,buf,ibuf,cv,dpr=1,ready=false,ctx2=null;
+  let gl=null,prog,buf,ibuf,cv,dpr=1,ready=false,ctx2=null,LT=[1,1,1];
   const T={},MESH={};
   // trọng số mỗi đỉnh lưới cho từng xương (vùng bao hình viên nhộng, mép mềm)
   function segD(v,p,q){const dx=q[0]-p[0],dy=q[1]-p[1],l=dx*dx+dy*dy||1;let t=((v[0]-p[0])*dx+(v[1]-p[1])*dy)/l;t=Math.max(0,Math.min(1,t));return Math.hypot(v[0]-p[0]-t*dx,v[1]-p[1]-t*dy)}
@@ -241,7 +247,7 @@ const SQ3=(()=>{
     gl=cv.getContext('webgl',{premultipliedAlpha:true,alpha:true,antialias:true});
     if(gl){
       const vs=`attribute vec2 p;attribute vec2 u;uniform vec2 R;varying vec2 vu;void main(){vu=u;gl_Position=vec4(p.x/R.x*2.-1.,1.-p.y/R.y*2.,0,1);}`;
-      const fs=`precision mediump float;varying vec2 vu;uniform sampler2D t;uniform float A;void main(){gl_FragColor=texture2D(t,vu)*A;}`;
+      const fs=`precision mediump float;varying vec2 vu;uniform sampler2D t;uniform float A;uniform vec3 L;void main(){vec4 c=texture2D(t,vu);gl_FragColor=vec4(c.rgb*L,c.a)*A;}`;
       const sh=(ty,src)=>{const s=gl.createShader(ty);gl.shaderSource(s,src);gl.compileShader(s);return s};
       prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);
       gl.useProgram(prog);buf=gl.createBuffer();ibuf=gl.createBuffer();
@@ -275,10 +281,10 @@ const SQ3=(()=>{
     gl.useProgram(prog);gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,arr,gl.DYNAMIC_DRAW);
     const lp=gl.getAttribLocation(prog,'p'),lu=gl.getAttribLocation(prog,'u');
     gl.enableVertexAttribArray(lp);gl.vertexAttribPointer(lp,2,gl.FLOAT,false,16,0);gl.enableVertexAttribArray(lu);gl.vertexAttribPointer(lu,2,gl.FLOAT,false,16,8);
-    gl.uniform2f(gl.getUniformLocation(prog,'R'),cv.width/dpr,cv.height/dpr);gl.uniform1f(gl.getUniformLocation(prog,'A'),alpha);
+    gl.uniform2f(gl.getUniformLocation(prog,'R'),cv.width/dpr,cv.height/dpr);gl.uniform1f(gl.getUniformLocation(prog,'A'),alpha);gl.uniform3f(gl.getUniformLocation(prog,'L'),LT[0],LT[1],LT[2]);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibuf);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,m.I,gl.DYNAMIC_DRAW);
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,T[n]);gl.drawElements(gl.TRIANGLES,m.I.length,gl.UNSIGNED_SHORT,0)}
-  return {D,init,clear,draw,pt,size,get ready(){return ready}};
+  return {D,init,clear,draw,pt,size,light(k){LT=[.5+.5*k,.44+.56*k,.38+.62*k]},get ready(){return ready}};
 })();
 </script>
 <script>
@@ -407,7 +413,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   SQ3.init(socEl,'/img/home/');
   const M={used:false,run:false,raf:0,st:'',ts:0,x:0,y:0,grab:false,miss:0,maxMiss:3,first:true,bean:false,flip:1,sq:1,sqv:0,lt:0,stride:0,lastFoot:0,
            tl:0,tlv:0,last:null,cur:null,fade:null};
-  const SC=()=>sec.clientWidth<600?1:1.25,SS=()=>.18*SC();
+  const SC=()=>sec.clientWidth<600?1:1.25,SS=()=>.14*SC();
   const easeOut=t=>1-(1-t)*(1-t),easeIn=t=>t*t,easeInOut=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   function squash(v){M.sqv+=v}
   function springs(dt,vx){const k=260,d=14;M.sqv+=(-(M.sq-1)*k-M.sqv*d)*dt;M.sq+=M.sqv*dt;M.sq=cl(M.sq,.72,1.28);
@@ -430,7 +436,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const feet=SQ3.pt(n,P,d.a.feet),head=SQ3.pt(n,P,d.a.head||d.a.feet);
     const vx=M.last?(feet[0]-M.last[0])/Math.max(dt,.001):0;M.last=feet;springs(dt,vx);
     M.o={feet,head,grab:d.a.grab?SQ3.pt(n,P,d.a.grab):null};return M.o}
-  function paint(now){SQ3.clear();
+  function paint(now){M.lit=(M.lit??0)+((sec.classList.contains('is-on')?1:0)-(M.lit??0))*.08;SQ3.light(M.lit);SQ3.clear();
     if(M.fade){const k=(now-M.fade.t)/80;if(k<1)SQ3.draw(M.fade.c.n,M.fade.c.P,M.fade.c.ang,(1-k)*.8);else M.fade=null}
     if(M.cur)SQ3.draw(M.cur.n,M.cur.P,M.cur.ang,1)}
   function shadowAt(x,g,k){socSh.style.transform='translate('+x.toFixed(1)+'px,'+g.toFixed(1)+'px) scale('+(Math.max(0,k)*SC()*.9).toFixed(2)+')';socSh.style.opacity=Math.max(0,k)}
@@ -469,7 +475,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const g=Math.min(H-20,restY+150);
     if(sec.classList.contains('is-on')&&!['pull','spull','startle','look','exit'].includes(M.st)){M.bean=false;if(M.grab){M.grab=false;drag=false}squash(3);toStartle()}
     switch(M.st){
-    case 'enter':{const tx=b.x+30*S,v=cl((M.x-tx)*1.5,70,170);M.x-=v*dt;M.y=g;runAt(now,dt,M.x,g,v,-1);
+    case 'enter':{const tx=b.x+24*S,v=cl((M.x-tx)*1.5,70,170);M.x-=v*dt;M.y=g;runAt(now,dt,M.x,g,v,-1);
       if(M.x<=tx+2){M.x=tx;squash(-2.4);dust(M.x-14,g,-1,3);go('skid')}break}
     case 'skid':{M.flip=1; // phanh gấp: ngả người ra sau rồi đứng dựng lên
       M.x-=Math.max(0,1-t/220)*70*dt;
@@ -478,7 +484,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     case 'ready':{M.flip=1;const dx=b.x-M.x;let hop=0;
       if(Math.abs(dx)>6){M.x+=cl(dx*2.4,-90,90)*dt;const ph=(t/220)%1;hop=Math.sin(ph*Math.PI)*7;if(ph<.06&&!M._h){M._h=1;squash(-1.2)}if(ph>.5)M._h=0}
       const crouch=t>420?Math.min(1,(t-420)/260):0; // ngó lên hạt, hạ người lấy đà
-      put('stand',A.stand(t,{head:-6}),'feet',M.x+(t>520?Math.sin(t/24)*.7:0),g-hop,Math.sin(t/160)*2,dt,{br:-.14*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
+      put('stand',A.stand(t,{head:-6}),'feet',M.x+(t>520?Math.sin(t/24)*.7:0),g-hop,Math.sin(t/160)*2,dt,{br:-.07*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
       if(t>720&&(Math.abs(dx)<24*S||t>1700)){const reach=(SQ3.D.jump.a.feet[1]-SQ3.D.jump.a.grab[1])*s;M.jx0=M.x;M.jx1=b.x;M.hp=Math.max(10,(g-b.y)-reach)+(M.first?-40*S:0);
         squash(4);dust(M.x-12,g,-1,3);dust(M.x+12,g,1,3);go('jump')}break}
     case 'jump':{const D=580,k=Math.min(1,t/D),up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5);
@@ -498,8 +504,8 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     case 'angry':{M.flip=1;const ph=(t/300)%1;if(ph<.06&&!M._st){M._st=1;squash(-2);dust(M.x-12,g,-1,2)}if(ph>.5)M._st=0;
       const stomp=ph<.5?0:Math.sin((ph-.5)*2*Math.PI);
       put('angry',A.angry(t,stomp),'feet',M.x+(t<1100?Math.sin(t/26)*1.4:0),g,Math.sin(t/120)*2,dt);shadowAt(M.x,g,1);
-      if(t<60)exclaim(M.x+6,g-110*S);
-      if(Math.floor(t/240)!==M._puff&&t<1400){M._puff=Math.floor(t/240);fx('steam',M.x+(Math.random()<.5?-16:16),g-100*S,{'--dx':((Math.random()-.5)*20)+'px'},850)}
+      if(t<60)exclaim(M.x+6,g-86*S);
+      if(Math.floor(t/240)!==M._puff&&t<1400){M._puff=Math.floor(t/240);fx('steam',M.x+(Math.random()<.5?-16:16),g-78*S,{'--dx':((Math.random()-.5)*20)+'px'},850)}
       if(t>1700){socEx.classList.remove('on');M.stride=0;go('sulk')}break}
     case 'sulk':{const v=Math.min(1,t/400)*cl(W*.22,130,170);M.x+=v*dt;runAt(now,dt,M.x,g,v,1);
       if(M.x>W+100){socSh.classList.remove('on');M.last=null;M.flip=1;go('slide')}break}
@@ -509,11 +515,19 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       put('grip',A.hold(t,Math.sin(t/140)*(1-k)),'grip',x,yA,(yA>P[0].y?-ropeAng()*.6:0)+wob*5,dt);
       if(k>=1){socSh.classList.add('on');M.grab=true;dragX=P[NP-1].x;dragY=P[NP-1].y;drag=true;tripped=false;M.pullY0=b.y;cBean.classList.add('gone');go('spull')}break}
     case 'startle':{const c=cardTop(),gy=c.y;M.flip=M.dir<0?1:-1;
-      if(t<40)exclaim(M.sx0,M.y0-130*S);
-      // giật mình nhảy dựng, tay chân quơ loạn, vọt lên mép trên của bảng
-      const D=900,k=Math.min(1,t/D),pk=Math.min(M.y0,gy)-90;
+      if(t<40){exclaim(M.sx0,M.y0-100*S);squash(-3)}
+      const SH=420; // khựng lại vì giật mình: phồng người, run bần bật, toát mồ hôi
+      if(t<SH){const k=t/SH,pop=1+.2*Math.sin(Math.min(1,k*2.2)*Math.PI)*(1-k*.5),sh=Math.sin(t/14)*3.2*(1-k);
+        const o=put('startle',A.startle(t*2.2),'feet',M.sx0+sh,M.y0-Math.sin(Math.min(1,k*2)*Math.PI)*10,sh*1.2,dt,{k:pop});exFollow();shadowAt(M.sx0,M.y0,.6);
+        if(!M._sw&&t>60){M._sw=1;const hx=o.head[0],hy=o.head[1]+22*S;
+          for(let i=0;i<3;i++)fx('sweat',hx+(i-1)*16*S,hy+(i%2)*6,{'--dx':((i-1)*14)+'px'},750);
+          for(let i=0;i<5;i++)fx('shock',hx+(i-2)*10*S,hy-6,{'--r':((i-2)*28)+'deg'},500)}
+        break}
+      M._sw=0;const tt=t-SH;
+      // nhảy dựng, tay chân quơ loạn, vọt lên mép trên của bảng
+      const D=900,k=Math.min(1,tt/D),pk=Math.min(M.y0,gy)-90;
       const y=k<.5?M.y0+(pk-M.y0)*easeOut(k/.5):pk+(gy-pk)*easeIn((k-.5)/.5),x=M.sx0+(M.lx-M.sx0)*easeInOut(k);
-      put('startle',A.startle(t),'feet',x+(k<.25?Math.sin(t/18)*2.5:0),y,(k-.5)*12*M.dir,dt);exFollow();shadowAt(x,gy,Math.max(0,1-(gy-y)/120));
+      put('startle',A.startle(t),'feet',x,y,(k-.5)*12*M.dir,dt);exFollow();shadowAt(x,gy,Math.max(0,1-(gy-y)/120));
       if(k>=1){M.x=M.lx;squash(-3.4);dust(M.x-12,gy,-1,3);dust(M.x+12,gy,1,3);M.stride=0;go('look')}break}
     case 'look':{const c=cardTop(),gy=c.y;const lk=t<420?M.dir:t<840?-M.dir:M.dir;M.flip=lk<0?1:-1;
       // đứng trên mép bảng ngó qua ngó lại rồi mới chạy
@@ -524,7 +538,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(off&&!M.fall){M.fall=true;M.fy=gy;M.vy=-120;squash(2)}
       if(M.fall){M.vy+=1500*dt;M.fy+=M.vy*dt;M.flip=M.dir<0?1:-1;put('startle',A.startle(t),'feet',M.x,M.fy,M.dir*-20,dt);socSh.classList.remove('on')}
       else{runAt(now,dt,M.x,gy,v,M.dir,M.bean?'runb':'run');
-        if(Math.floor(t/170)!==M._sl){M._sl=Math.floor(t/170);speedLines(M.x-M.dir*40*S,gy-40*S,-M.dir)}}
+        if(Math.floor(t/170)!==M._sl){M._sl=Math.floor(t/170);speedLines(M.x-M.dir*32*S,gy-32*S,-M.dir)}}
       if(M.x<-140||M.x>W+140||(M.fall&&M.fy>H+120)){M.run=false;SQ3.clear();socEl.classList.remove('on');socSh.classList.remove('on');socEx.classList.remove('on');if(M.bean||cBean.classList.contains('gone'))newBean();return}break}
     }
     paint(now);M.raf=requestAnimationFrame(mtick);
