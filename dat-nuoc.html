@@ -2539,6 +2539,12 @@ function addrFull(){ const a = $('#addr').value.trim(); return GEO ? (a ? a + ' 
         const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=vi&lat=' + GEO.lat + '&lon=' + GEO.lng);
         if(r.ok) addr = shortAddr(await r.json());
       }catch(e){}
+      if(!addr){ /* dự phòng: chỉ ra phường/thành phố */
+        try{
+          const r = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?localityLanguage=vi&latitude=' + GEO.lat + '&longitude=' + GEO.lng);
+          if(r.ok){ const j = await r.json(); addr = [j.locality, j.city].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(', '); }
+        }catch(e){}
+      }
       if(addr){ inp.value = addr; inp.classList.remove('err'); }
       done((addr ? 'Đã điền địa chỉ gần đúng — quý khách thêm số nhà/căn hộ nếu cần. ' : 'Đã lấy vị trí. ') +
            'Quán nhận kèm <a href="' + mapLink() + '" target="_blank" rel="noopener">vị trí trên bản đồ</a>.');
