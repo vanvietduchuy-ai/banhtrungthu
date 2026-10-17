@@ -114,6 +114,13 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 .soc-ex{position:absolute;z-index:4;left:0;top:0;font:800 30px/1 var(--body);color:#FFD27A;text-shadow:0 2px 6px rgba(0,0,0,.6);pointer-events:none;opacity:0;transform:scale(.3)}
 .soc-ex.on{animation:socEx .7s cubic-bezier(.2,1.6,.4,1) forwards}
 @keyframes socEx{0%{opacity:0;transform:scale(.3) rotate(-10deg)}60%{opacity:1;transform:scale(1.25) rotate(6deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+.dust{position:absolute;z-index:2;left:0;top:0;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(230,205,170,.55),rgba(230,205,170,0));animation:dust .65s ease-out forwards}
+@keyframes dust{from{transform:translate(0,0) scale(.4);opacity:.9}to{transform:translate(var(--dx),var(--dy)) scale(2.2);opacity:0}}
+.speed{position:absolute;z-index:2;left:0;top:0;height:2px;border-radius:2px;pointer-events:none;background:linear-gradient(90deg,rgba(255,236,200,0),rgba(255,236,200,.7));animation:speed .35s ease-out forwards}
+@keyframes speed{from{opacity:.9;transform:translateX(0) scaleX(.6)}to{opacity:0;transform:translateX(24px) scaleX(1.2)}}
+.steam{position:absolute;z-index:4;left:0;top:0;width:14px;height:14px;margin:-7px;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.75);animation:steam .8s ease-out forwards}
+@keyframes steam{from{transform:translate(0,0) scale(.3);opacity:.9}to{transform:translate(var(--dx),-34px) scale(1.4);opacity:0}}
 #cTas{transition:opacity .2s}
 #cTas.gone{opacity:0}
 #cBean{transform-box:fill-box;transform-origin:50% 0}
@@ -218,8 +225,8 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
   // bàn tay hướng dẫn sau 4 giây chưa bật đèn
   const tap=document.getElementById('tap');let idleT;
-  function idle(start){clearTimeout(idleT);tap.classList.remove('on');if(start)idleT=setTimeout(()=>{if(sec.classList.contains('is-on'))return;if(!mascotStart())tap.classList.add('on')},4000)}
-  idle(true);
+  function idle(start){clearTimeout(idleT);tap.classList.remove('on');if(start)idleT=setTimeout(()=>{if(sec.classList.contains('is-on')||M.run)return;tap.classList.add('on')},9000)}
+  idle(true);setTimeout(()=>{if(mascotStart())tap.classList.remove('on')},5000);
   // dây: chuỗi 16 điểm mô phỏng Verlet — có trọng lực, quán tính, tua nặng hơn nên dây mềm và văng tự nhiên
   const NP=16;let P=[],seg=8,drag=false,on=false,tripped=false,dragX=0,dragY=0,offX=0,offY=0,downX=0,downY=0,restY=0,acc=0,lastT=0;
   function initRope(){seg=len/(NP-1);P=[];for(let i=0;i<NP;i++){const y=ay+i*seg;P.push({x:ax,y,ox:ax,oy:y,w:i===NP-1?.4:1})}restY=ay+len}
@@ -312,86 +319,133 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function tick(){const d=new Date(),m=d.getHours()*60+d.getMinutes(),o=m>=360&&m<1305;st.classList.toggle('off',!o);
     st.lastChild.textContent=o?'Đang nhận đơn · đến 21:45':'Đã nghỉ · đặt trước, nhận từ 06:00'}
   tick();setInterval(tick,60000);
-  // ===== sóc 3D (máy trạng thái) =====
+  // ===== sóc 3D (máy trạng thái, chuyển động kiểu hoạt hình: nhún-giãn, quán tính, bụi, vệt gió) =====
   // chạy vào -> lấy đà -> nhảy (nhắm theo vị trí hạt lúc bật) -> trúng: đu kéo dây, đèn sáng -> giật mình ngậm hạt chạy đi
   // khách kéo dây đi chỗ khác làm sóc hụt; hụt 3–5 lần thì dỗi, chạy ra rồi đu dây từ trên xuống lấy hạt
   const socEl=document.getElementById('soc'),socImg=document.getElementById('socImg'),socSh=document.getElementById('socSh'),socEx=document.getElementById('socEx'),cBean=document.getElementById('cTas');
-  const SOC={run:{src:'/img/home/soc-run.webp',w:560,h:438,H:78},crouch:{src:'/img/home/soc-crouch.webp',w:440,h:470,H:96},
+  const SOC={run:{src:'/img/home/soc-run.webp',w:560,h:471,H:82},run2:{src:'/img/home/soc-run2.webp',w:560,h:471,H:82},
+             crouch:{src:'/img/home/soc-crouch.webp',w:440,h:470,H:96},
              leap:{src:'/img/home/soc-leap.webp',w:162,h:439,H:150,bx:.18,by:.128},flee:{src:'/img/home/soc-flee.webp',w:387,h:275,H:66},
              angry:{src:'/img/home/soc-angry.webp',w:440,h:534,H:104},slide:{src:'/img/home/soc-slide.webp',w:183,h:594,H:170,rx:.56,hy:.97}};
   Object.values(SOC).forEach(p=>{const i=new Image();i.src=p.src});
-  const M={used:false,run:false,raf:0,st:'',ts:0,x:0,grab:false,pose:'',miss:0,maxMiss:3,jx0:0,jx1:0,peak:0,first:true,bean:false,flip:1};
-  const easeOut=t=>1-(1-t)*(1-t),easeIn=t=>t*t;
+  const M={used:false,run:false,raf:0,st:'',ts:0,x:0,grab:false,pose:'',miss:0,maxMiss:3,jx0:0,jx1:0,peak:0,first:true,bean:false,flip:1,
+           sq:1,sqv:0,lt:0,stride:0,lastFoot:0};
+  const easeOut=t=>1-(1-t)*(1-t),easeIn=t=>t*t,easeInOut=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const Wof=n=>SOC[n].H*SOC[n].w/SOC[n].h;
   function pose(n){if(M.pose===n)return;M.pose=n;const p=SOC[n];socImg.src=p.src;socImg.style.height=p.H+'px';socImg.style.width=Wof(n)+'px'}
-  function placeFeet(x,yb,sx=1,sy=1,rot=0){const p=SOC[M.pose],W=Wof(M.pose);socEl.style.transformOrigin=(W/2)+'px '+p.H+'px';
-    socEl.style.transform='translate('+(x-W/2).toFixed(1)+'px,'+(yb-p.H).toFixed(1)+'px) rotate('+rot+'deg) scale('+(sx*M.flip)+','+sy+')'}
-  function placeAt(n,px,py,fx,fy){const p=SOC[n],W=Wof(n);socEl.style.transformOrigin='0 0';
-    socEl.style.transform='translate('+(px-fx*W).toFixed(1)+'px,'+(py-fy*p.H).toFixed(1)+'px)'}
+  // lò xo nhún-giãn: sq<1 là bẹp xuống, sq>1 là giãn dài
+  function squash(v){M.sqv+=v}
+  function springStep(dt){const k=260,d=14;M.sqv+=(-(M.sq-1)*k-M.sqv*d)*dt;M.sq+=M.sqv*dt;M.sq=Math.max(.62,Math.min(1.35,M.sq))}
+  function placeFeet(x,yb,sx=1,sy=1,rot=0){const p=SOC[M.pose],W=Wof(M.pose),q=M.sq;
+    const SY=sy*q,SX=sx*(1+(1-q)*.85);socEl.style.transformOrigin=(W/2)+'px '+p.H+'px';
+    socEl.style.transform='translate('+(x-W/2).toFixed(1)+'px,'+(yb-p.H).toFixed(1)+'px) rotate('+rot.toFixed(2)+'deg) scale('+(SX*M.flip).toFixed(3)+','+SY.toFixed(3)+')'}
+  function placeAt(n,px,py,fx,fy,rot=0,sx=1,sy=1){const p=SOC[n],W=Wof(n);socEl.style.transformOrigin=(fx*W)+'px '+(fy*p.H)+'px';
+    socEl.style.transform='translate('+(px-fx*W).toFixed(1)+'px,'+(py-fy*p.H).toFixed(1)+'px) rotate('+rot.toFixed(2)+'deg) scale('+sx.toFixed(3)+','+sy.toFixed(3)+')'}
   function shadowAt(x,g,k){socSh.style.transform='translate('+x.toFixed(1)+'px,'+g.toFixed(1)+'px) scale('+Math.max(0,k).toFixed(2)+')';socSh.style.opacity=Math.max(0,k)}
+  function fx(cls,x,y,vars,life){const e=document.createElement('i');e.className=cls;e.style.left=x+'px';e.style.top=y+'px';
+    for(const k in vars)e.style.setProperty(k,vars[k]);sec.appendChild(e);setTimeout(()=>e.remove(),life)}
+  function dust(x,g,dir,n=3){for(let i=0;i<n;i++)fx('dust',x+dir*(i*6),g-4,{'--dx':(dir*(14+Math.random()*16))+'px','--dy':(-6-Math.random()*10)+'px'},700)}
+  function speedLines(x,y,dir){for(let i=0;i<2;i++){const w=18+Math.random()*22;const e=document.createElement('i');e.className='speed';
+    e.style.left=(x+dir*20)+'px';e.style.top=(y+i*12-Math.random()*8)+'px';e.style.width=w+'px';if(dir<0)e.style.transform='scaleX(-1)';sec.appendChild(e);setTimeout(()=>e.remove(),400)}}
   function go(st){M.st=st;M.ts=performance.now()}
+  const cardEl=document.getElementById('card');
+  function cardTop(){const c=cardEl.getBoundingClientRect(),r=sec.getBoundingClientRect();return {y:c.top-r.top+1,l:c.left-r.left,r:c.right-r.left}}
+  function toStartle(y0){const c=cardTop();M.y0=y0;M.lx=Math.max(c.l+40,Math.min(c.r-40,M.x));M.sx0=M.x;
+    M.dir=(M.lx>c.l+(c.r-c.l)/2)?-1:1;M.vy=0;M.fall=false;go('startle')}
   function beanPt(){const e=P[NP-1];return {x:e.x,y:e.y+9}}
   function mascotStop(){if(!M.run)return;M.run=false;cancelAnimationFrame(M.raf);if(M.grab){drag=false;M.grab=false}
     socEl.classList.remove('on');socSh.classList.remove('on');socEx.classList.remove('on');cBean.classList.remove('gone')}
   function mascotStart(){
     if(M.used||RM||sec.classList.contains('is-on'))return false;
-    Object.assign(M,{used:true,run:true,grab:false,pose:'',miss:0,maxMiss:3+Math.floor(Math.random()*3),first:true,bean:false,flip:1,x:sec.clientWidth+80});
+    Object.assign(M,{used:true,run:true,grab:false,pose:'',miss:0,maxMiss:3+Math.floor(Math.random()*3),first:true,bean:false,flip:1,x:sec.clientWidth+80,sq:1,sqv:0,lt:performance.now(),stride:0});
     pose('run');socEl.classList.add('on');socSh.classList.add('on');go('enter');M.raf=requestAnimationFrame(mtick);return true}
   function exclaim(x,y){socEx.style.left=x+'px';socEx.style.top=y+'px';socEx.classList.remove('on');void socEx.offsetWidth;socEx.classList.add('on')}
   function newBean(){setTimeout(()=>{cBean.classList.remove('gone');const bi=document.getElementById('cBean');bi.classList.add('grow');setTimeout(()=>bi.classList.remove('grow'),800)},700)}
+  // chu kỳ chạy phi nước đại: 2 khung hình (duỗi / co) + nảy người + bụi mỗi lần chạm đất
+  function gallop(x,g,dir,speed,fA,fB){
+    const T=230/speed;M.stride+=(performance.now()-M.lt)/T;const ph=M.stride%1;
+    const air=ph>.5; if(fB)pose(air?fB:fA);else pose(fA);
+    const h=air?Math.sin((ph-.5)*2*Math.PI)*(16*speed):0;
+    const fNow=Math.floor(M.stride);if(fNow!==M.lastFoot){M.lastFoot=fNow;squash(-2.6);dust(x+dir*-26,g,-dir,2)}
+    if(ph>.5&&ph<.56)squash(1.6);
+    const tilt=air?(-dir)*Math.cos((ph-.5)*2*Math.PI)*6:dir*2;
+    placeFeet(x,g-h,1,1,tilt);shadowAt(x,g,1-h/45);return h}
   function mtick(now){
     if(!M.run)return;
+    const dt=Math.min(.05,(now-M.lt)/1000);springStep(dt);
     const t=now-M.ts,W=sec.clientWidth,H=sec.clientHeight,b=beanPt();
     const g=Math.min(H-20,restY+150);
-    // khách tự bật đèn khi sóc chưa lấy được hạt: sóc giật mình chạy mất
-    if(sec.classList.contains('is-on')&&!['pull','spull','startle','exit'].includes(M.st)){M.bean=false;M.flip=1;pose('run');exclaim(M.x,g-SOC.run.H-40);go('exit')}
+    if(sec.classList.contains('is-on')&&!['pull','spull','startle','look','exit'].includes(M.st)){M.bean=false;M.flip=1;squash(3);toStartle(g)}
     switch(M.st){
-    case 'enter':{pose('run');M.flip=1;const tx=b.x+24;M.x+=(tx-M.x)*.06-2.2;
-      const hop=Math.abs(Math.sin(t/95))*14;placeFeet(M.x,g-hop,1,1,Math.sin(t/48)*4);shadowAt(M.x,g,1-hop/40);
-      if(M.x<=tx+2){M.x=tx;go('ready')}break}
+    case 'enter':{M.flip=1;const tx=b.x+24,v=Math.max(70,Math.min(170,(M.x-tx)*1.4));M.x-=v*dt;
+      gallop(M.x,g,-1,v>110?.8:.6,'run','run2');
+      if(M.x<=tx+2){M.x=tx;pose('crouch');squash(-3.2);dust(M.x-20,g,-1,2);dust(M.x+20,g,1,2);go('ready')}break}
     case 'ready':{pose('crouch');M.flip=1;
-      // nhích theo hạt cà phê nếu khách kéo dây đi chỗ khác
-      const dx=b.x-M.x,step=Math.max(-5,Math.min(5,dx*.12));let y=0;
-      if(Math.abs(dx)>6){M.x+=step;y=Math.abs(Math.sin(t/80))*8}
-      const sy=t<450?1-.18*Math.min(1,t/450):1,sx=2-sy;
-      placeFeet(M.x,g-y,sx,sy);shadowAt(M.x,g,1-y/60);
-      if(t>520&&Math.abs(dx)<40){M.jx0=M.x;M.jx1=b.x;
-        const groundHand=g-SOC.leap.H*(1-SOC.leap.by);
-        M.peak=M.first?(b.y+46):b.y; // lần đầu cố tình hụt một chút
-        M.peakFrom=groundHand;go('jump')}break}
+      const dx=b.x-M.x;let y=0,rot=0;
+      if(Math.abs(dx)>6){ // nhảy lò cò nhích theo hạt cà phê
+        const step=Math.max(-4,Math.min(4,dx*.1));M.x+=step;const ph=(t/170)%1;y=Math.sin(ph*Math.PI)*10;rot=Math.sign(dx)*5;
+        if(ph<.08&&!M._hopped){M._hopped=1;squash(-1.4)}if(ph>.5)M._hopped=0}
+      // thở + run run lấy đà
+      const breathe=1+Math.sin(t/180)*.02,shiver=t>260?Math.sin(t/22)*1.2:0;
+      const sy=t<520?1-.16*easeInOut(Math.min(1,t/520)):1;
+      placeFeet(M.x+shiver,g-y,(2-sy)*breathe,sy/breathe,rot+Math.sin(t/260)*2);shadowAt(M.x,g,1-y/60);
+      if(t>560&&Math.abs(dx)<40){M.jx0=M.x;M.jx1=b.x;
+        M.peakFrom=g-SOC.leap.H*(1-SOC.leap.by);M.peak=M.first?(b.y+46):b.y;
+        squash(4.5);dust(M.x-18,g,-1,3);dust(M.x+18,g,1,3);go('jump')}break}
     case 'jump':{pose('leap');const D=560,k=Math.min(1,t/D);
-      const up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5); // lên rồi xuống
+      const up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5);
       const hx=M.jx0+(M.jx1-M.jx0)*Math.min(1,k*1.6),hy=M.peakFrom+(M.peak-M.peakFrom)*up;
-      placeAt('leap',hx,hy,SOC.leap.bx,SOC.leap.by);shadowAt(hx,g,.5+.5*(1-up));
+      const vel=k<.5?1-k/.5:-(k-.5)/.5; // >0 đi lên, <0 rơi
+      const st=1+Math.abs(vel)*.14,rot=(M.jx1-M.jx0)*.08*(1-k)+Math.sin(k*Math.PI*2)*3;
+      placeAt('leap',hx,hy,SOC.leap.bx,SOC.leap.by,rot,1/Math.sqrt(st),st);shadowAt(hx,g,.5+.5*(1-up));
       if(k>.42&&k<.6&&!M.grab&&Math.hypot(b.x-hx,b.y-hy)<24){M.grab=true;dragX=hx;dragY=hy-9;drag=true;tripped=false;M.pullY0=hy;cBean.classList.add('gone');M.x=hx;go('pull');break}
-      if(k>=1){M.first=false;M.x=hx;M.miss++;go(M.miss>=M.maxMiss?'angry':'land')}break}
-    case 'land':{pose('crouch');const sy=t<140?.82:1;placeFeet(M.x,g,2-sy,sy);shadowAt(M.x,g,1);if(t>260)go('ready');break}
-    case 'pull':{pose('leap');const k=easeIn(Math.min(1,t/700)),by=M.pullY0===undefined?(M.pullY0=b.y):M.pullY0;
-      const hy=by+72*k,hx=P[NP-1].x;dragX=hx;dragY=hy-9;placeAt('leap',hx,hy,SOC.leap.bx,SOC.leap.by);shadowAt(hx,g,.6+.3*k);
+      if(k>=1){M.first=false;M.x=hx;M.miss++;pose('crouch');squash(-4.4);dust(M.x-20,g,-1,3);dust(M.x+20,g,1,3);go(M.miss>=M.maxMiss?'angry':'land')}break}
+    case 'land':{pose('crouch');const wob=Math.sin(t/40)*(1-Math.min(1,t/300))*4;placeFeet(M.x,g,1,1,wob);shadowAt(M.x,g,1);if(t>320)go('ready');break}
+    case 'pull':{pose('leap');const k=easeIn(Math.min(1,t/700));
+      const hy=M.pullY0+72*k,hx=P[NP-1].x;dragX=hx;dragY=hy-9;
+      const sw=Math.sin(t/90)*6*(1-k*.5),st=1+(1-k)*.08; // đu lắc lư theo dây
+      placeAt('leap',hx,hy,SOC.leap.bx,SOC.leap.by,sw,1/Math.sqrt(st),st);shadowAt(hx,g,.6+.3*k);
       if(dragY-restY>50&&!tripped){tripped=true;set(true)}
-      if(k>=1){M.pullY0=undefined;M.grab=false;drag=false;kick(-4,(Math.random()<.5?-1:1)*6);M.x=hx;M.bean=true;go('startle')}break}
-    case 'angry':{pose('angry');M.flip=1;const shake=t<900?Math.sin(t/30)*2.5:0,stomp=(Math.floor(t/260)%2)?0:3;
-      placeFeet(M.x+shake,g-stomp);shadowAt(M.x,g,1);
+      if(k>=1){M.grab=false;drag=false;kick(-4,(Math.random()<.5?-1:1)*6);M.x=hx;M.bean=true;pose('flee');squash(3.5);toStartle(hy+40)}break}
+    case 'angry':{pose('angry');M.flip=1;
+      const stompPh=(t/300)%1;if(stompPh<.06&&!M._st){M._st=1;squash(-2.6);dust(M.x-16,g,-1,2);dust(M.x+16,g,1,2)}if(stompPh>.5)M._st=0;
+      const shake=t<1100?Math.sin(t/26)*2.2:0,lift=stompPh<.5?0:Math.sin((stompPh-.5)*2*Math.PI)*5;
+      placeFeet(M.x+shake,g-lift,1,1,Math.sin(t/120)*3);shadowAt(M.x,g,1);
       if(t<60)exclaim(M.x+10,g-SOC.angry.H-38);
-      if(t>1500){socEx.classList.remove('on');go('sulk')}break}
-    case 'sulk':{pose('run');M.flip=-1;M.x+=Math.max(5,W*.016);const hop=Math.abs(Math.sin(t/90))*9;
-      placeFeet(M.x,g-hop,1,1,-Math.sin(t/45)*4);shadowAt(M.x,g,1-hop/30);
+      if(Math.floor(t/240)!==M._puff&&t<1400){M._puff=Math.floor(t/240);fx('steam',M.x+(Math.random()<.5?-18:18),g-SOC.angry.H+6,{'--dx':((Math.random()-.5)*20)+'px'},850)}
+      if(t>1600){socEx.classList.remove('on');M.stride=0;go('sulk')}break}
+    case 'sulk':{M.flip=-1;M.x+=Math.max(150,W*.22)*dt;gallop(M.x,g,1,.8,'run','run2');
       if(M.x>W+120){socSh.classList.remove('on');go('slide')}break}
-    case 'slide':{pose('slide');M.flip=1;const k=Math.min(1,t/1500),top=-SOC.slide.H,end=b.y+6;
-      const yb=top+(end-top)*easeOut(k),hx=P[NP-1].x; // bám dây, đầu trượt xuống tới hạt cà phê
-      placeAt('slide',hx,yb,SOC.slide.rx,SOC.slide.hy);
+    case 'slide':{pose('slide');M.flip=1;const k=Math.min(1,t/2000),top=-SOC.slide.H,end=b.y+6;
+      const yb=top+(end-top)*easeOut(k),hx=P[NP-1].x,e=P[NP-1],q=P[NP-3],ang=Math.atan2(e.x-q.x,e.y-q.y)*180/Math.PI;
+      const wob=Math.sin(t/70)*4*(1-k);placeAt('slide',hx,yb,SOC.slide.rx,SOC.slide.hy,-ang+wob,1,1+Math.sin(t/60)*.03*(1-k));
       if(k>=1){M.grab=true;dragX=hx;dragY=b.y-9;drag=true;tripped=false;cBean.classList.add('gone');M.pullY0=b.y;go('spull')}break}
     case 'spull':{pose('slide');const k=easeIn(Math.min(1,t/650)),hy=M.pullY0+70*k,hx=P[NP-1].x;
-      dragX=hx;dragY=hy-9;placeAt('slide',hx,hy+6,SOC.slide.rx,SOC.slide.hy);
+      dragX=hx;dragY=hy-9;placeAt('slide',hx,hy+6,SOC.slide.rx,SOC.slide.hy,Math.sin(t/80)*5,1,1+k*.06);
       if(dragY-restY>50&&!tripped){tripped=true;set(true)}
-      if(k>=1){M.grab=false;drag=false;kick(-4,(Math.random()<.5?-1:1)*6);M.x=hx;M.bean=true;socSh.classList.add('on');go('startle')}break}
-    case 'startle':{pose(M.bean?'flee':'run');M.flip=1;if(t<40)exclaim(M.x+4,g-SOC.flee.H-44);
-      const k=Math.min(1,t/600),y=60*4*k*(1-k);placeFeet(M.x,g-y);shadowAt(M.x,g,1-y/70);if(k>=1)go('exit');break}
-    case 'exit':{pose(M.bean?'flee':'run');M.flip=1;if(t>300)socEx.classList.remove('on');M.x-=Math.max(7,W*.022);
-      const hop=Math.abs(Math.sin(t/80))*10;placeFeet(M.x,g-hop,1,1,Math.sin(t/40)*5);shadowAt(M.x,g,1-hop/30);
-      if(M.x<-140){M.run=false;socEl.classList.remove('on');socSh.classList.remove('on');socEx.classList.remove('on');if(M.bean||cBean.classList.contains('gone'))newBean();return}break}
+      if(k>=1){M.grab=false;drag=false;kick(-4,(Math.random()<.5?-1:1)*6);M.x=hx;M.bean=true;socSh.classList.add('on');pose('flee');squash(3.5);toStartle(hy+40)}break}
+    case 'startle':{pose(M.bean?'flee':'run');const c=cardTop(),gy=c.y;M.flip=M.dir<0?1:-1;
+      if(t<40)exclaim(M.sx0+4,M.y0-SOC.flee.H-44);
+      // giật mình nhảy dựng, vọt lên mép trên của bảng rồi đáp xuống bẹp người
+      const D=900,k=Math.min(1,t/D),pk=Math.min(M.y0,gy)-90;
+      const y=k<.5?M.y0+(pk-M.y0)*easeOut(k/.5):pk+(gy-pk)*easeIn((k-.5)/.5);
+      const x=M.sx0+(M.lx-M.sx0)*easeInOut(k),shake=k<.25?Math.sin(t/18)*3:0;
+      placeFeet(x+shake,y,1,1,(k-.5)*-14*M.dir*-1);shadowAt(x,gy,Math.max(0,1-(gy-y)/120));
+      if(k>=1){M.x=M.lx;squash(-3.8);dust(M.x-16,gy,-1,3);dust(M.x+16,gy,1,3);M.stride=0;go('look')}break}
+    case 'look':{const c=cardTop(),gy=c.y;pose(M.bean?'flee':'run');
+      // khựng lại, ngó qua ngó lại rồi mới chạy
+      const lk=t<380?(M.dir<0?-1:1):t<760?(M.dir<0?1:-1):(M.dir<0?-1:1);M.flip=lk<0?1:-1;
+      placeFeet(M.x,gy,1,1,Math.sin(t/90)*2);shadowAt(M.x,gy,1);if(t>1050){socEx.classList.remove('on');M.flip=M.dir<0?1:-1;go('exit')}break}
+    case 'exit':{const c=cardTop();let gy=c.y;M.flip=M.dir<0?1:-1;
+      const v=Math.min(1,t/500)*Math.max(120,Math.min(190,W*.3));M.x+=M.dir*v*dt;
+      const off=M.x<c.l+6||M.x>c.r-6;
+      if(off&&!M.fall){M.fall=true;M.fy=gy;M.vy=-120;squash(2)}
+      if(M.fall){M.vy+=1500*dt;M.fy+=M.vy*dt;placeFeet(M.x,M.fy,1,1,M.dir*-18);socSh.classList.remove('on')}
+      else{const h=M.bean?gallop(M.x,gy,M.dir,.8,'flee',null):gallop(M.x,gy,M.dir,.8,'run','run2');
+        if(Math.floor(t/160)!==M._sl){M._sl=Math.floor(t/160);speedLines(M.x-M.dir*Wof(M.pose)*.35,gy-SOC[M.pose].H*.55-h,-M.dir)}}
+      if(M.x<-160||M.x>W+160||(M.fall&&M.fy>H+SOC.run.H)){M.run=false;socEl.classList.remove('on');socSh.classList.remove('on');socEx.classList.remove('on');if(M.bean||cBean.classList.contains('gone'))newBean();return}break}
     }
-    M.raf=requestAnimationFrame(mtick);
+    M.lt=now;M.raf=requestAnimationFrame(mtick);
   }
   addEventListener('resize',place);place();requestAnimationFrame(step);requestAnimationFrame(light);
 })();
