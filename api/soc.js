@@ -15,12 +15,15 @@ const BEANS_PER_CUP = 10, FEED_COST = 10, FEED_GAIN = 25, HUNGRY_HOURS = 96; // 
 const AUTO_CREDIT_MS = 24 * 3600e3;
 // cửa hàng đồ cho sóc: giá tính bằng hạt cà phê, mỗi ô (slot) mặc 1 món
 const SHOP = {
-  nonla: { s: 'hat', p: 40 }, beanie: { s: 'hat', p: 30 }, santa: { s: 'hat', p: 50 }, cap: { s: 'hat', p: 30 },
-  flower: { s: 'hat', p: 40 }, party: { s: 'hat', p: 25 },
-  glasses: { s: 'eye', p: 35 }, hearts: { s: 'eye', p: 45 },
-  scarf: { s: 'neck', p: 30 }, bow: { s: 'neck', p: 20 }, bell: { s: 'neck', p: 35 },
-  overall: { s: 'body', p: 60 },
+  nonla: { s: 'hat', p: 40 }, beanie: { s: 'hat', p: 30 }, santa: { s: 'hat', p: 50, soon: 1 }, cap: { s: 'hat', p: 30, soon: 1 },
+  flower: { s: 'hat', p: 40, soon: 1 }, party: { s: 'hat', p: 25, soon: 1 },
+  glasses: { s: 'eye', p: 35, soon: 1 }, hearts: { s: 'eye', p: 45, soon: 1 },
+  scarf: { s: 'neck', p: 30, soon: 1 }, bow: { s: 'neck', p: 20, soon: 1 }, bell: { s: 'neck', p: 35, soon: 1 },
+  overall: { s: 'body', p: 60, soon: 1 },
 };
+// món "soon": chưa có ảnh sóc mặc thật nên chưa bán. Sóc mặc 1 món nổi bật một lúc (ảnh vẽ sẵn sóc đang mặc món đó).
+const PIN = process.env.STAFF_PIN || '';
+const pinOk = p => PIN && typeof p === 'string' && p.length >= 4 && crypto.timingSafeEqual(Buffer.from(sha(p)), Buffer.from(sha(PIN)));
 const SLOTS = ['hat', 'eye', 'neck', 'body'];
 // số demo để trình diễn: ai cũng chăm được, hạt không bao giờ hết, đổi cấp tuỳ ý
 const DEMO = '0123456789';
@@ -116,8 +119,11 @@ module.exports = async (req, res) => {
       const p2 = JSON.parse(await redis('GET', key));
       return send(200, { ok: true, t: tok, n, pet: view(p2, now, true) });
     }
+    // số demo chỉ chủ quán mở được (cần mã PIN quầy); khách nhập số này chỉ thấy như số chưa có sóc
+    const demoOk = ph === DEMO && pinOk(req.headers['x-staff-pin']);
+    if (ph === DEMO && !demoOk) return req.method === 'POST' ? send(403, { ok: false, err: 'Số này chưa có sóc.' }) : send(200, { ok: true, pet: { exists: false } });
     let raw = await redis('GET', key);
-    if (!raw && ph === DEMO) {
+    if (!raw && demoOk) {
       raw = JSON.stringify({ nm: 'Hạt Dẻ', beans: 999, cups: 40, full: 70, fedAt: now, born: now - 30 * 86400e3, pend: [], toks: [], inv: [], eq: {}, demo: true });
       await redis('SET', key, raw);
     }
@@ -141,17 +147,17 @@ module.exports = async (req, res) => {
         p.beans -= FEED_COST; p.full = Math.min(100, f + FEED_GAIN); p.fedAt = now; changed = true;
       } else if (b.a === 'buy') {
         const it = SHOP[b.id];
-        if (!it) return send(400, { ok: false, err: 'Món này không có.' });
+        if (!it || it.soon) return send(400, { ok: false, err: 'Món này sắp có.' });
         p.inv = p.inv || []; p.eq = p.eq || {};
         if (!p.inv.includes(b.id)) {
           if ((p.beans || 0) < it.p) return send(400, { ok: false, err: 'Chưa đủ hạt — cần ' + it.p + ' hạt.', pet: view(p, now, canEdit) });
           p.beans -= it.p; p.inv.push(b.id);
         }
-        p.eq[it.s] = b.id; changed = true;
+        p.eq = { [it.s]: b.id }; changed = true;
       } else if (b.a === 'wear') {
         p.eq = p.eq || {};
         if (!SLOTS.includes(b.s)) return send(400, { ok: false, err: 'Thao tác không hợp lệ.' });
-        if (b.id) { const it = SHOP[b.id]; if (!it || it.s !== b.s || !(p.inv || []).includes(b.id)) return send(400, { ok: false, err: 'Bạn chưa có món này.' }); p.eq[b.s] = b.id; }
+        if (b.id) { const it = SHOP[b.id]; if (!it || it.soon || it.s !== b.s || !(p.inv || []).includes(b.id)) return send(400, { ok: false, err: 'Bạn chưa có món này.' }); p.eq = { [b.s]: b.id }; }
         else delete p.eq[b.s];
         changed = true;
       } else if (b.a === 'lv' && p.demo) {
