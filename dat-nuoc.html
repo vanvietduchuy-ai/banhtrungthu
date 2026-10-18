@@ -2778,8 +2778,6 @@ const SQT=((D,PRE)=>{
     const c=[...document.querySelectorAll('.stp button:last-child,.bs .ad,.np-add,.addbtn')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.top>B.t+10&&r.bottom<B.b-10&&r.left>30&&!inPanel({x:r.left,y:r.top})});
     if(!c.length)return false;c.sort((a,b)=>{const ra=a.getBoundingClientRect(),rb=b.getBoundingClientRect();return Math.hypot(ra.left-M.x,ra.top-M.y)-Math.hypot(rb.left-M.x,rb.top-M.y)});
     M.hint={el:c[Math.floor(Math.random()*Math.min(3,c.length))]};return true}
-  function showHungry(x,y){const e=document.createElement('div');e.className='sq-say';e.innerHTML='<b>Đói quá…</b> cho tớ hạt cà phê nhé!';
-    e.style.left=(x+scrollX)+'px';e.style.top=(y-42+scrollY)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),3400)}
   function rumble(x,y){const e=document.createElement('i');e.className='sq-rum';e.textContent='ọt ọt';e.style.left=(x+16+scrollX)+'px';e.style.top=(y+6+scrollY)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),900)}
   // ---- vòng lặp ----
   let idleN=0;
@@ -2826,7 +2824,7 @@ const SQT=((D,PRE)=>{
       if(d<6){M.v=0;go('hint')}break}
     case 'hint':{const H=M.hint,r=H&&H.el.isConnected&&H.el.getBoundingClientRect();
       if(!r){go('rest');break}
-      if(t<40){H.el.classList.add('sq-hint');showHungry(M.x,M.y)}
+      if(t<40){H.el.classList.add('sq-hint')}
       // ngồi cạnh nút cộng: nghiêng người về phía nút, xoa bụng, bụng kêu ọt ọt
       const rub=Math.sin(t/140),lean=8+3*Math.sin(t/300);
       put('ts13',{},M.x,M.y,lean,1+.03*Math.max(0,rub));

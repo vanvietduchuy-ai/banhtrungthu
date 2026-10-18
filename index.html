@@ -317,7 +317,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // bàn tay hướng dẫn sau 4 giây chưa bật đèn
   const tap=document.getElementById('tap');let idleT;
   function idle(start){clearTimeout(idleT);tap.classList.remove('on');if(start)idleT=setTimeout(()=>{if(sec.classList.contains('is-on')||M.run)return;tap.classList.add('on')},9000)}
-  idle(true);setTimeout(()=>{if(mascotStart())tap.classList.remove('on')},5000);
+  idle(true);setTimeout(()=>{if(mascotStart())tap.classList.remove('on')},2000);
   // dây: chuỗi 16 điểm mô phỏng Verlet — có trọng lực, quán tính, tua nặng hơn nên dây mềm và văng tự nhiên
   const NP=16;let P=[],seg=8,drag=false,on=false,tripped=false,dragX=0,dragY=0,offX=0,offY=0,downX=0,downY=0,restY=0,acc=0,lastT=0;
   function initRope(){seg=len/(NP-1);P=[];for(let i=0;i<NP;i++){const y=ay+i*seg;P.push({x:ax,y,ox:ax,oy:y,w:i===NP-1?.4:1})}restY=ay+len}
@@ -471,7 +471,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function mascotStart(){
     if(M.used||RM||sec.classList.contains('is-on'))return false;
     if(!SQ3.ready){setTimeout(mascotStart,400);return false}
-    Object.assign(M,{used:true,run:true,grab:false,miss:0,maxMiss:3+Math.floor(Math.random()*3),first:true,bean:false,flip:-1,x:-90,sq:1,sqv:0,lt:performance.now(),stride:0,last:null,cur:null,fade:null});
+    Object.assign(M,{used:true,run:true,grab:false,miss:0,maxMiss:3+Math.floor(Math.random()*3),first:false,bean:false,flip:-1,x:-90,sq:1,sqv:0,lt:performance.now(),stride:0,last:null,cur:null,fade:null});
     socEl.classList.add('on');socSh.classList.add('on');go('enter');M.raf=requestAnimationFrame(mtick);return true}
   function exclaim(x,y){socEx.style.left=x+'px';socEx.style.top=y+'px';socEx.classList.remove('on');void socEx.offsetWidth;socEx.classList.add('on')}
   function exFollow(){if(M.o){socEx.style.left=(M.o.head[0]-8)+'px';socEx.style.top=(M.o.head[1]-30)+'px'}}
@@ -494,19 +494,19 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(sec.classList.contains('is-on')&&!['pull','spull','startle','look','fetch','pick','exit'].includes(M.st)){M.bean=false;if(M.grab){M.grab=false;drag=false}squash(3);toStartle()}
     dropTick(dt);
     switch(M.st){
-    case 'enter':{const tx=b.x-24*S,v=cl((tx-M.x)*1.5,70,170);M.x+=v*dt;M.y=g;runAt(now,dt,M.x,g,v,1);
+    case 'enter':{const tx=b.x-24*S,v=cl((tx-M.x)*4,200,560);M.x+=v*dt;M.y=g;runAt(now,dt,M.x,g,v,1);
       if(M.x>=tx-2){M.x=tx;dust(M.x+14,g,1,3);go('skid')}break}
     case 'skid':{M.flip=-1; // phanh gấp: ngả người ra sau rồi đứng dựng lên
       M.x+=Math.max(0,1-t/300)*80*dt; // phanh, hạ mông, nhổm dậy, ngồi dựng nhìn khách
-      M.flip=-1;if(t<820)seq('tr',11,easeInOut(t/820),'feet',M.x,g,dt);else{M.flip=1;put('stand',A.stand(t),'feet',M.x,g,0,dt)}
-      shadowAt(M.x,g,1);if(t>950)go('ready');break}
-    case 'ready':{const dx=b.x-M.x;let hop=0;const lk=t<350?0:t<800?1:t<1250?-1:0;M.flip=lk>0?-1:1; // ngó sang trái, sang phải rồi nhìn lên hạt
-      if(Math.abs(dx)>6){M.x+=cl(dx*2.4,-90,90)*dt;const ph=(t/220)%1;hop=Math.sin(ph*Math.PI)*7;if(ph<.06&&!M._h){M._h=1;squash(-1.2)}if(ph>.5)M._h=0}
-      const crouch=t>1250?Math.min(1,(t-1250)/260):0; // ngó lên hạt, hạ người lấy đà
-      put('stand',A.stand(t,{head:lk?10*Math.sin(Math.min(1,((t-350)%450)/150)*Math.PI/2):-6}),'feet',M.x,g-hop,0,dt,{br:-.05*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
-      if(t>1520&&(Math.abs(dx)<24*S||t>2400)){const reach=(SQ3.D.jump.a.feet[1]-SQ3.D.jump.a.grab[1])*s;M.jx0=M.x;M.jx1=b.x;M.hp=Math.max(10,(g-b.y)-reach)+(M.first?-40*S:0);
+      M.flip=-1;if(t<400)seq('tr',11,easeInOut(t/400),'feet',M.x,g,dt);else{M.flip=1;put('stand',A.stand(t),'feet',M.x,g,0,dt)}
+      shadowAt(M.x,g,1);if(t>470)go('ready');break}
+    case 'ready':{const dx=b.x-M.x;let hop=0;const lk=t<100?0:t<300?1:t<500?-1:0;M.flip=lk>0?-1:1; // ngó sang trái, sang phải rồi nhìn lên hạt
+      if(Math.abs(dx)>6){M.x+=cl(dx*5,-200,200)*dt;const ph=(t/220)%1;hop=Math.sin(ph*Math.PI)*7;if(ph<.06&&!M._h){M._h=1;squash(-1.2)}if(ph>.5)M._h=0}
+      const crouch=t>500?Math.min(1,(t-500)/140):0; // ngó lên hạt, hạ người lấy đà
+      put('stand',A.stand(t,{head:lk?10*Math.sin(Math.min(1,((t-100)%200)/80)*Math.PI/2):-6}),'feet',M.x,g-hop,0,dt,{br:-.05*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
+      if(t>640&&(Math.abs(dx)<24*S||t>1300)){const reach=(SQ3.D.jump.a.feet[1]-SQ3.D.jump.a.grab[1])*s;M.jx0=M.x;M.jx1=b.x;M.hp=Math.max(10,(g-b.y)-reach)+0;M.first=false;
         squash(4);dust(M.x-12,g,-1,3);dust(M.x+12,g,1,3);go('jump')}break}
-    case 'jump':{const D=580,k=Math.min(1,t/D),up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5),held=drag&&!M.grab;
+    case 'jump':{const D=460,k=Math.min(1,t/D),up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5),held=drag&&!M.grab;
       // dây đung đưa theo gió: sóc liệu theo hạt khi đang bay lên (trừ khi khách đang cầm dây kéo đi)
       if(!held&&!M.first&&k<.6)M.jx1+=cl(b.x-M.jx1,-40*S,40*S)*Math.min(1,dt*10);
       const x=M.jx0+(M.jx1-M.jx0)*Math.min(1,k*1.7),y=g-M.hp*up;M.x=x;
@@ -516,7 +516,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(k>=1){M.first=false;M.miss++;squash(-4);dust(M.x-12,g,-1,3);dust(M.x+12,g,1,3);go(M.miss>=M.maxMiss?'angry':'land')}break}
     case 'land':{put('stand',A.stand(t,{head:8}),'feet',M.x,g,0,dt,{br:-.1*(1-Math.min(1,t/380))});shadowAt(M.x,g,1);if(t>420)go('ready');break}
     case 'pull':case 'spull':{ // 2 tay ôm đúng hạt trên dây, người lắc như con lắc, chân đạp, kéo dây xuống
-      const k=easeIn(Math.min(1,t/900)),sw=Math.sin(t/170),kk=Math.sin(t/95);
+      const k=easeIn(Math.min(1,t/560)),sw=Math.sin(t/140),kk=Math.sin(t/80);
       const hy=M.pullY0+70*k;dragX=ax+sw*10*(1-k*.4);dragY=hy-9.5;
       const e=P[NP-1],ang=ropeAng();M.flip=1;
       put('hold',A.hold(t,kk),'bean',e.x,e.y+9.5,-ang,dt);shadowAt(e.x,g,.5);
@@ -538,7 +538,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(k>=1){socSh.classList.add('on');M.grab=true;dragX=P[NP-1].x;dragY=P[NP-1].y;drag=true;tripped=false;M.pullY0=b.y;cBean.classList.add('gone');go('spull')}break}
     case 'startle':{const c=cardTop(),gy=c.y;M.flip=M.dir<0?1:-1;
       if(t<40){exclaim(M.sx0,M.y0-100*S);squash(-3)}
-      const SH=420; // khựng lại vì giật mình: phồng người, run bần bật, toát mồ hôi
+      const SH=300; // khựng lại vì giật mình: phồng người, run bần bật, toát mồ hôi
       if(t<SH){const k=t/SH,pop=1+.2*Math.sin(Math.min(1,k*2.2)*Math.PI)*(1-k*.5);
         const an=A.startle(t*2.2);an.head=12*Math.sin(t/28)*(1-k*.6);
         const o=put('startle',an,'feet',M.sx0,M.y0-Math.sin(Math.min(1,k*2)*Math.PI)*10,0,dt,{k:pop});exFollow();shadowAt(M.sx0,M.y0,.6);
@@ -548,7 +548,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
         break}
       M._sw=0;const tt=t-SH;
       // nhảy dựng, tay chân quơ loạn, vọt lên mép trên của bảng
-      const D=900,k=Math.min(1,tt/D),pk=Math.min(M.y0,gy)-90;
+      const D=620,k=Math.min(1,tt/D),pk=Math.min(M.y0,gy)-90;
       const y=k<.5?M.y0+(pk-M.y0)*easeOut(k/.5):pk+(gy-pk)*easeIn((k-.5)/.5),x=M.sx0+(M.lx-M.sx0)*easeInOut(k);
       put('startle',A.startle(t),'feet',x,y,(k-.5)*12*M.dir,dt);exFollow();shadowAt(x,gy,Math.max(0,1-(gy-y)/120));
       if(k>=1){M.x=M.lx;squash(-3.4);dust(M.x-12,gy,-1,3);dust(M.x+12,gy,1,3);M.stride=0;socEx.classList.remove('on');go(M.drop?'fetch':'exit')}break}
