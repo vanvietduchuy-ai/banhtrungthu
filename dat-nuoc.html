@@ -3104,6 +3104,9 @@ const SQT=((D,PRE)=>{
 .pt-demo button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 9px;font:500 11px var(--body);cursor:pointer}
 .pt-demo button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .pt-board{margin-top:6px}
+.pt-house{font-style:normal;font-size:9.5px;font-weight:600;letter-spacing:.04em;background:var(--ink);color:#FDF8EF;border-radius:999px;padding:1px 7px;margin-right:3px}
+.pt-first{text-align:center;padding:14px 10px 4px}.pt-first img{height:120px;width:auto;display:block;margin:0 auto 8px}
+.pt-first b{display:block;font-family:var(--disp);font-size:22px;font-weight:600}.pt-first span{display:block;font-size:12.5px;color:var(--mute);margin-top:4px;line-height:1.5}
 .pt-rk{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:6px}
 .pt-rk.top{background:#FFF8E6;border-color:rgba(184,145,47,.4)}
 .pt-rk.me{background:var(--ink);color:#FDF8EF;border-color:var(--ink);margin-top:12px}
@@ -3222,10 +3225,10 @@ const SQT=((D,PRE)=>{
     let r; try{ r = await fetch(API + '?a=top&per=' + boardPer + (S.ph && S.ph !== DEMO ? '&ph=' + encodeURIComponent(S.ph) : '') + '&_=' + Date.now()).then(x => x.json()); }catch(e){ r = null; }
     const box = document.getElementById('ptBoard'); if(!box) return;
     if(!r || !r.ok){ box.innerHTML = '<div class="sub">Chưa tải được bảng xếp hạng.</div>'; return; }
-    if(!r.list.length){ box.innerHTML = '<div class="pend">' + (boardPer === 'month' ? 'Tháng này chưa có sóc nào lên bảng — đặt ly để sóc của bạn đứng đầu nhé!' : 'Chưa có sóc nào lên bảng.') + '</div>'; return; }
+    if(!r.list.length){ box.innerHTML = '<div class="pt-first"><img src="' + IMG + 'sqc-2.webp?v=1" alt=""><b>Mùa đầu tiên của bảng xếp hạng</b><span>Chưa có sóc nào lên bảng' + (boardPer === 'month' ? ' tháng này' : '') + '. Đặt một ly để sóc của bạn là sóc đầu tiên đứng top!</span></div>'; return; }
     const md = ['🥇','🥈','🥉'];
-    box.innerHTML = r.list.map((x, i) => { const src = x.hat && WORN[x.hat] ? wimg(x.hat, x.lv) : pimg(x.lv);
-      return '<div class="pt-rk' + (i < 3 ? ' top' : '') + '"><b>' + (md[i] || (i + 1)) + '</b><img src="' + src + '" alt=""><span><em>' + esc(x.n) + '</em><small>' + LV[x.lv][0] + '</small></span><strong>' + x.cups + ' ly</strong></div>'; }).join('') +
+    box.innerHTML = r.list.map((x, i) => { const w = x.wear || x.hat, src = w && WORN[w] ? wimg(w, x.lv) : pimg(x.lv);
+      return '<div class="pt-rk' + (i < 3 ? ' top' : '') + '"><b>' + (md[i] || (i + 1)) + '</b><img src="' + src + '" alt=""><span><em>' + esc(x.n) + '</em><small>' + (x.house ? '<i class="pt-house">Nhà Curator</i> ' : '') + LV[x.lv][0] + '</small></span><strong>' + x.cups + ' ly</strong></div>'; }).join('') +
       (r.me ? '<div class="pt-rk me"><b>' + r.me.rank + '</b><span><em>Sóc của bạn</em><small>hạng ' + r.me.rank + ' / ' + r.me.of + '</small></span><strong>' + r.me.cups + ' ly</strong></div>'
             : mode === 'on' && S.ph ? '<div class="pend">Sóc của bạn chưa có ly nào ' + (boardPer === 'month' ? 'tháng này' : '') + ' — đặt ly để lên bảng nhé.</div>' : '') +
       '<div class="note">' + r.total + ' sóc đang được nuôi' + (boardPer === 'month' ? ' có ly trong tháng' : '') + '.</div>';

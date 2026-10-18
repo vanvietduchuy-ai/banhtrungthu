@@ -65,7 +65,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px
 <body>
 <header><h1>Theo dõi nuôi sóc</h1>
   <div class="seg" id="rng"><button data-d="7">7 ngày</button><button data-d="30" class="on">30 ngày</button><button data-d="90">90 ngày</button></div>
-  <button class="btn ghost" id="reload">Làm mới</button></header>
+  <button class="btn ghost" id="reload">Làm mới</button><button class="btn ghost" id="out">Đăng xuất</button></header>
 <div class="wrap" id="app"></div>
 <div class="tip" id="tip"></div>
 <script>
@@ -75,21 +75,30 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px
   const ITN = { nonla:'Nón lá', beanie:'Mũ len', santa:'Mũ Noel', cap:'Mũ lưỡi trai', flower:'Vòng hoa', party:'Mũ sinh nhật', glasses:'Kính tròn', hearts:'Kính tim', scarf:'Khăn len', bow:'Nơ chấm bi', bell:'Vòng chuông cổ', overall:'Yếm jean' };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = n => Number(n || 0).toLocaleString('vi-VN'), pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
-  let pin = ''; try{ pin = localStorage.getItem('tcCashierPin') || localStorage.getItem('tcSocAdminPin') || ''; }catch(e){}
+  // dang nhap: tai khoan admin (giong trang quan tri menu) hoac ma PIN quay
+  let pin = '', tok = ''; try{ tok = localStorage.getItem('curator-admin-token') || ''; pin = localStorage.getItem('tcCashierPin') || localStorage.getItem('tcSocAdminPin') || ''; }catch(e){}
+  const auth = () => Object.assign({}, tok ? { Authorization:'Bearer ' + tok } : {}, pin ? { 'x-staff-pin':pin } : {});
   let days = 30, D = null;
 
   function login(err){
-    app.innerHTML = '<div class="login"><h2>Mã PIN quầy</h2><div class="note">Dùng cùng mã PIN với trang quầy đơn hàng.</div>' +
-      '<input id="pin" type="password" inputmode="numeric" autocomplete="off"><div class="err">' + esc(err || '') + '</div><button class="btn" id="go">Xem thống kê</button></div>';
-    const go = () => { pin = $('#pin').value.trim(); try{ localStorage.setItem('tcSocAdminPin', pin); }catch(e){} load(); };
-    $('#go').onclick = go; $('#pin').onkeydown = e => { if(e.key === 'Enter') go(); }; $('#pin').focus();
+    app.innerHTML = '<div class="login"><h2>Đăng nhập</h2><div class="note">Tài khoản admin (giống trang quản trị menu)</div>' +
+      '<input id="u" type="text" autocomplete="username" value="admin" style="letter-spacing:0;text-align:left"><input id="p" type="password" autocomplete="current-password" placeholder="Mật khẩu" style="letter-spacing:0;text-align:left;margin-top:0">' +
+      '<div class="err">' + esc(err || '') + '</div><button class="btn" id="go">Đăng nhập</button>' +
+      '<div class="note" style="margin:16px 0 0">hoặc dùng mã PIN quầy</div><input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"><button class="btn ghost" id="goPin">Vào bằng PIN</button></div>';
+    const go = async () => { $('.err').textContent = '';
+      try{ const r = await fetch('/api/menu', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ a:'login', u:$('#u').value.trim(), p:$('#p').value }) }).then(x => x.json());
+        if(!r.token){ $('.err').textContent = r.err || 'Sai tên đăng nhập hoặc mật khẩu.'; return; }
+        tok = r.token; try{ localStorage.setItem('curator-admin-token', tok); }catch(e){} load(); }catch(e){ $('.err').textContent = 'Chưa kết nối được.'; } };
+    const goPin = () => { pin = $('#pin').value.trim(); try{ localStorage.setItem('tcSocAdminPin', pin); }catch(e){} load(); };
+    $('#go').onclick = go; $('#p').onkeydown = e => { if(e.key === 'Enter') go(); };
+    $('#goPin').onclick = goPin; $('#pin').onkeydown = e => { if(e.key === 'Enter') goPin(); }; $('#p').focus();
   }
   async function load(){
-    if(!pin) return login();
+    if(!pin && !tok) return login();
     app.innerHTML = '<p class="note" style="margin-top:30px">Đang tải…</p>';
     try{
-      const r = await fetch('/api/soc?a=admin&days=' + days + '&_=' + Date.now(), { headers:{ 'x-staff-pin':pin } }).then(x => x.json());
-      if(!r.ok) return login(r.err || 'Không tải được.');
+      const r = await fetch('/api/soc?a=admin&days=' + days + '&_=' + Date.now(), { headers:auth() }).then(x => x.json());
+      if(!r.ok){ tok = ''; pin = ''; try{ localStorage.removeItem('tcSocAdminPin'); }catch(e){} return login(r.err || 'Không tải được.'); }
       D = r; render();
     }catch(e){ app.innerHTML = '<p class="err" style="margin-top:30px">Chưa kết nối được máy chủ.</p>'; }
   }
@@ -117,12 +126,20 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px
       '<details><summary>Xem bảng số liệu theo ngày</summary><div class="card" style="margin-top:8px;overflow-x:auto">' + dayTable() + '</div></details>' +
       '<div class="grid2" style="margin-top:12px"><div class="card"><h3>Sóc theo cấp</h3>' + lvBars() + '</div>' +
       '<div class="card"><h3>Cửa hàng đồ</h3>' + shopTable() + '</div></div>' +
+      '<h2 class="sec">Sóc nhà quán</h2><div class="card"><p class="note" style="margin-bottom:10px">Sóc thật của nhân viên: nhập số điện thoại nhân viên và tên hiển thị. Nhân viên đặt nước bằng số đó như khách bình thường, số ly được cộng thật. Trên bảng xếp hạng sóc này luôn có nhãn <b>Nhà Curator</b> để khách biết là sóc của quán.</p>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap"><input id="hPh" inputmode="tel" placeholder="SĐT nhân viên" style="flex:1;min-width:140px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit">' +
+        '<input id="hNm" maxlength="20" placeholder="Tên hiển thị, vd. Sóc của Barista Nam" style="flex:2;min-width:180px;border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit"><button class="btn" id="hAdd">Thêm</button></div><div class="err" id="hErr"></div>' +
+        (D.top.filter(x => x.house).length ? '<table style="margin-top:8px"><tr><th>Sóc</th><th class="n">Ly</th><th></th></tr>' + D.top.filter(x => x.house).map(x => '<tr><td>' + esc(x.nm || x.tag) + ' <span class="tag">Nhà Curator</span></td><td class="n">' + fmt(x.cups) + '</td><td><button class="mini" data-unhouse="' + x.id + '">Bỏ nhãn</button></td></tr>').join('') + '</table>' : '') + '</div>' +
       '<h2 class="sec">Top sóc (mọi thời)</h2><div class="card" style="overflow-x:auto">' + topTable() + '</div>' +
       '<p class="note" style="margin-top:8px">Tên do khách tự đặt hiện trên bảng xếp hạng. Bấm "Ẩn tên" nếu tên không phù hợp — sóc vẫn giữ hạng, chỉ hiện mã Sóc #xxxx. Lượt xem bảng xếp hạng: ' + fmt(board) + '.</p>';
     stacked('#c1', D.series.map(d => ({ x:d.d, a:d.linkCups || 0, b:Math.max(0, (d.orderCups || 0) - (d.linkCups || 0)) })));
     bars('#c2', D.series.map(d => ({ x:d.d, v:d.active || 0, ad:d.adopt || 0 })));
+    const house = async body => { const r = await fetch('/api/soc', { method:'POST', headers:Object.assign({ 'Content-Type':'application/json' }, auth()), body:JSON.stringify(Object.assign({ a:'house' }, body)) }).then(x => x.json());
+      if(r.ok) load(); else $('#hErr').textContent = r.err || 'Không được'; };
+    $('#hAdd').onclick = () => { const ph = $('#hPh').value.trim(), nm = $('#hNm').value.trim(); if(!ph || !nm){ $('#hErr').textContent = 'Nhập số điện thoại và tên hiển thị.'; return; } house({ ph, nm }); };
+    document.querySelectorAll('[data-unhouse]').forEach(b => b.onclick = () => house({ k:b.dataset.unhouse, off:1 }));
     document.querySelectorAll('[data-hide]').forEach(b => b.onclick = async () => {
-      b.disabled = true; const r = await fetch('/api/soc', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-staff-pin':pin }, body:JSON.stringify({ a:'hide', k:b.dataset.hide }) }).then(x => x.json());
+      b.disabled = true; const r = await fetch('/api/soc', { method:'POST', headers:Object.assign({ 'Content-Type':'application/json' }, auth()), body:JSON.stringify({ a:'hide', k:b.dataset.hide }) }).then(x => x.json());
       if(r.ok) load(); else { alert(r.err || 'Không được'); b.disabled = false; } });
   }
   const tileH = (v, l, s) => '<div class="tile"><b>' + v + '</b><span>' + l + '</span>' + (s ? '<small>' + s + '</small>' : '') + '</div>';
@@ -136,7 +153,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px
     if(!D.top.length) return '<p class="note">Chưa có sóc nào.</p>';
     const d = t => t ? new Date(t).toLocaleDateString('vi-VN') : '—';
     return '<table><tr><th>#</th><th>Sóc</th><th>Cấp</th><th class="n">Ly</th><th class="n">Hạt còn</th><th class="n">Đồ</th><th>Nhận nuôi</th><th>Cho ăn gần nhất</th><th></th></tr>' +
-      D.top.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(x.nm || '(chưa đặt tên)') + ' <span class="tag' + (x.hide ? ' off' : '') + '">' + esc(x.tag) + (x.hide ? ' · đang ẩn' : '') + '</span></td><td>' + LVN[x.lv] + '</td><td class="n">' + fmt(x.cups) + '</td><td class="n">' + fmt(x.beans) +
+      D.top.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(x.nm || '(chưa đặt tên)') + ' <span class="tag' + (x.hide ? ' off' : '') + '">' + esc(x.tag) + (x.hide ? ' · đang ẩn' : '') + '</span>' + (x.house ? ' <span class="tag">Nhà Curator</span>' : '') + '</td><td>' + LVN[x.lv] + '</td><td class="n">' + fmt(x.cups) + '</td><td class="n">' + fmt(x.beans) +
         '</td><td class="n">' + x.items + '</td><td>' + d(x.born) + '</td><td>' + d(x.fedAt) + '</td><td>' + (x.nm ? '<button class="mini" data-hide="' + x.id + '">' + (x.hide ? 'Hiện tên' : 'Ẩn tên') + '</button>' : '') + '</td></tr>').join('') + '</table>';
   }
   function dayTable(){
@@ -179,6 +196,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px
   }
   document.querySelectorAll('#rng button').forEach(b => b.onclick = () => { document.querySelectorAll('#rng button').forEach(x => x.classList.toggle('on', x === b)); days = +b.dataset.d; load(); });
   $('#reload').onclick = load;
+  $('#out').onclick = () => { tok = ''; pin = ''; try{ localStorage.removeItem('tcSocAdminPin'); }catch(e){} login(); };
   document.addEventListener('click', e => { if(!e.target.closest('rect[data-i]')) tip.classList.remove('on'); });
   load();
 })();
