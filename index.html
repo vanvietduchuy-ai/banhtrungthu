@@ -479,7 +479,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // chạy 4 chân: chân trước/sau đánh so le, thân nhấp nhô, chúi nhẹ; sải chân khớp tốc độ
   // phát 1 chuỗi khung theo thời gian (k: 0..1), hoà trộn khung kế để chuyển mượt
   const late=f=>0; // chuyển khung dứt khoát như phim hoạt hình, không chồng 2 ảnh (hết bóng đôi, hết giật) // chỉ hoà trộn ở cuối mỗi khung để không bị bóng đôi
-  function seq(pre,n,k,anchor,x,y,dt,ang={}){const q=Math.max(0,Math.min(.999,k))*(n-1),i=Math.floor(q),f=q-i,fs=late(f);
+  function seq(pre,n,k,anchor,x,y,dt,ang={}){const q=Math.max(0,Math.min(.999,k))*(n-1),i=Math.floor(q),f=q-i,fs=(pre==='tr'&&i===6)?f*f*(3-2*f):late(f);
     return put(pre+(i+1),ang,anchor,x,y,0,dt,{blend:i+2<=n?{n:pre+(i+2),a:fs}:null})}
   function runAt(now,dt,x,g,v,dir,n='run'){const S=SC();M.stride+=Math.abs(v)*dt/(52*S);const ph=M.stride%1,w=ph*Math.PI*2;
     const st=Math.floor(M.stride*2);if(st!==M.lastFoot){M.lastFoot=st;dust(x-dir*-18*S,g,-dir,1)}
@@ -498,13 +498,13 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(M.x>=tx-2){M.x=tx;dust(M.x+14,g,1,3);go('skid')}break}
     case 'skid':{M.flip=-1; // phanh gấp: ngả người ra sau rồi đứng dựng lên
       M.x+=Math.max(0,1-t/300)*80*dt; // phanh, hạ mông, nhổm dậy, ngồi dựng nhìn khách
-      M.flip=-1;if(t<620)seq('tr',11,easeOut(t/620),'feet',M.x,g,dt);else{M.flip=1;put('stand',A.stand(t),'feet',M.x,g,0,dt)}
-      shadowAt(M.x,g,1);if(t>820)go('ready');break}
-    case 'ready':{M.flip=1;const dx=b.x-M.x;let hop=0;
+      M.flip=-1;if(t<820)seq('tr',11,easeInOut(t/820),'feet',M.x,g,dt);else{M.flip=1;put('stand',A.stand(t),'feet',M.x,g,0,dt)}
+      shadowAt(M.x,g,1);if(t>950)go('ready');break}
+    case 'ready':{const dx=b.x-M.x;let hop=0;const lk=t<350?0:t<800?1:t<1250?-1:0;M.flip=lk>0?-1:1; // ngó sang trái, sang phải rồi nhìn lên hạt
       if(Math.abs(dx)>6){M.x+=cl(dx*2.4,-90,90)*dt;const ph=(t/220)%1;hop=Math.sin(ph*Math.PI)*7;if(ph<.06&&!M._h){M._h=1;squash(-1.2)}if(ph>.5)M._h=0}
-      const crouch=t>420?Math.min(1,(t-420)/260):0; // ngó lên hạt, hạ người lấy đà
-      put('stand',A.stand(t,{head:-6}),'feet',M.x,g-hop,0,dt,{br:-.05*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
-      if(t>720&&(Math.abs(dx)<24*S||t>1700)){const reach=(SQ3.D.jump.a.feet[1]-SQ3.D.jump.a.grab[1])*s;M.jx0=M.x;M.jx1=b.x;M.hp=Math.max(10,(g-b.y)-reach)+(M.first?-40*S:0);
+      const crouch=t>1250?Math.min(1,(t-1250)/260):0; // ngó lên hạt, hạ người lấy đà
+      put('stand',A.stand(t,{head:lk?10*Math.sin(Math.min(1,((t-350)%450)/150)*Math.PI/2):-6}),'feet',M.x,g-hop,0,dt,{br:-.05*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
+      if(t>1520&&(Math.abs(dx)<24*S||t>2400)){const reach=(SQ3.D.jump.a.feet[1]-SQ3.D.jump.a.grab[1])*s;M.jx0=M.x;M.jx1=b.x;M.hp=Math.max(10,(g-b.y)-reach)+(M.first?-40*S:0);
         squash(4);dust(M.x-12,g,-1,3);dust(M.x+12,g,1,3);go('jump')}break}
     case 'jump':{const D=580,k=Math.min(1,t/D),up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5),held=drag&&!M.grab;
       // dây đung đưa theo gió: sóc liệu theo hạt khi đang bay lên (trừ khi khách đang cầm dây kéo đi)
@@ -565,13 +565,13 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       else runAt(now,dt,M.x,gy,v,dir0,'run');break}
     case 'pick':{const c=cardTop(),gy=c.y,D=M.drop;M.flip=M.fdir<0?1:-1;
       // nhìn hạt -> cúi ngửi -> ngoạm -> ngẩng lên ngậm hạt -> đứng đắc ý, rồi mới chạy
-      const T=[0,380,700,980,1260,1560],K=[1,4,7,8,11,11];let i=0;while(i<4&&t>=T[i+1])i++;
+      const T=[0,300,560,760,920,1000],K=[1,4,7,8,11,11];let i=0;while(i<4&&t>=T[i+1])i++;
       const f=Math.min(1,(t-T[i])/(T[i+1]-T[i])),fr=Math.round(K[i]+(K[i+1]-K[i])*easeInOut(f));
       put('pk'+fr,{},'feet',M.x,gy,0,dt);shadowAt(M.x,gy,1);
-      if(t>=380&&t<700&&Math.floor((t-380)/150)!==M._sn){M._sn=Math.floor((t-380)/150);fx('sqsn',D.x-M.fdir*6,D.y-8,{'--dx':(-M.fdir*10)+'px'},500)}
-      if(D&&t>=980){D.el.remove();M.drop=null;M.bean=true}
-      if(t>1700){M.stride=0;M.dir=1;go('exit')}break}
-    case 'exit':{const c=cardTop();let gy=c.y;const v=easeIn(Math.min(1,t/420))*cl(W*.5,220,320);M.x+=M.dir*v*dt;
+      if(t>=300&&t<560&&Math.floor((t-300)/130)!==M._sn){M._sn=Math.floor((t-300)/130);fx('sqsn',D.x-M.fdir*6,D.y-8,{'--dx':(-M.fdir*10)+'px'},500)}
+      if(D&&t>=760){D.el.remove();M.drop=null;M.bean=true}
+      if(t>920){M.stride=0;M.dir=1;go('exit')}break}
+    case 'exit':{const c=cardTop();let gy=c.y;const v=(.45+.55*easeOut(Math.min(1,t/300)))*cl(W*.5,220,320);M.x+=M.dir*v*dt;
       const off=M.x<c.l+6||M.x>c.r-6;
       if(off&&!M.fall){M.fall=true;M.fy=gy;M.vy=-120;squash(2)}
       if(M.fall){M.vy+=1500*dt;M.fy+=M.vy*dt;M.flip=M.dir<0?1:-1;put('startle',A.startle(t),'feet',M.x,M.fy,M.dir*-20,dt);socSh.classList.remove('on')}
