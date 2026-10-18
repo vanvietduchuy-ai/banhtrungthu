@@ -2642,6 +2642,9 @@ for(const n in HD)if(TD[n])TD[n].a=Object.assign({},TD[n].a,{hd:HD[n]});TD.sit.a
 // phụ kiện theo cấp: lá non, mũ hạt sồi, mũ nồi barista, mũ phớt trưởng quán, vương miện huyền thoại [bề ngang so với đầu, điểm bám]
 const ACC=[[.38,.95],[.62,.8],[.82,.72],[.9,.75],[.62,.86]],ACCH=[67,87,73,63,86];
 ACC.forEach((a,i)=>TD['acc'+i]={w:120,h:ACCH[i],a:{c:[60,ACCH[i]*a[1]]},b:[]});
+// mũ mua trong cửa hàng của sóc: [bề ngang so với đầu, điểm bám, chiều cao ảnh]
+const HAT={nonla:[1.25,.6,106],beanie:[.95,.8,172],santa:[1.05,.8,139],cap:[.95,.76,144],flower:[1,.55,73],party:[.5,.95,208]};
+for(const k in HAT)TD['h-'+k]={w:160,h:HAT[k][2],src:'sqi-'+k+'.webp?v=1',a:{c:[80,HAT[k][2]*HAT[k][1]]},b:[]};
 
 // ===== Sóc nhìn từ trên xuống: ảnh 3D + lưới biến dạng theo xương (WebGL) =====
 const SQT=((D,PRE)=>{
@@ -2672,7 +2675,7 @@ const SQT=((D,PRE)=>{
         gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);T[n]=tx}
       else T[n]=im;
-      if(++left===names.length){ready=true;res()}};im.src=base+PRE+n+'.webp?v=6'}))}
+      if(++left===names.length){ready=true;res()}};im.src=base+(D[n].src||PRE+n+'.webp?v=6')}))}
   function size(){if(!cv)return;dpr=Math.min(2,devicePixelRatio||1);const w=cv.clientWidth,h=cv.clientHeight;
     if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}}
   function clear(){if(!cv)return;size();if(gl){gl.viewport(0,0,cv.width,cv.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT)}else if(ctx2)ctx2.clearRect(0,0,cv.width,cv.height)}
@@ -2766,8 +2769,8 @@ const SQT=((D,PRE)=>{
   function drawAcc(n,P,ang,al){const L=lvl(),d=TD[n],hd=d&&d.a.hd;if(L<0||!hd)return;
     let p=[hd[0],hd[1]],r=0;const hb=d.b.find(b=>b[0]==='head');
     if(hb&&ang&&ang.head){r=ang.head;const a=r*Math.PI/180,c=Math.cos(a),s=Math.sin(a),o=hb[1],dx=p[0]-o[0],dy=p[1]-o[1];p=[o[0]+c*dx-s*dy,o[1]+s*dx+c*dy]}
-    const q=SQT.pt(n,P,p),k=hd[2]*ACC[L][0]/120;
-    SQT.draw('acc'+L,{x:q[0],y:q[1],rot:P.rot+r,sx:P.sx*k,sy:P.sy*k,anchor:TD['acc'+L].a.c},null,al)}
+    const q=SQT.pt(n,P,p),h=PET().hat,an=h&&HAT[h]?'h-'+h:'acc'+L,k=hd[2]*(h&&HAT[h]?HAT[h][0]/160:ACC[L][0]/120);
+    SQT.draw(an,{x:q[0],y:q[1],rot:P.rot+r,sx:P.sx*k,sy:P.sy*k,anchor:TD[an].a.c},null,al)}
   // ---- nhịp cử động từng tư thế ----
   const A={
     run:(ph,t)=>{const w=ph*Math.PI*2;return {armL:30*Math.sin(w),armR:-30*Math.sin(w+.5),legL:-28*Math.sin(w+.4),legR:28*Math.sin(w),head:4*Math.sin(w*2),tail1:14*Math.sin(w-1),tail2:18*Math.sin(w-1.8)}},
@@ -3054,12 +3057,49 @@ const SQT=((D,PRE)=>{
 .pt-up b{font-family:var(--disp);font-size:30px;font-weight:600;margin-top:8px}
 .pt-up span{font-size:13px;color:var(--mute);margin-top:4px}
 .pt-up img{height:200px;width:auto;animation:ptHop .6s ease-out 2}
+/* trang phuc mac len chan dung */
+.pt-doll{position:relative;display:block}
+.pt-doll>img{display:block;height:100%;width:auto;pointer-events:none;-webkit-user-drag:none}
+.pt-doll .it{position:absolute;height:auto;pointer-events:none;transform:translate(-50%,0);transition:opacity .25s}
+.pt-doll .it.try{animation:ptTry .5s ease-out}
+@keyframes ptTry{0%{transform:translate(-50%,-14px) scale(1.25);opacity:0}60%{transform:translate(-50%,2px) scale(.96);opacity:1}100%{transform:translate(-50%,0)}}
+/* soc con lam mat de thuong xin nhan nuoi */
+.pt-cute{position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.pt-cute img{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:180px;width:auto;opacity:0;transition:opacity .22s;pointer-events:none;-webkit-user-drag:none}
+.pt-cute img.on{opacity:1}
+.pt-beg{animation:ptBeg 1.8s ease-in-out infinite}
+@keyframes ptBeg{0%,100%{box-shadow:0 0 0 0 rgba(42,29,22,.35)}50%{box-shadow:0 0 0 8px rgba(42,29,22,0)}}
+/* cua hang */
+.pt-shop{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.pt-shop h4{font-family:var(--disp);font-size:22px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+.pt-shop h4 small{font:500 12px var(--body);color:var(--mute)}
+.pt-tabs{display:flex;gap:6px;margin:10px 0;overflow-x:auto}
+.pt-tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:500 12.5px var(--body);color:var(--ink);cursor:pointer;white-space:nowrap}
+.pt-tabs button.on{background:var(--ink);color:#FDF8EF;border-color:var(--ink)}
+.pt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pt-it{position:relative;border:1px solid var(--line);border-radius:14px;background:#fff;padding:8px 6px 7px;text-align:center;cursor:pointer;font:inherit;color:inherit;transition:.15s}
+.pt-it:hover{border-color:var(--ink)}
+.pt-it.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,145,47,.35)}
+.pt-it img{display:block;height:44px;width:auto;max-width:100%;object-fit:contain;margin:0 auto 4px}
+.pt-it b{display:block;font-size:11.5px;font-weight:500;line-height:1.25;min-height:2.5em}
+.pt-it span{display:block;font-size:11px;color:var(--gold-soft);font-weight:600;margin-top:2px}
+.pt-it i{position:absolute;top:5px;right:6px;font-style:normal;font-size:9.5px;background:#1F6B4A;color:#fff;border-radius:999px;padding:1px 6px}
+.pt-it i.own{background:rgba(42,29,22,.55)}
+.pt-act{display:flex;gap:8px;margin-top:10px}
+.pt-act button{flex:1;border-radius:999px;padding:12px;font:600 13px var(--body);cursor:pointer;border:1px solid var(--ink)}
+.pt-act .buy{background:var(--ink);color:#FDF8EF}.pt-act .buy:disabled{opacity:.4;cursor:default}
+.pt-act .off{background:transparent;color:var(--ink)}
+.pt-demo{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0 2px;font-size:11px;color:var(--mute)}
+.pt-demo b{background:#B8912F;color:#fff;border-radius:999px;padding:2px 8px;font-size:10px;letter-spacing:.06em}
+.pt-demo button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 9px;font:500 11px var(--body);cursor:pointer}
+.pt-demo button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pt-tryd{display:block;margin:10px auto 0;border:0;background:none;color:var(--mute);font:500 12px var(--body);text-decoration:underline;cursor:pointer}
 </style>
 <div class="pt-bg" id="ptBg"></div>
 <div class="pt" id="pt" role="dialog" aria-modal="true" aria-labelledby="ptH"><div class="grab"></div><button type="button" class="x" id="ptX" aria-label="Đóng">×</button><div id="ptBd"></div></div>
 <script>
 (function(){
-  const API = '/api/soc', KEY = 'tcPet', MODE = 'tcPetMode', VKEY = 'tcPetV', HIDE = 'tcSqHide', IMG = 'img/home/';
+  const API = '/api/soc', KEY = 'tcPet', MODE = 'tcPetMode', VKEY = 'tcPetV', HIDE = 'tcSqHide', IMG = 'img/home/', DEMO = '0123456789';
   const LV = [['Sóc con',0],['Sóc nhỏ',5],['Sóc barista',15],['Sóc trưởng quán',35],['Sóc huyền thoại',70]];
   const LVH = [128,150,166,182,200];                       // lớn dần theo cấp
   const LOOK = ['lá non trên đầu','mũ hạt sồi','mũ nồi + tạp dề barista','mũ phớt + nơ trưởng quán','vương miện + áo choàng vàng'];
@@ -3068,32 +3108,48 @@ const SQT=((D,PRE)=>{
                ['Hôm nay uống latte nhé?','Tớ vừa học vẽ latte art!','Thơm mùi cà phê chưa?'],['Mời bạn ngồi, tớ lấy menu!','Quán hôm nay đông khách ghê!','Món mới ngon lắm đó!'],
                ['Cảm ơn bạn đã nuôi tớ lớn!','Ánh sáng cà phê toả khắp nơi!','Tớ là huyền thoại của quán!']];
   const HUNGRY = ['Bụng tớ kêu ọt ọt…','Cho tớ vài hạt nhé?','Đói đói…'];
+  // soc con lam nung xin nhan nuoi: 0 nai ni, 1 vay tay, 2 ban tim, 3 de thuong do mat, 4 nhay mat
+  const BEG = ['Cho tớ về nhà với bạn nhé?','Tớ ngoan lắm, hứa đó!','Một ly cà phê là tớ no rồi…','Nuôi tớ đi mà~','Tớ sẽ lớn thật nhanh!'];
+  // cua hang: [ten, o, gia, be ngang so voi khoang 2 mat, diem bam theo chieu cao mon do]
+  const SHOP = {
+    nonla:['Nón lá','hat',40,2.45,.62], beanie:['Mũ len','hat',30,1.85,.82], santa:['Mũ Noel','hat',50,2.0,.82], cap:['Mũ lưỡi trai','hat',30,1.8,.78],
+    flower:['Vòng hoa','hat',40,1.9,.6], party:['Mũ sinh nhật','hat',25,.95,.95],
+    glasses:['Kính tròn','eye',35,2.15,.45], hearts:['Kính tim','eye',45,2.2,.5],
+    scarf:['Khăn len','neck',30,1.3,.04], bow:['Nơ chấm bi','neck',20,.8,.45], bell:['Vòng chuông','neck',35,1.3,.15],
+    overall:['Yếm jean','body',60,1.5,.4]
+  };
+  const SLOTN = { hat:'Mũ', eye:'Kính', neck:'Cổ', body:'Áo' }, ORDER = ['body','neck','eye','hat'];
+  // diem dat do tren chan dung tung cap (ti le anh): dinh dau, tam 2 mat, khoang 2 mat, co, bung
+  const PA = [{hy:.16,ex:.5,ey:.31,es:.36,ny:.46,by:.6},{hy:.21,ex:.5,ey:.31,es:.38,ny:.45,by:.58},{hy:.19,ex:.51,ey:.27,es:.38,ny:.41,by:.6},
+              {hy:.17,ex:.505,ey:.27,es:.35,ny:.44,by:.58},{hy:.17,ex:.505,ey:.31,es:.35,ny:.43,by:.6}];
+  const PW = [122,156,164,190,242], PH = [252,326,360,411,462];   // kich thuoc anh chan dung
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const get = (k, d) => { try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } };
   const set = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
   const norm = p => { let d = String(p || '').replace(/\D/g, ''); if(d.startsWith('84')) d = '0' + d.slice(2); return /^0\d{9,10}$/.test(d) ? d : ''; };
   const pimg = i => IMG + 'sqp-' + Math.max(0, Math.min(4, i)) + '.webp?v=1';
+  const iimg = id => IMG + 'sqi-' + id + '.webp?v=1';
   const pick = a => a[Math.floor(Math.random() * a.length)];
-  const mask = p => p.slice(0, 3) + '••••' + p.slice(-3);
-  let S = get(KEY, null) || {}, mode = get(MODE, ''), P = null, busy = false;
+  const mask = p => p === DEMO ? 'demo' : p.slice(0, 3) + '••••' + p.slice(-3);
+  let S = get(KEY, null) || {}, mode = get(MODE, ''), P = null, busy = false, tab = 'hat', sel = null, tryEq = null;
   const V0 = get(VKEY, null);
 
   // chia se cho soc chay tren trang dat nuoc
   function share(){
-    const v = P && P.exists ? { lv:P.lv.i, mood:P.mood, nm:P.nm } : (V0 || {});
-    window.TCPET = { on: mode === 'on' && v.lv != null, off: mode === 'off', lv: v.lv == null ? -1 : v.lv, mood: v.mood || 'vui', nm: v.nm || '' };
+    const v = P && P.exists ? { lv:P.lv.i, mood:P.mood, nm:P.nm, hat:(P.eq || {}).hat } : (V0 || {});
+    window.TCPET = { on: mode === 'on' && v.lv != null, off: mode === 'off', lv: v.lv == null ? -1 : v.lv, mood: v.mood || 'vui', nm: v.nm || '', hat: v.hat || '' };
     window.TCSQ_OFF = !!get(HIDE, false);
     const b = document.getElementById('navPet'); if(!b) return;
     b.classList.toggle('off', mode === 'off');
     b.classList.toggle('hungry', mode === 'on' && !!P && P.exists && P.mood !== 'vui');
-    b.querySelector('img').src = pimg(window.TCPET.on ? window.TCPET.lv : 1);
+    b.querySelector('img').src = window.TCPET.on ? pimg(window.TCPET.lv) : IMG + 'sqc-0.webp?v=1';
   }
 
   const navR = document.querySelector('.nav-r') || document.querySelector('.nav-in');
-  navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-pet" id="navPet" aria-label="Sóc của bạn"><img src="' + pimg(1) + '" alt=""><span class="tx">Sóc của bạn</span></button>');
+  navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-pet" id="navPet" aria-label="Sóc của bạn"><img src="' + IMG + 'sqc-0.webp?v=1" alt=""><span class="tx">Sóc của bạn</span></button>');
   const bg = document.getElementById('ptBg'), sh = document.getElementById('pt'), bd = document.getElementById('ptBd');
-  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; paint(); if(mode === 'on') load(); }
-  function close(){ bg.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = ''; }
+  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; tryEq = null; sel = null; paint(); if(mode === 'on') load(); }
+  function close(){ bg.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = ''; stopBeg(); }
   document.getElementById('navPet').addEventListener('click', open);
   bg.addEventListener('click', close); document.getElementById('ptX').addEventListener('click', close);
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && sh.classList.contains('on')) close(); });
@@ -3107,9 +3163,9 @@ const SQT=((D,PRE)=>{
     const was = P; P = pet;
     if(P && P.exists){
       const old = get(VKEY, null);
-      set(VKEY, { lv:P.lv.i, mood:P.mood, nm:P.nm });
-      if(old && old.lv != null && P.lv.i > old.lv) setTimeout(() => levelUp(P.lv.i), 350);
-      else if(was && was.exists && P.cups > was.cups) setTimeout(() => say('Yay! +' + (P.cups - was.cups) * 10 + ' hạt cà phê', 'yay'), 300);
+      set(VKEY, { lv:P.lv.i, mood:P.mood, nm:P.nm, hat:(P.eq || {}).hat || '' });
+      if(old && old.lv != null && P.lv.i > old.lv && !P.demo) setTimeout(() => levelUp(P.lv.i), 350);
+      else if(was && was.exists && P.cups > was.cups && !P.demo) setTimeout(() => say('Yay! +' + (P.cups - was.cups) * 10 + ' hạt cà phê', 'yay'), 300);
     }
     share();
   }
@@ -3121,7 +3177,7 @@ const SQT=((D,PRE)=>{
   // nhan nuoi muon: gan cac don vua dat tren may nay
   async function claim(){
     const os = get('tcOrders', []).filter(e => e && e.c && e.k && Date.now() - e.at < 3*86400e3 && !(e.last && e.last.s === 'cancel')).map(e => ({ c:e.c, k:e.k }));
-    if(!os.length) return 0;
+    if(!os.length || S.ph === DEMO) return 0;
     try{ const r = await call('POST', { a:'claim', os }); if(r.ok){ S.t = r.t; set(KEY, S); got(r.pet); return r.n; } }catch(e){}
     return 0;
   }
@@ -3138,51 +3194,88 @@ const SQT=((D,PRE)=>{
     const q = document.getElementById('ptQuit'); if(q) q.addEventListener('click', e => { e.preventDefault(); setMode('off'); paint(); });
   }
 
+  // ---------- soc con lam nung (man chua nhan nuoi) ----------
+  let begT = 0, begN = 0;
+  function cuteStage(h){
+    return '<div class="pt-stage" id="ptSt" style="height:' + (h + 30) + 'px"><div class="pt-say" id="ptSay"></div><div class="pt-pet pt-cute" id="ptPet" style="width:' + Math.round(h * .62) + 'px">' +
+      [0,1,2,3,4].map(i => '<img src="' + IMG + 'sqc-' + i + '.webp?v=1" data-i="' + i + '" style="height:' + h + 'px"' + (i ? '' : ' class="on"') + ' alt="">').join('') + '</div></div>' +
+      '<div class="pt-hint">Chạm để cù · vuốt để nựng</div>';
+  }
+  function face(i){ document.querySelectorAll('#ptPet.pt-cute img').forEach(e => e.classList.toggle('on', +e.dataset.i === i)); }
+  function stopBeg(){ clearInterval(begT); begT = 0; }
+  function startBeg(){
+    stopBeg(); begN = 0;
+    setTimeout(() => say(BEG[0]), 500);
+    begT = setInterval(() => { if(!document.getElementById('ptPet')) return stopBeg();
+      const p = document.getElementById('ptPet'); if(p && p._busy) return;
+      const i = [0,4,0,1,0,3][begN++ % 6]; face(i); if(i) setTimeout(() => face(0), 1300); }, 2600);
+    bindPet(-1);
+  }
+  function nudgeAdopt(){ const b = document.getElementById('ptYes'); if(b) b.classList.add('pt-beg'); }
+
+  // ---------- chan dung co mac do ----------
+  function doll(L, eq, h, tried){
+    const a = PA[L], w = Math.round(h * PW[L] / PH[L]), es = a.es * w;
+    let out = '<div class="pt-doll" style="height:' + h + 'px;width:' + w + 'px"><img src="' + pimg(L) + '" alt="">';
+    ORDER.forEach(s => { const id = eq && eq[s]; if(!id || !SHOP[id]) return; const it = SHOP[id], iw = it[3] * es;
+      const y = s === 'hat' ? a.hy : s === 'eye' ? a.ey : s === 'neck' ? a.ny : a.by;
+      const ih = iw * ({nonla:106,beanie:172,santa:139,cap:144,flower:73,party:208,glasses:66,hearts:62,scarf:164,bow:89,bell:122,overall:141}[id]) / 160;
+      out += '<img class="it' + (tried === id ? ' try' : '') + '" src="' + iimg(id) + '" alt="" style="width:' + iw.toFixed(1) + 'px;left:' + (a.ex * 100).toFixed(1) + '%;top:' + (y * h - ih * it[4]).toFixed(1) + 'px">'; });
+    return out + '</div>';
+  }
+
   function paint(err){
-    // 1. chua chon / khong nuoi: gioi thieu, hoi y khach
+    stopBeg();
+    // 1. chua chon / khong nuoi: soc con lam nung, hoi y khach
     if(mode !== 'on'){
       bd.innerHTML = '<h3 id="ptH">' + (mode === 'off' ? 'Bạn đang không nuôi sóc' : 'Nuôi một bé sóc?') + '</h3>' +
-        '<div class="sub">Hoàn toàn tuỳ bạn — không nuôi vẫn đặt nước bình thường</div>' +
-        '<div class="pt-line">' + LV.map((l, i) => '<img src="' + pimg(i) + '" alt="' + l[0] + '" style="height:' + Math.round(LVH[i] * .5) + 'px">').join('') + '</div>' +
+        '<div class="sub">Hoàn toàn tuỳ bạn — không nuôi vẫn đặt nước bình thường</div>' + cuteStage(170) +
         '<ul class="pt-feat"><li><b>☕</b><span>Mỗi ly bạn đặt = 10 hạt cà phê cho sóc ăn.</span></li>' +
         '<li><b>🌱</b><span>Sóc lớn dần qua 5 cấp, mỗi cấp một bộ đồ và thói quen riêng.</span></li>' +
-        '<li><b>🐾</b><span>Sóc chạy trên trang đặt nước chính là sóc của bạn — chạm để cù, vuốt để vuốt ve.</span></li></ul>' +
+        '<li><b>🎀</b><span>Dùng hạt mua mũ, kính, khăn, áo cho sóc trong cửa hàng.</span></li>' +
+        '<li><b>🐾</b><span>Sóc chạy trên trang đặt nước chính là sóc của bạn — chạm để cù, vuốt để nựng.</span></li></ul>' +
+        '<div class="pt-line">' + LV.map((l, i) => '<img src="' + pimg(i) + '" alt="' + l[0] + '" style="height:' + Math.round(LVH[i] * .42) + 'px">').join('') + '</div>' +
         '<button class="btn-feed" id="ptYes">' + (mode === 'off' ? 'Nuôi lại sóc' : 'Nhận nuôi sóc') + '</button>' +
         (mode === 'off' ? '' : '<button class="btn-ghost" id="ptNo">Không, cảm ơn</button>') +
         '<div class="note">Không nuôi thì sóc không xin ăn, không nhắc nhở gì nữa.</div>' + settings();
-      bindSet();
+      bindSet(); startBeg();
       document.getElementById('ptYes').addEventListener('click', () => { setMode('on'); paint(); if(S.ph) load(); });
-      const no = document.getElementById('ptNo'); if(no) no.addEventListener('click', () => { setMode('off'); close(); });
+      const no = document.getElementById('ptNo'); if(no) no.addEventListener('click', () => { face(0); say('Huhu… lúc nào muốn thì gọi tớ nha'); setTimeout(() => { setMode('off'); close(); }, 1100); });
       return;
     }
     // 2. nhap so dien thoai
     if(!S.ph){
-      bd.innerHTML = '<h3 id="ptH">Nhận nuôi sóc</h3><div class="sub">Sóc gắn với số điện thoại bạn dùng khi đặt</div>' +
-        '<div class="pt-stage"><div class="pt-pet"><img src="' + pimg(0) + '" style="height:' + LVH[0] + 'px" alt="Sóc con"></div></div>' +
+      bd.innerHTML = '<h3 id="ptH">Nhận nuôi sóc</h3><div class="sub">Sóc gắn với số điện thoại bạn dùng khi đặt</div>' + cuteStage(150) +
         '<div class="pt-name"><input id="ptPh" inputmode="tel" autocomplete="tel" placeholder="Số điện thoại" value="' + esc((document.getElementById('phone') || {}).value || '') + '"><button class="btn-sec" id="ptGo">Nhận nuôi</button></div>' +
         '<div class="err" id="ptErr">' + esc(err || '') + '</div>' +
-        '<div class="note">Quán chỉ lưu mã hoá của số, không lưu số thật. Đơn bạn vừa đặt trên máy này được tính luôn cho sóc.</div>' + settings();
-      bindSet();
-      const go = async () => { const p = norm(document.getElementById('ptPh').value); if(!p){ document.getElementById('ptErr').textContent = 'Số điện thoại chưa đúng.'; return; }
+        '<div class="note">Quán chỉ lưu mã hoá của số, không lưu số thật. Đơn bạn vừa đặt trên máy này được tính luôn cho sóc.</div>' +
+        '<button class="pt-tryd" id="ptDemo">Xem thử với sóc demo (số ' + DEMO + ')</button>' + settings();
+      bindSet(); startBeg();
+      const go = async ph => { const p = norm(ph); if(!p){ document.getElementById('ptErr').textContent = 'Số điện thoại chưa đúng.'; return; }
         S = { ph:p, t:'' }; set(KEY, S); P = null; paint(); const n = await claim(); if(!n) load(); else paint(); };
-      document.getElementById('ptGo').addEventListener('click', go);
-      document.getElementById('ptPh').addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
+      document.getElementById('ptGo').addEventListener('click', () => go(document.getElementById('ptPh').value));
+      document.getElementById('ptPh').addEventListener('keydown', e => { if(e.key === 'Enter') go(e.target.value); });
+      document.getElementById('ptDemo').addEventListener('click', () => go(DEMO));
       return;
     }
-    if(!P){ bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="pt-stage"><div class="pt-pet"><img src="' + pimg(V0 ? V0.lv : 0) + '" style="height:' + LVH[V0 ? V0.lv : 0] + 'px" alt=""></div></div><div class="sub">' + esc(err || 'Đang gọi sóc…') + '</div>' + settings(); bindSet(); return; }
+    if(!P){ bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="pt-stage"><div class="pt-pet">' + doll(V0 ? V0.lv : 0, {}, LVH[V0 ? V0.lv : 0]) + '</div></div><div class="sub">' + esc(err || 'Đang gọi sóc…') + '</div>' + settings(); bindSet(); return; }
+    // 3. so chua co soc: soc con van lam nung, nung duoc
     if(!P.exists){
-      bd.innerHTML = '<h3 id="ptH">Sóc đang chờ bạn</h3><div class="sub">Số ' + mask(S.ph) + '</div>' +
-        '<div class="pt-stage"><div class="pt-pet"><img src="' + pimg(0) + '" style="height:' + LVH[0] + 'px" alt="Sóc con"></div></div>' +
-        '<div class="pend">Đặt ly đầu tiên với số này là bé sóc về nhà bạn — mỗi ly được 10 hạt cà phê cho sóc ăn.</div>' + settings();
-      bindSet(); return;
+      bd.innerHTML = '<h3 id="ptH">Sóc đang chờ bạn</h3><div class="sub">Số ' + mask(S.ph) + '</div>' + cuteStage(170) +
+        '<div class="pend">Đặt ly đầu tiên với số này là bé sóc về nhà bạn — mỗi ly được 10 hạt cà phê cho sóc ăn.</div>' +
+        '<button class="btn-feed" id="ptOrder">Đặt ly đầu tiên</button>' + settings();
+      bindSet(); startBeg();
+      document.getElementById('ptOrder').addEventListener('click', () => { close(); const m = document.getElementById('menu'); if(m) m.scrollIntoView({ behavior:'smooth' }); });
+      return;
     }
-    // 3. soc cua ban
-    const L = P.lv.i, named = !!P.nm, low = P.full < 25;
+    // 4. soc cua ban
+    const L = P.lv.i, named = !!P.nm, low = P.full < 25, eq = tryEq || P.eq || {};
     bd.innerHTML = '<h3 id="ptH">' + (named ? esc(P.nm) : 'Sóc của bạn') + '</h3>' +
       '<div class="sub">' + esc(P.lv.n) + ' · ' + (P.mood === 'vui' ? 'đang vui vẻ' : P.mood === 'doi' ? 'hơi đói bụng' : 'đói lả rồi') + '</div>' +
-      '<div class="pt-stage lv' + L + ' ' + P.mood + '" id="ptSt"><div class="pt-say" id="ptSay"></div><i class="pt-bean" id="ptBean"></i>' +
-        '<div class="pt-pet" id="ptPet"><img src="' + pimg(L) + '" style="height:' + LVH[L] + 'px" alt="' + esc(P.lv.n) + '"></div></div>' +
-      '<div class="pt-hint">Chạm để cù · vuốt để vuốt ve</div>' +
+      (P.demo ? '<div class="pt-demo"><b>DEMO</b>Xem từng cấp:' + LV.map((l, i) => '<button data-lv="' + i + '"' + (i === L ? ' class="on"' : '') + '>' + l[0].replace('Sóc ', '') + '</button>').join('') + '</div>' : '') +
+      '<div class="pt-stage lv' + L + ' ' + P.mood + '" id="ptSt" style="height:' + (LVH[L] + 62) + 'px"><div class="pt-say" id="ptSay"></div><i class="pt-bean" id="ptBean"></i>' +
+        '<div class="pt-pet" id="ptPet">' + doll(L, eq, LVH[L], sel) + '</div></div>' +
+      '<div class="pt-hint">Chạm để cù · vuốt để nựng</div>' +
       (!named && P.canEdit ? '<div class="pt-name"><input id="ptNm" maxlength="20" placeholder="Đặt tên cho sóc"><button class="btn-sec" id="ptNmGo">Lưu</button></div>' : '') +
       '<div class="pt-lv"><span>Độ no</span><span>' + P.full + '%</span></div><div class="pt-bar full' + (low ? ' low' : '') + '"><i style="width:' + P.full + '%"></i></div>' +
       '<div class="pt-lv"><b>' + esc(P.lv.n) + '</b><span>' + (P.lv.next == null ? 'Cấp cao nhất' : (P.lv.next - P.cups) + ' ly nữa → ' + esc(P.lv.nextN)) + '</span></div>' +
@@ -3193,31 +3286,75 @@ const SQT=((D,PRE)=>{
       (P.pendCups ? '<div class="pend">⏳ ' + P.pendCups + ' ly đang chờ — hạt được cộng khi quán giao xong đơn.</div>' : '') +
       (P.canEdit ? '<button class="btn-feed" id="ptFeed"' + (P.beans < P.cost || P.full >= 100 ? ' disabled' : '') + '>' + (P.full >= 100 ? 'Sóc no căng rồi' : P.beans < P.cost ? 'Cần ' + P.cost + ' hạt để cho ăn' : 'Cho ăn · ' + P.cost + ' hạt') + '</button>'
                  : '<div class="pend">Máy này chỉ xem được sóc. Đặt một đơn bằng số ' + mask(S.ph) + ' trên máy này để chăm sóc.</div>') +
-      '<div class="err" id="ptErr">' + esc(err || '') + '</div>' + settings();
-    bindSet(); bindPet(L);
+      '<div class="err" id="ptErr">' + esc(err || '') + '</div>' + shopHtml() + settings();
+    bindSet(); bindPet(L); bindShop();
     const fb = document.getElementById('ptFeed'); if(fb) fb.addEventListener('click', feed);
     const ng = document.getElementById('ptNmGo'); if(ng){ const doName = () => nameIt(document.getElementById('ptNm').value);
       ng.addEventListener('click', doName); document.getElementById('ptNm').addEventListener('keydown', e => { if(e.key === 'Enter') doName(); }); }
+    document.querySelectorAll('.pt-demo button').forEach(b => b.addEventListener('click', async () => {
+      try{ const r = await call('POST', { a:'lv', i:+b.dataset.lv }); if(r.ok){ got(r.pet); paint(); say(TAP[P.lv.i][0], 'yay'); } }catch(e){} }));
   }
 
-  // tuong tac truc tiep: cham = cu, vuot = vuot ve
+  // ---------- cua hang ----------
+  function shopHtml(){
+    const inv = P.inv || [], eq = P.eq || {}, ids = Object.keys(SHOP).filter(id => SHOP[id][1] === tab);
+    let act = '';
+    if(sel){ const it = SHOP[sel], own = inv.includes(sel), on = eq[it[1]] === sel;
+      act = '<div class="pt-act">' + (on ? '<button class="off" id="ptOff">Cởi ' + esc(it[0].toLowerCase()) + '</button>'
+        : own ? '<button class="buy" id="ptWear">Mặc ' + esc(it[0].toLowerCase()) + '</button>'
+        : '<button class="buy" id="ptBuy"' + (!P.canEdit || P.beans < it[2] ? ' disabled' : '') + '>' + (P.beans < it[2] ? 'Cần ' + it[2] + ' hạt' : 'Mua · ' + it[2] + ' hạt') + '</button>') +
+        '<button class="off" id="ptCancel">Bỏ thử</button></div>'; }
+    return '<div class="pt-shop"><h4>Cửa hàng của sóc<small>☕ ' + P.beans + ' hạt</small></h4>' +
+      '<div class="pt-tabs">' + Object.keys(SLOTN).map(s => '<button data-s="' + s + '"' + (s === tab ? ' class="on"' : '') + '>' + SLOTN[s] + '</button>').join('') + '</div>' +
+      '<div class="pt-grid">' + ids.map(id => { const it = SHOP[id], own = inv.includes(id), on = eq[it[1]] === id;
+        return '<button type="button" class="pt-it' + (sel === id ? ' sel' : '') + '" data-id="' + id + '">' + (on ? '<i>Đang mặc</i>' : own ? '<i class="own">Đã có</i>' : '') +
+          '<img src="' + iimg(id) + '" alt=""><b>' + esc(it[0]) + '</b><span>' + (own ? '✓' : it[2] + ' hạt') + '</span></button>'; }).join('') + '</div>' + act +
+      '<div class="note">Chạm một món để thử lên sóc trước khi mua. Mũ cũng hiện trên sóc chạy ở trang đặt nước.</div></div>';
+  }
+  function bindShop(){
+    document.querySelectorAll('.pt-tabs button').forEach(b => b.addEventListener('click', () => { tab = b.dataset.s; repaintKeep(); }));
+    document.querySelectorAll('.pt-it').forEach(b => b.addEventListener('click', () => {
+      const id = b.dataset.id; sel = id; tryEq = Object.assign({}, P.eq || {}, { [SHOP[id][1]]: id }); repaintKeep();
+      say(pick(['Hợp với tớ không?','Xinh chưa nè!','Tớ thích cái này!']), ''); fx('✨', 3); }));
+    const C = document.getElementById('ptCancel'); if(C) C.addEventListener('click', () => { sel = null; tryEq = null; repaintKeep(); });
+    const B = document.getElementById('ptBuy'); if(B) B.addEventListener('click', () => shopAct({ a:'buy', id:sel }, 'Cảm ơn bạn! Tớ mặc luôn nè'));
+    const W = document.getElementById('ptWear'); if(W) W.addEventListener('click', () => shopAct({ a:'wear', s:SHOP[sel][1], id:sel }, 'Mặc vào rồi nè!'));
+    const O = document.getElementById('ptOff'); if(O) O.addEventListener('click', () => shopAct({ a:'wear', s:SHOP[sel][1], id:null }, 'Cởi ra cho mát~'));
+  }
+  function repaintKeep(){ const y = sh.scrollTop; paint(); sh.scrollTop = y; }
+  async function shopAct(body, line){
+    if(busy) return; busy = true;
+    try{ const r = await call('POST', body); busy = false;
+      if(r.ok){ got(r.pet); const keep = sel; tryEq = null; repaintKeep(); sel = keep; say(line, 'yay'); fx('♥', 4); }
+      else { if(r.pet) got(r.pet); repaintKeep(); const e = document.getElementById('ptErr'); if(e) e.textContent = r.err || 'Chưa làm được.'; } }
+    catch(e){ busy = false; const er = document.getElementById('ptErr'); if(er) er.textContent = 'Chưa kết nối được.'; }
+  }
+
+  // ---------- tuong tac truc tiep: cham = cu, vuot = nung ----------
   function fx(ch, n){ const st = document.getElementById('ptSt'); if(!st) return;
     for(let i = 0; i < n; i++){ const e = document.createElement('i'); e.className = 'pt-fx'; e.textContent = ch;
       const a = -Math.PI/2 + (Math.random() - .5) * 2.2; e.style.setProperty('--dx', Math.cos(a) * (40 + Math.random()*40) + 'px'); e.style.setProperty('--dy', Math.sin(a) * (50 + Math.random()*40) + 'px');
       e.style.animationDelay = (i * 60) + 'ms'; st.appendChild(e); setTimeout(() => e.remove(), 1300 + i*60); } }
-  function react(cls, ms){ const p = document.getElementById('ptPet'); if(!p) return; p.className = 'pt-pet ' + cls; clearTimeout(p._t); p._t = setTimeout(() => { p.className = 'pt-pet'; }, ms); }
+  function react(cls, ms){ const p = document.getElementById('ptPet'); if(!p) return; const base = p.classList.contains('pt-cute') ? 'pt-pet pt-cute ' : 'pt-pet ';
+    p.className = base + cls; clearTimeout(p._t); p._t = setTimeout(() => { p.className = base.trim(); }, ms); }
   function bindPet(L){
     const el = document.getElementById('ptPet'); if(!el) return;
-    let g = null;
-    el.addEventListener('pointerdown', e => { g = { x:e.clientX, y:e.clientY, d:0, t:Date.now(), pet:false }; try{ el.setPointerCapture(e.pointerId); }catch(err){} });
+    const cute = L < 0; let g = null, hits = 0;
+    el.addEventListener('pointerdown', e => { g = { x:e.clientX, y:e.clientY, d:0, pet:false }; try{ el.setPointerCapture(e.pointerId); }catch(err){} });
     el.addEventListener('pointermove', e => { if(!g) return; g.d += Math.hypot(e.clientX - g.x, e.clientY - g.y); g.x = e.clientX; g.y = e.clientY;
-      if(g.d > 26){ if(!g.pet){ g.pet = true; el.className = 'pt-pet pet'; say(P && P.mood !== 'vui' ? 'Ưm… nhưng tớ đói…' : 'Ưm… dễ chịu quá~'); }
+      if(g.d > 26){ if(!g.pet){ g.pet = true; el._busy = 1; el.classList.add('pet');
+          if(cute){ face(3); say('Hihi… nhột quá à~'); } else say(P && P.mood !== 'vui' ? 'Ưm… nhưng tớ đói…' : 'Ưm… dễ chịu quá~'); }
         if(Date.now() - (g.h || 0) > 220){ g.h = Date.now(); fx(L === 4 ? '✦' : '♥', 1); } } });
-    const up = () => { if(!g) return;
-      if(!g.pet){ // cu
+    const up = () => { if(!g) return; hits++;
+      if(cute){
+        if(!g.pet){ const f = pick([1,2,4]); face(f); react('r' + (f === 2 ? 4 : 1), 900); say(f === 2 ? 'Thương bạn nhiều nè!' : pick(BEG)); fx('♥', f === 2 ? 6 : 3); }
+        else { el.classList.remove('pet'); face(2); fx('♥', 4); say('Nhận nuôi tớ nha? 🥺'); }
+        el._busy = 1; clearTimeout(el._bt); el._bt = setTimeout(() => { el._busy = 0; face(0); }, 1800);
+        if(hits >= 2) nudgeAdopt();
+      } else if(!g.pet){
         if(P && P.mood !== 'vui'){ react('r0', 700); say(pick(HUNGRY)); fx('…', 1); }
         else { react('r' + L, 1000); say(pick(TAP[L])); fx(L === 4 ? '✦' : L === 2 ? '☕' : '♥', L === 4 ? 6 : 3); }
-      } else { el.className = 'pt-pet'; fx('♥', 3); }
+      } else { el.classList.remove('pet'); fx('♥', 3); }
       g = null; };
     el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   }
@@ -3225,7 +3362,7 @@ const SQT=((D,PRE)=>{
   function say(t, mode2){
     const el = document.getElementById('ptSay'); if(!el) return;
     el.textContent = t; el.classList.add('on'); clearTimeout(sayT); sayT = setTimeout(() => el.classList.remove('on'), 2200);
-    if(mode2 === 'yay'){ react('yay', 1500); fx(P && P.lv.i === 4 ? '✦' : '♥', 5); }
+    if(mode2 === 'yay'){ react('yay', 1500); fx(P && P.lv && P.lv.i === 4 ? '✦' : '♥', 5); }
   }
   function levelUp(i){
     if(!sh.classList.contains('on')) return;
@@ -3242,8 +3379,8 @@ const SQT=((D,PRE)=>{
     setTimeout(() => { if(pet) pet.className = 'pt-pet eat'; }, 450);
     let r; try{ r = await call('POST', { a:'feed' }); }catch(e){ r = { ok:false, err:'Chưa kết nối được.' }; }
     setTimeout(() => { busy = false;
-      if(r.ok){ got(r.pet); paint(); say(P.full >= 100 ? 'No căng! Cảm ơn bạn!' : 'Ngon quá! Măm măm', P.full >= 100 ? 'yay' : ''); fx('♥', 3); }
-      else { if(r.pet) got(r.pet); paint(r.err || 'Không cho ăn được.'); }
+      if(r.ok){ got(r.pet); repaintKeep(); say(P.full >= 100 ? 'No căng! Cảm ơn bạn!' : 'Ngon quá! Măm măm', P.full >= 100 ? 'yay' : ''); fx('♥', 3); }
+      else { if(r.pet) got(r.pet); repaintKeep(); const e = document.getElementById('ptErr'); if(e) e.textContent = r.err || 'Không cho ăn được.'; }
     }, 1500);
   }
   async function nameIt(v){
@@ -3257,7 +3394,7 @@ const SQT=((D,PRE)=>{
     const old = document.getElementById('ptEarn'); if(old) old.remove();
     if(mode === 'off' || !box) return;
     if(mode === 'on'){
-      ph = norm(ph); if(ph && t){ S = { ph, t }; set(KEY, S); load(); }
+      ph = norm(ph); if(ph && t && ph !== DEMO){ S = { ph, t }; set(KEY, S); load(); }
       if(cnt) box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ Đơn này sẽ nuôi sóc của bạn thêm ' + cnt * 10 + ' hạt cà phê · <button type="button" id="ptEarnGo">Xem sóc</button></div>');
     } else box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ <button type="button" id="ptEarnGo">Nhận nuôi một bé sóc với đơn này?</button> (tuỳ bạn)</div>');
     const b = document.getElementById('ptEarnGo'); if(b) b.addEventListener('click', open);
