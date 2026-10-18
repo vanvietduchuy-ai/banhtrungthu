@@ -62,7 +62,7 @@ async function settle(p, now) {
     const st = o ? o.s : null;
     if (st === 'cancel') { changed = true; return; }
     if (st === 'done' || (st && now - x.at > AUTO_CREDIT_MS)) {
-      p.beans = (p.beans || 0) + x.cnt * BEANS_PER_CUP; p.cups = (p.cups || 0) + x.cnt; changed = true; return;
+      p.beans = (p.beans || 0) + x.cnt * BEANS_PER_CUP; p.cups = (p.cups || 0) + x.cnt; p.got = (p.got || []).concat([x.c]).slice(-60); changed = true; return;
     }
     if (!o && now - x.at > 3 * 86400e3) { changed = true; return; } // đơn đã hết hạn theo dõi
     keep.push(x);
@@ -89,6 +89,21 @@ module.exports = async (req, res) => {
     const ph = normPhone(b.ph);
     if (!ph) return send(400, { ok: false, err: 'Số điện thoại chưa đúng.' });
     const key = petKey(ph);
+    // nhận nuôi muộn: gắn các đơn vừa đặt trên máy này (có khoá đơn k) vào sóc
+    if (req.method === 'POST' && b.a === 'claim') {
+      const list = (Array.isArray(b.os) ? b.os : []).slice(0, 10);
+      let tok = null, n = 0;
+      for (const x of list) {
+        const c = String(x && x.c || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 30);
+        if (!c || !x.k) continue;
+        const raw0 = await redis('GET', 'o:' + c); if (!raw0) continue;
+        const o = JSON.parse(raw0); if (o.k !== sha(x.k) || o.s === 'cancel') continue;
+        const t = await module.exports.linkOrder(ph, c, o.cnt); if (t) { tok = t; n++; }
+      }
+      if (!tok) return send(400, { ok: false, err: 'Chưa có đơn nào trên máy này để nhận nuôi — đặt một ly là có sóc ngay.' });
+      const p2 = JSON.parse(await redis('GET', key));
+      return send(200, { ok: true, t: tok, n, pet: view(p2, now, true) });
+    }
     const raw = await redis('GET', key);
     if (!raw) return send(200, { ok: true, pet: { exists: false } });
     const p = JSON.parse(raw);
@@ -121,9 +136,13 @@ module.exports.linkOrder = async function (phone, code, cnt) {
   const ph = normPhone(phone);
   if (!ph || !code || !(cnt > 0)) return null;
   const key = petKey(ph), now = Date.now();
+  // mỗi đơn chỉ nuôi được một sóc, một lần
+  const claimed = await redis('SET', 'pc:' + code, key, 'NX', 'EX', 5 * 86400);
+  if (claimed !== 'OK' && (await redis('GET', 'pc:' + code)) !== key) return null;
   const raw = await redis('GET', key);
   const p = raw ? JSON.parse(raw) : { nm: '', beans: 0, cups: 0, full: 70, fedAt: now, born: now, pend: [], toks: [] };
-  p.pend = (p.pend || []).filter(x => x.c !== code).concat([{ c: code, cnt: Math.min(99, cnt), at: now }]).slice(-30);
+  p.got = p.got || [];
+  if (!p.got.includes(code) && !(p.pend || []).some(x => x.c === code)) p.pend = (p.pend || []).concat([{ c: code, cnt: Math.min(99, cnt), at: now }]).slice(-30);
   const tok = crypto.randomBytes(12).toString('hex');
   p.toks = (p.toks || []).concat([sha(tok)]).slice(-6);
   await redis('SET', key, JSON.stringify(p));
