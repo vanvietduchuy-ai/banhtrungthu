@@ -3103,6 +3103,16 @@ const SQT=((D,PRE)=>{
 .pt-demo b{background:#B8912F;color:#fff;border-radius:999px;padding:2px 8px;font-size:10px;letter-spacing:.06em}
 .pt-demo button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 9px;font:500 11px var(--body);cursor:pointer}
 .pt-demo button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pt-board{margin-top:6px}
+.pt-rk{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:6px}
+.pt-rk.top{background:#FFF8E6;border-color:rgba(184,145,47,.4)}
+.pt-rk.me{background:var(--ink);color:#FDF8EF;border-color:var(--ink);margin-top:12px}
+.pt-rk b{flex:0 0 26px;text-align:center;font-size:15px}
+.pt-rk img{height:40px;width:30px;object-fit:contain;object-position:top}
+.pt-rk span{flex:1;min-width:0}.pt-rk em{display:block;font-style:normal;font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt-rk small{display:block;font-size:11px;opacity:.7}
+.pt-rk strong{font-family:var(--disp);font-size:20px;font-weight:600}
+.pt-brd{display:block;margin:8px auto 0;border:1px solid var(--line);background:#FFF8E6;border-radius:999px;padding:7px 14px;font:500 12px var(--body);color:var(--ink);cursor:pointer}
 .pt-tryd{display:block;margin:10px auto 0;border:0;background:none;color:var(--mute);font:500 12px var(--body);text-decoration:underline;cursor:pointer}
 </style>
 <div class="pt-bg" id="ptBg"></div>
@@ -3129,7 +3139,7 @@ const SQT=((D,PRE)=>{
   };
   const SLOTN = { hat:'Mũ', eye:'Kính', neck:'Cổ', body:'Áo' };
   // anh soc DANG MAC tung mon o tung cap (ve san, mon cua khach thay mon co san cua cap). [rong, cao] moi cap; mon chua co anh = sap co
-  const WORN = { nonla:[[153,244],[173,324],[190,351],[190,403],[243,435]], beanie:[[121,250],[154,333],[158,370],[187,411],[240,455]] };
+  const WORN = { nonla:[[153,244],[173,324],[190,351],[190,403],[243,435]], beanie:[[121,250],[154,333],[158,370],[187,411],[240,455]], santa:[[147,255],[164,330],[183,363],[200,416],[244,450]], scarf:[[120,250],[155,330],[162,360],[188,410],[193,455]] };
   const wimg = (id, L) => IMG + 'sqw-' + id + '-' + L + '.webp?v=1';
   const worn = eq => { for(const s in (eq || {})){ const id = eq[s]; if(WORN[id]) return id; } return ''; };
   // diem dat do tren chan dung tung cap (ti le anh): dinh dau, tam 2 mat, khoang 2 mat, co, bung
@@ -3161,7 +3171,7 @@ const SQT=((D,PRE)=>{
   const navR = document.querySelector('.nav-r') || document.querySelector('.nav-in');
   navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-pet" id="navPet" aria-label="Sóc của bạn"><img src="' + IMG + 'sqc-0.webp?v=1" alt=""><span class="tx">Sóc của bạn</span></button>');
   const bg = document.getElementById('ptBg'), sh = document.getElementById('pt'), bd = document.getElementById('ptBd');
-  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; tryEq = null; sel = null; paint(); if(mode === 'on') load(); }
+  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; tryEq = null; sel = null; delete evSent.tickle; delete evSent.pet; ev('open'); paint(); if(mode === 'on') load(); }
   function close(){ bg.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = ''; stopBeg(); }
   document.getElementById('navPet').addEventListener('click', open);
   bg.addEventListener('click', close); document.getElementById('ptX').addEventListener('click', close);
@@ -3197,6 +3207,29 @@ const SQT=((D,PRE)=>{
   }
 
   function setMode(m){ mode = m; set(MODE, m); share(); }
+  // dem su kien an danh cho trang quan tri (khong gui so dien thoai)
+  const evSent = {};
+  function ev(e, once){ if(once && evSent[e]) return; evSent[e] = 1; try{ fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ a:'ev', e }), keepalive:true }); }catch(err){} }
+  // ---------- bang xep hang ----------
+  let boardPer = 'month';
+  async function showBoard(per){
+    boardPer = per || boardPer; stopBeg(); ev('board', true);
+    bd.innerHTML = '<h3 id="ptH">Bảng xếp hạng</h3><div class="sub">Xếp theo số ly đã nuôi sóc · chỉ hiện tên sóc</div>' +
+      '<div class="pt-tabs" style="justify-content:center"><button data-p="month"' + (boardPer === 'month' ? ' class="on"' : '') + '>Tháng này</button><button data-p="all"' + (boardPer === 'all' ? ' class="on"' : '') + '>Mọi thời</button></div>' +
+      '<div id="ptBoard" class="pt-board"><div class="sub">Đang tải…</div></div><button class="btn-ghost" id="ptBack">← Quay lại</button>';
+    bd.querySelectorAll('.pt-tabs button').forEach(b => b.addEventListener('click', () => showBoard(b.dataset.p)));
+    document.getElementById('ptBack').addEventListener('click', () => paint());
+    let r; try{ r = await fetch(API + '?a=top&per=' + boardPer + (S.ph && S.ph !== DEMO ? '&ph=' + encodeURIComponent(S.ph) : '') + '&_=' + Date.now()).then(x => x.json()); }catch(e){ r = null; }
+    const box = document.getElementById('ptBoard'); if(!box) return;
+    if(!r || !r.ok){ box.innerHTML = '<div class="sub">Chưa tải được bảng xếp hạng.</div>'; return; }
+    if(!r.list.length){ box.innerHTML = '<div class="pend">' + (boardPer === 'month' ? 'Tháng này chưa có sóc nào lên bảng — đặt ly để sóc của bạn đứng đầu nhé!' : 'Chưa có sóc nào lên bảng.') + '</div>'; return; }
+    const md = ['🥇','🥈','🥉'];
+    box.innerHTML = r.list.map((x, i) => { const src = x.hat && WORN[x.hat] ? wimg(x.hat, x.lv) : pimg(x.lv);
+      return '<div class="pt-rk' + (i < 3 ? ' top' : '') + '"><b>' + (md[i] || (i + 1)) + '</b><img src="' + src + '" alt=""><span><em>' + esc(x.n) + '</em><small>' + LV[x.lv][0] + '</small></span><strong>' + x.cups + ' ly</strong></div>'; }).join('') +
+      (r.me ? '<div class="pt-rk me"><b>' + r.me.rank + '</b><span><em>Sóc của bạn</em><small>hạng ' + r.me.rank + ' / ' + r.me.of + '</small></span><strong>' + r.me.cups + ' ly</strong></div>'
+            : mode === 'on' && S.ph ? '<div class="pend">Sóc của bạn chưa có ly nào ' + (boardPer === 'month' ? 'tháng này' : '') + ' — đặt ly để lên bảng nhé.</div>' : '') +
+      '<div class="note">' + r.total + ' sóc đang được nuôi' + (boardPer === 'month' ? ' có ly trong tháng' : '') + '.</div>';
+  }
   function settings(){
     return '<div class="pt-set"><label>Hiện sóc chạy trên trang đặt nước<input type="checkbox" id="ptShow"' + (get(HIDE, false) ? '' : ' checked') + '></label>' +
       (mode === 'on' ? '<div class="lk"><a href="#" id="ptChg">Dùng số khác</a><a href="#" id="ptQuit">Thôi, không nuôi sóc</a></div>' : '') + '</div>';
@@ -3205,7 +3238,7 @@ const SQT=((D,PRE)=>{
     const cb = document.getElementById('ptShow');
     if(cb) cb.addEventListener('change', () => { set(HIDE, cb.checked ? null : true); share(); });
     const a = document.getElementById('ptChg'); if(a) a.addEventListener('click', e => { e.preventDefault(); S = {}; set(KEY, null); P = null; set(VKEY, null); share(); paint(); });
-    const q = document.getElementById('ptQuit'); if(q) q.addEventListener('click', e => { e.preventDefault(); setMode('off'); paint(); });
+    const q = document.getElementById('ptQuit'); if(q) q.addEventListener('click', e => { e.preventDefault(); ev('optout'); setMode('off'); paint(); });
   }
 
   // ---------- soc con lam nung (man chua nhan nuoi) ----------
@@ -3249,6 +3282,7 @@ const SQT=((D,PRE)=>{
     if(mode !== 'on'){
       bd.innerHTML = '<h3 id="ptH">' + (mode === 'off' ? 'Bạn đang không nuôi sóc' : 'Nuôi một bé sóc?') + '</h3>' +
         '<div class="sub">Hoàn toàn tuỳ bạn — không nuôi vẫn đặt nước bình thường</div>' + cuteStage(170) +
+        '<button class="pt-brd" id="ptBrd">🏆 Xem bảng xếp hạng sóc</button>' +
         '<ul class="pt-feat"><li><b>☕</b><span>Mỗi ly bạn đặt = 10 hạt cà phê cho sóc ăn.</span></li>' +
         '<li><b>🌱</b><span>Sóc lớn dần qua 5 cấp, mỗi cấp một bộ đồ và thói quen riêng.</span></li>' +
         '<li><b>🎀</b><span>Dùng hạt mua mũ, kính, khăn, áo cho sóc trong cửa hàng.</span></li>' +
@@ -3257,9 +3291,9 @@ const SQT=((D,PRE)=>{
         '<button class="btn-feed" id="ptYes">' + (mode === 'off' ? 'Nuôi lại sóc' : 'Nhận nuôi sóc') + '</button>' +
         (mode === 'off' ? '' : '<button class="btn-ghost" id="ptNo">Không, cảm ơn</button>') +
         '<div class="note">Không nuôi thì sóc không xin ăn, không nhắc nhở gì nữa.</div>' + settings();
-      bindSet(); startBeg();
-      document.getElementById('ptYes').addEventListener('click', () => { setMode('on'); paint(); if(S.ph) load(); });
-      const no = document.getElementById('ptNo'); if(no) no.addEventListener('click', () => { face(0); say('hu hu…'); fx('💧', 2); setTimeout(() => { setMode('off'); close(); }, 1100); });
+      bindSet(); startBeg(); document.getElementById('ptBrd').addEventListener('click', () => showBoard());
+      document.getElementById('ptYes').addEventListener('click', () => { ev('optin'); setMode('on'); paint(); if(S.ph) load(); });
+      const no = document.getElementById('ptNo'); if(no) no.addEventListener('click', () => { ev('optout'); face(0); say('hu hu…'); fx('💧', 2); setTimeout(() => { setMode('off'); close(); }, 1100); });
       return;
     }
     // 2. nhap so dien thoai
@@ -3289,6 +3323,7 @@ const SQT=((D,PRE)=>{
     const L = P.lv.i, named = !!P.nm, low = P.full < 25, eq = tryEq || P.eq || {};
     bd.innerHTML = '<h3 id="ptH">' + (named ? esc(P.nm) : 'Sóc của bạn') + '</h3>' +
       '<div class="sub">' + esc(P.lv.n) + ' · ' + (P.mood === 'vui' ? 'đang vui vẻ' : P.mood === 'doi' ? 'hơi đói bụng' : 'đói lả rồi') + '</div>' +
+      '<button class="pt-brd" id="ptBrd">🏆 Bảng xếp hạng</button>' +
       (P.demo ? '<div class="pt-demo"><b>DEMO</b>Xem từng cấp:' + LV.map((l, i) => '<button data-lv="' + i + '"' + (i === L ? ' class="on"' : '') + '>' + l[0].replace('Sóc ', '') + '</button>').join('') + '</div>' : '') +
       '<div class="pt-stage lv' + L + ' ' + P.mood + '" id="ptSt" style="height:' + (LVH[L] + 62) + 'px"><i class="pt-bean" id="ptBean"></i>' +
         '<div class="pt-pet" id="ptPet">' + doll(L, eq, LVH[L], sel) + '</div></div>' +
@@ -3304,7 +3339,7 @@ const SQT=((D,PRE)=>{
       (P.canEdit ? '<button class="btn-feed" id="ptFeed"' + (P.beans < P.cost || P.full >= 100 ? ' disabled' : '') + '>' + (P.full >= 100 ? 'Sóc no căng rồi' : P.beans < P.cost ? 'Cần ' + P.cost + ' hạt để cho ăn' : 'Cho ăn · ' + P.cost + ' hạt') + '</button>'
                  : '<div class="pend">Máy này chỉ xem được sóc. Đặt một đơn bằng số ' + mask(S.ph) + ' trên máy này để chăm sóc.</div>') +
       '<div class="err" id="ptErr">' + esc(err || '') + '</div>' + shopHtml() + settings();
-    bindSet(); bindPet(L); bindShop();
+    bindSet(); bindPet(L); bindShop(); document.getElementById('ptBrd').addEventListener('click', () => showBoard());
     const fb = document.getElementById('ptFeed'); if(fb) fb.addEventListener('click', feed);
     const ng = document.getElementById('ptNmGo'); if(ng){ const doName = () => nameIt(document.getElementById('ptNm').value);
       ng.addEventListener('click', doName); document.getElementById('ptNm').addEventListener('keydown', e => { if(e.key === 'Enter') doName(); }); }
@@ -3363,7 +3398,7 @@ const SQT=((D,PRE)=>{
           if(cute){ face(3); say('ư ư~'); } else { expr('bliss'); say(P && P.mood !== 'vui' ? 'ư… ọt ọt' : pick(['rừ rừ~','ư ư~','khụt khịt~'])); } }
         if(!cute && Date.now() - (g.b || 0) > 1600){ g.b = Date.now(); expr('bliss'); }
         if(Date.now() - (g.h || 0) > 220){ g.h = Date.now(); fx(L === 4 ? '✦' : '♥', 1); } } });
-    const up = () => { if(!g) return; hits++;
+    const up = () => { if(!g) return; hits++; ev(g.pet ? 'pet' : 'tickle', true);
       if(cute){
         if(!g.pet){ const f = pick([1,2,4]); face(f); react('r' + (f === 2 ? 4 : 1), 900); say(pick(['khúc khích','hí hí','chíp chíp!'])); fx('♥', f === 2 ? 6 : 3); }
         else { el.classList.remove('pet'); face(2); fx('♥', 4); say('chíp… 🥺'); }

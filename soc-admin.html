@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theo dõi nuôi sóc — The Curator Cafe</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2A1D16;--cream:#FDF8EF;--card:#FFFDF8;--gold:#B8912F;--red:#9C3226;--green:#1F6B4A;--mute:#7D6851;--line:rgba(42,29,22,.14);
+  --s1:#2a78d6;--s2:#eb6834;--grid:rgba(42,29,22,.08);--disp:'Cormorant Garamond',serif;--body:'Be Vietnam Pro',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);font-weight:300;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px 60px}
+header{position:sticky;top:0;z-index:10;background:rgba(253,248,239,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-family:var(--disp);font-size:22px;font-weight:600;letter-spacing:.04em;flex:1;white-space:nowrap}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:transparent;padding:7px 13px;font:500 12px var(--body);color:var(--ink);cursor:pointer}
+.seg button.on{background:var(--ink);color:#FDF8EF}
+.btn{border:1px solid var(--ink);border-radius:999px;background:var(--ink);color:#FDF8EF;padding:9px 16px;font:500 12px var(--body);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.login{max-width:360px;margin:60px auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;text-align:center}
+.login h2{font-family:var(--disp);font-size:26px;font-weight:500}
+.login input{width:100%;margin:14px 0 10px;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;font-size:16px;text-align:center;letter-spacing:.3em}
+.err{color:var(--red);font-size:12.5px;min-height:1.2em}
+h2.sec{font-family:var(--disp);font-size:24px;font-weight:600;margin:28px 0 10px}
+.note{font-size:12px;color:var(--mute)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:16px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.tile b{display:block;font-family:var(--disp);font-size:34px;font-weight:600;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile span{display:block;font-size:12px;color:var(--mute);margin-top:4px}
+.tile small{display:block;font-size:11.5px;color:var(--ink);margin-top:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card h3{font-size:13.5px;font-weight:600;margin-bottom:2px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--mute);margin:6px 0 4px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font:400 10.5px var(--body);fill:var(--mute)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#FDF8EF;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.45;white-space:nowrap;
+  transform:translate(-50%,-100%);margin-top:-8px;opacity:0;transition:opacity .12s;z-index:5}
+.tip.on{opacity:1}
+.tip i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{font-size:11px;font-weight:500;color:var(--mute);letter-spacing:.04em;text-transform:uppercase}
+td.n,th.n{text-align:right}
+.hbar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+.hbar span{flex:0 0 120px}
+.hbar div{flex:1;height:14px;background:var(--grid);border-radius:4px;overflow:hidden}
+.hbar div i{display:block;height:100%;background:var(--s1);border-radius:0 4px 4px 0}
+.hbar b{flex:0 0 42px;text-align:right;font-weight:500}
+.tag{font-size:11px;border-radius:999px;padding:2px 8px;background:var(--grid)}
+.tag.off{background:#F3DAD6;color:var(--red)}
+.mini{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 10px;font:500 11px var(--body);cursor:pointer}
+details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px}
+</style>
+</head>
+<body>
+<header><h1>Theo dõi nuôi sóc</h1>
+  <div class="seg" id="rng"><button data-d="7">7 ngày</button><button data-d="30" class="on">30 ngày</button><button data-d="90">90 ngày</button></div>
+  <button class="btn ghost" id="reload">Làm mới</button></header>
+<div class="wrap" id="app"></div>
+<div class="tip" id="tip"></div>
+<script>
+(function(){
+  const $ = s => document.querySelector(s), app = $('#app'), tip = $('#tip');
+  const LVN = ['Sóc con','Sóc nhỏ','Sóc barista','Sóc trưởng quán','Sóc huyền thoại'];
+  const ITN = { nonla:'Nón lá', beanie:'Mũ len', santa:'Mũ Noel', cap:'Mũ lưỡi trai', flower:'Vòng hoa', party:'Mũ sinh nhật', glasses:'Kính tròn', hearts:'Kính tim', scarf:'Khăn len', bow:'Nơ chấm bi', bell:'Vòng chuông cổ', overall:'Yếm jean' };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmt = n => Number(n || 0).toLocaleString('vi-VN'), pct = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+  let pin = ''; try{ pin = localStorage.getItem('tcCashierPin') || localStorage.getItem('tcSocAdminPin') || ''; }catch(e){}
+  let days = 30, D = null;
+
+  function login(err){
+    app.innerHTML = '<div class="login"><h2>Mã PIN quầy</h2><div class="note">Dùng cùng mã PIN với trang quầy đơn hàng.</div>' +
+      '<input id="pin" type="password" inputmode="numeric" autocomplete="off"><div class="err">' + esc(err || '') + '</div><button class="btn" id="go">Xem thống kê</button></div>';
+    const go = () => { pin = $('#pin').value.trim(); try{ localStorage.setItem('tcSocAdminPin', pin); }catch(e){} load(); };
+    $('#go').onclick = go; $('#pin').onkeydown = e => { if(e.key === 'Enter') go(); }; $('#pin').focus();
+  }
+  async function load(){
+    if(!pin) return login();
+    app.innerHTML = '<p class="note" style="margin-top:30px">Đang tải…</p>';
+    try{
+      const r = await fetch('/api/soc?a=admin&days=' + days + '&_=' + Date.now(), { headers:{ 'x-staff-pin':pin } }).then(x => x.json());
+      if(!r.ok) return login(r.err || 'Không tải được.');
+      D = r; render();
+    }catch(e){ app.innerHTML = '<p class="err" style="margin-top:30px">Chưa kết nối được máy chủ.</p>'; }
+  }
+  const sum = (k) => D.series.reduce((a, d) => a + (d[k] || 0), 0);
+
+  function render(){
+    const orders = sum('orders'), cups = sum('orderCups'), link = sum('link'), linkCups = sum('linkCups'), adopt = sum('adopt');
+    const optin = sum('ev_optin'), optout = sum('ev_optout'), opens = sum('ev_open'), feed = sum('feed'), buy = sum('buy'), spent = sum('spent'), credit = sum('credit');
+    const tick = sum('ev_tickle'), pet = sum('ev_pet'), board = sum('ev_board');
+    app.innerHTML =
+      '<p class="note" style="margin-top:16px">' + days + ' ngày gần nhất, tính đến hôm nay. Số điện thoại khách không được lưu — mỗi sóc chỉ có mã ẩn danh.</p>' +
+      '<div class="tiles">' +
+        tileH(fmt(D.pets), 'Sóc đang được nuôi', '+' + fmt(adopt) + ' sóc mới trong kỳ') +
+        tileH(fmt(D.act7), 'Sóc có khách ghé 7 ngày qua', fmt(D.actN) + ' trong ' + days + ' ngày') +
+        tileH(pct(link, orders), 'Đơn có nuôi sóc', fmt(link) + ' / ' + fmt(orders) + ' đơn') +
+        tileH(fmt(linkCups), 'Ly đặt bởi khách nuôi sóc', pct(linkCups, cups) + ' tổng ' + fmt(cups) + ' ly') +
+        tileH(pct(optin, optin + optout), 'Chọn nhận nuôi khi được hỏi', fmt(optin) + ' nhận · ' + fmt(optout) + ' từ chối') +
+        tileH(fmt(opens), 'Lượt mở cửa sổ sóc', fmt(tick + pet) + ' lượt cù / vuốt sóc') +
+        tileH(fmt(feed), 'Lượt cho sóc ăn', fmt(credit * 10) + ' hạt đã phát') +
+        tileH(fmt(buy), 'Món đồ đã bán', fmt(spent) + ' hạt đã tiêu') +
+      '</div>' +
+      '<h2 class="sec">Hiệu quả theo ngày</h2>' +
+      '<div class="grid2"><div class="card"><h3>Ly mỗi ngày</h3><div class="legend"><span><i style="background:var(--s2)"></i>Khách nuôi sóc</span><span><i style="background:var(--s1)"></i>Khách khác</span></div><div class="chart" id="c1"></div></div>' +
+      '<div class="card"><h3>Sóc có khách ghé mỗi ngày</h3><div class="note">Khách mở sóc, cho ăn, mua đồ hoặc đặt đơn</div><div class="chart" id="c2"></div></div></div>' +
+      '<details><summary>Xem bảng số liệu theo ngày</summary><div class="card" style="margin-top:8px;overflow-x:auto">' + dayTable() + '</div></details>' +
+      '<div class="grid2" style="margin-top:12px"><div class="card"><h3>Sóc theo cấp</h3>' + lvBars() + '</div>' +
+      '<div class="card"><h3>Cửa hàng đồ</h3>' + shopTable() + '</div></div>' +
+      '<h2 class="sec">Top sóc (mọi thời)</h2><div class="card" style="overflow-x:auto">' + topTable() + '</div>' +
+      '<p class="note" style="margin-top:8px">Tên do khách tự đặt hiện trên bảng xếp hạng. Bấm "Ẩn tên" nếu tên không phù hợp — sóc vẫn giữ hạng, chỉ hiện mã Sóc #xxxx. Lượt xem bảng xếp hạng: ' + fmt(board) + '.</p>';
+    stacked('#c1', D.series.map(d => ({ x:d.d, a:d.linkCups || 0, b:Math.max(0, (d.orderCups || 0) - (d.linkCups || 0)) })));
+    bars('#c2', D.series.map(d => ({ x:d.d, v:d.active || 0, ad:d.adopt || 0 })));
+    document.querySelectorAll('[data-hide]').forEach(b => b.onclick = async () => {
+      b.disabled = true; const r = await fetch('/api/soc', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-staff-pin':pin }, body:JSON.stringify({ a:'hide', k:b.dataset.hide }) }).then(x => x.json());
+      if(r.ok) load(); else { alert(r.err || 'Không được'); b.disabled = false; } });
+  }
+  const tileH = (v, l, s) => '<div class="tile"><b>' + v + '</b><span>' + l + '</span>' + (s ? '<small>' + s + '</small>' : '') + '</div>';
+  function lvBars(){ const m = Math.max(1, ...D.lv); return D.lv.map((n, i) => '<div class="hbar"><span>' + LVN[i] + '</span><div><i style="width:' + (n / m * 100) + '%"></i></div><b>' + fmt(n) + '</b></div>').join(''); }
+  function shopTable(){
+    const rows = Object.entries(D.shop).sort((a, b) => b[1].n - a[1].n);
+    return '<table><tr><th>Món</th><th class="n">Giá</th><th class="n">Đã bán</th><th class="n">Hạt thu</th></tr>' +
+      rows.map(([id, x]) => '<tr><td>' + esc(ITN[id] || id) + (x.soon ? ' <span class="tag">sắp có</span>' : '') + '</td><td class="n">' + x.p + '</td><td class="n">' + fmt(x.n) + '</td><td class="n">' + fmt(x.n * x.p) + '</td></tr>').join('') + '</table>';
+  }
+  function topTable(){
+    if(!D.top.length) return '<p class="note">Chưa có sóc nào.</p>';
+    const d = t => t ? new Date(t).toLocaleDateString('vi-VN') : '—';
+    return '<table><tr><th>#</th><th>Sóc</th><th>Cấp</th><th class="n">Ly</th><th class="n">Hạt còn</th><th class="n">Đồ</th><th>Nhận nuôi</th><th>Cho ăn gần nhất</th><th></th></tr>' +
+      D.top.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc(x.nm || '(chưa đặt tên)') + ' <span class="tag' + (x.hide ? ' off' : '') + '">' + esc(x.tag) + (x.hide ? ' · đang ẩn' : '') + '</span></td><td>' + LVN[x.lv] + '</td><td class="n">' + fmt(x.cups) + '</td><td class="n">' + fmt(x.beans) +
+        '</td><td class="n">' + x.items + '</td><td>' + d(x.born) + '</td><td>' + d(x.fedAt) + '</td><td>' + (x.nm ? '<button class="mini" data-hide="' + x.id + '">' + (x.hide ? 'Hiện tên' : 'Ẩn tên') + '</button>' : '') + '</td></tr>').join('') + '</table>';
+  }
+  function dayTable(){
+    return '<table><tr><th>Ngày</th><th class="n">Đơn</th><th class="n">Đơn có sóc</th><th class="n">Ly</th><th class="n">Ly có sóc</th><th class="n">Sóc mới</th><th class="n">Sóc ghé</th><th class="n">Cho ăn</th><th class="n">Mua đồ</th><th class="n">Nhận / từ chối</th></tr>' +
+      D.series.slice().reverse().map(d => '<tr><td>' + d.d.slice(5).split('-').reverse().join('/') + '</td><td class="n">' + fmt(d.orders) + '</td><td class="n">' + fmt(d.link) + '</td><td class="n">' + fmt(d.orderCups) + '</td><td class="n">' + fmt(d.linkCups) +
+        '</td><td class="n">' + fmt(d.adopt) + '</td><td class="n">' + fmt(d.active) + '</td><td class="n">' + fmt(d.feed) + '</td><td class="n">' + fmt(d.buy) + '</td><td class="n">' + fmt(d.ev_optin) + ' / ' + fmt(d.ev_optout) + '</td></tr>').join('') + '</table>';
+  }
+  // ---- bieu do cot (SVG), co tooltip khi re chuot / cham ----
+  const W = 520, H = 200, L = 30, B = 22, T = 8;
+  const nice = m => { const raw = Math.max(1, m) / 4, p = Math.pow(10, Math.floor(Math.log10(raw))); const st = [1,2,5,10].map(f => f * p).find(v => v >= raw); return Math.max(4, st * 4); };
+  const dd = s => s.slice(8) + '/' + s.slice(5, 7);
+  function frame(max, n){
+    let g = ''; for(let i = 0; i <= 4; i++){ const y = T + (H - T - B) * (1 - i / 4); g += '<line x1="' + L + '" x2="' + W + '" y1="' + y + '" y2="' + y + '" stroke="var(--grid)"/><text x="' + (L - 6) + '" y="' + (y + 3) + '" text-anchor="end">' + Math.round(max * i / 4) + '</text>'; }
+    return g;
+  }
+  function axisX(data, bw){ const step = Math.ceil(data.length / 7); return data.map((d, i) => i % step ? '' : '<text x="' + (L + i * bw + bw / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + dd(d.x) + '</text>').join(''); }
+  function rbar(x, y, w, h, fill, top){ if(h <= 0) return ''; const r = top ? Math.min(4, w / 2, h) : 0;
+    return '<path d="M' + x + ',' + (y + h) + 'V' + (y + r) + (r ? 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) : 'H' + (x + w)) + 'V' + (y + h) + 'Z" fill="' + fill + '"/>'; }
+  function stacked(sel, data){
+    const max = nice(Math.max(1, ...data.map(d => d.a + d.b))), n = data.length, bw = (W - L) / n, w = Math.max(2, bw - 2), sc = (H - T - B) / max;
+    let g = frame(max, n);
+    data.forEach((d, i) => { const x = L + i * bw + (bw - w) / 2, ha = d.a * sc, hb = d.b * sc, base = H - B;
+      g += rbar(x, base - ha, w, ha, 'var(--s2)', !d.b) + rbar(x, base - ha - hb - (d.a && d.b ? 2 : 0), w, hb, 'var(--s1)', true) +
+        '<rect x="' + (L + i * bw) + '" y="' + T + '" width="' + bw + '" height="' + (H - T - B) + '" fill="transparent" data-i="' + i + '"/>'; });
+    draw(sel, g + axisX(data, bw), (i) => { const d = data[i]; return dd(d.x) + '<br><i style="background:var(--s2)"></i>Khách nuôi sóc: ' + d.a + ' ly<br><i style="background:var(--s1)"></i>Khách khác: ' + d.b + ' ly'; }, data, bw);
+  }
+  function bars(sel, data){
+    const max = nice(Math.max(1, ...data.map(d => d.v))), n = data.length, bw = (W - L) / n, w = Math.max(2, bw - 2), sc = (H - T - B) / max;
+    let g = frame(max, n);
+    data.forEach((d, i) => { const x = L + i * bw + (bw - w) / 2, h = d.v * sc; g += rbar(x, H - B - h, w, h, 'var(--s1)', true) +
+      '<rect x="' + (L + i * bw) + '" y="' + T + '" width="' + bw + '" height="' + (H - T - B) + '" fill="transparent" data-i="' + i + '"/>'; });
+    draw(sel, g + axisX(data, bw), i => dd(data[i].x) + '<br>' + data[i].v + ' sóc có khách ghé<br>' + data[i].ad + ' sóc mới', data, bw);
+  }
+  function draw(sel, inner, tipFn){
+    const el = $(sel); el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img">' + inner + '</svg>';
+    el.querySelectorAll('rect[data-i]').forEach(r => {
+      const show = () => { const b = r.getBoundingClientRect(); tip.innerHTML = tipFn(+r.dataset.i); tip.style.left = (b.left + b.width / 2 + scrollX) + 'px'; tip.style.top = (b.top + scrollY + 10) + 'px'; tip.classList.add('on'); r.setAttribute('fill', 'rgba(42,29,22,.05)'); };
+      const hide = () => { tip.classList.remove('on'); r.setAttribute('fill', 'transparent'); };
+      r.addEventListener('mouseenter', show); r.addEventListener('mouseleave', hide); r.addEventListener('click', show); });
+  }
+  document.querySelectorAll('#rng button').forEach(b => b.onclick = () => { document.querySelectorAll('#rng button').forEach(x => x.classList.toggle('on', x === b)); days = +b.dataset.d; load(); });
+  $('#reload').onclick = load;
+  document.addEventListener('click', e => { if(!e.target.closest('rect[data-i]')) tip.classList.remove('on'); });
+  load();
+})();
+</script>
+</body>
+</html>
