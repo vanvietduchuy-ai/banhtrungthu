@@ -226,11 +226,14 @@ const SQ3=(()=>{
     startle:{w:290,h:360,face:0,k:1.76,a:{feet:[140,355],head:[140,30]},b:[
       ['head',[140,150],[140,50],60],['armL',[70,195],[10,190],25],['armR',[210,195],[285,210],25]]}};
   D.grip=Object.assign({},D.hold);
+  // điểm neo theo thân (đo trên từng khung ảnh) để sóc đứng yên đúng chỗ khi đổi khung/đổi tư thế
+  const ANC={"stand":[207,382],"angry":[85,358],"startle":[142,357],"tr1":[299,383],"pk1":[250,390],"tr2":[310,383],"pk2":[258,390],"tr3":[323,383],"pk3":[258,391],"tr4":[336,383],"pk4":[261,393],"tr5":[330,382],"pk5":[253,395],"tr6":[324,383],"pk6":[244,396],"tr7":[318,382],"pk7":[240,395],"tr8":[260,382],"pk8":[217,390],"tr9":[241,382],"pk9":[216,390],"tr10":[224,382],"pk10":[215,390],"tr11":[207,382],"pk11":[215,390],"ga1":[261,297],"gab1":[261,297],"ga2":[261,297],"gab2":[261,297],"ga3":[261,297],"gab3":[261,297],"ga4":[261,297],"gab4":[261,297],"ga5":[261,297],"gab5":[261,297],"ga6":[261,297],"gab6":[261,297],"ga7":[261,297],"gab7":[261,297],"ga8":[261,297],"gab8":[261,297],"ga9":[261,297],"gab9":[261,297],"ga10":[261,297],"gab10":[261,297],"ga11":[261,297],"gab11":[261,297],"ga12":[261,297],"gab12":[261,297],"ga13":[261,297],"gab13":[261,297],"ga14":[261,297],"gab14":[261,297],"ga15":[261,297],"gab15":[261,297]};
   // bộ khung ảnh 3D chi tiết: phi nước đại 5 khung (thường / ngậm hạt), chạy->ngồi 5 khung, nhặt hạt 5 khung
   // khung ảnh gốc + khung chèn giữa (nội suy chuyển động) để chạy mượt: 15 khung phi nước đại, 11 khung ngồi xuống, 11 khung nhặt hạt
   for(let i=1;i<=15;i++)['ga','gab'].forEach(p=>D[p+i]={w:416,h:337,face:1,k:1.85,a:{feet:[205,292],head:[300,80]},b:[]});
   for(let i=1;i<=11;i++){D['tr'+i]={w:472,h:425,face:1,k:1.75,a:{feet:[260,382],head:[300,60]},b:[]};
     D['pk'+i]={w:398,h:436,face:1,k:1.4,a:{feet:[200,390],bean:[332,380],head:[300,60]},b:[]};}
+  for(const n in ANC)if(D[n])D[n].a=Object.assign({},D[n].a,{feet:ANC[n]});
   // 3 khung phi nước đại nhìn ngang (bay duỗi người -> chạm chân trước -> gom chân), bản thường và bản ngậm hạt
 
   const GX=16,GY=20;
@@ -554,7 +557,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     case 'fetch':{const c=cardTop(),gy=c.y,D=M.drop,dir0=(D.x-M.x)<0?-1:1; // quay người, chạy lại chỗ hạt rơi, chậm dần khi tới gần
       M.flip=dir0<0?1:-1;
       if(t<360){seq('tr',11,1-easeIn(t/360),'feet',M.x,gy,dt);shadowAt(M.x,gy,1);break}
-      const mo=(332-200)*SS()*1.15,tx=D.x-dir0*mo,dx=tx-M.x,dir=dx<0?-1:1;
+      const mo=(332-SQ3.D.pk1.a.feet[0])*SS()*SQ3.D.pk1.k,tx=D.x-dir0*mo,dx=tx-M.x,dir=dx<0?-1:1;
       const v=cl(Math.abs(dx)*4,40,260);M.x+=dir*Math.min(Math.abs(dx),v*dt);
       if(Math.abs(dx)<2&&D.rest){M.x=tx;squash(-1.6);dust(M.x+dir0*14,gy,dir0,2);M.fdir=dir0;D.el.style.opacity=0;go('pick')}
       else runAt(now,dt,M.x,gy,v,dir0,'run');break}

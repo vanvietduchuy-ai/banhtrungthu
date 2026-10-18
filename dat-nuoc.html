@@ -2617,6 +2617,8 @@ const TD={ // pixel ảnh gốc; đầu sóc hướng xuống dưới ảnh (+y)
   pant:{w:212,h:463,a:{c:[105,150],mouth:[105,195],hand:[190,200]},b:[['head',[105,190],[105,30],72],['tail1',[105,265],[105,455],72]]}};
 // 4 khung chạy phi nước đại nhìn từ trên xuống (thấy lưng), đầu hướng lên trên ảnh
 TD.sit=Object.assign({},TD.eat);
+// 13 khung chuyển chạy <-> ngồi nhìn từ trên xuống (ảnh gốc + khung chèn giữa)
+[[125, 245],[125, 251],[124, 258],[125, 263],[123, 261],[123, 260],[123, 258],[124, 260],[123, 260],[124, 263],[124, 262],[124, 262],[125, 261]].forEach((c,i)=>TD['ts'+(i+1)]={w:245,h:556,k:1.195,a:{c,mouth:[125,170],hand:[200,260]},b:[]});
 // 6 khung phi nước đại nhìn từ trên xuống, thấy rõ 4 chân
 for(let i=1;i<=6;i++)TD['td'+i]={w:311,h:670,a:{c:[157,300],mouth:[157,90],hand:[240,300]},b:[['head',[157,190],[157,50],60],['tail1',[157,420],[157,660],70]]}; // ngồi ngửa mặt nhìn khách, 2 tay chụm trước ngực
 
@@ -2707,11 +2709,22 @@ const SQT=((D,PRE)=>{
     const a=Math.PI*2*i/n+Math.random()*.5;e.style.setProperty('--dx',Math.cos(a)*22+'px');e.style.setProperty('--dy',Math.sin(a)*22+'px');document.body.appendChild(e);setTimeout(()=>e.remove(),700)}}
   // ---- vẽ ----
   const fam=n=>/^(b|td)\d$/.test(n)?'b':n;
-  function put(n,ang,x,y,rot,k=1,alpha=1,blend=null){const d=TD[n],s=S()*k,q=M.sq||1;const P={x,y,rot,sx:s*(1+(1-q)*.7),sy:s*q,anchor:d.a.c};
-    if(M.cur&&fam(M.cur.n)!==fam(n)){const up=fam(n)==='b';M.tr={c:M.cur,t:performance.now(),dur:up?300:360,up};M.sqv=(M.sqv||0)+(up?3.2:-4)}
-    M.cur={n,P,ang,alpha,blend};return P}
   const lerpA=(a,b,e)=>a+((((b-a)%360)+540)%360-180)*e;
-  function paint(now){SQT.clear();
+  const isRun=n=>/^td\d/.test(n);
+  function put(n,ang,x,y,rot,k=1,alpha=1,blend=null){
+    // chạy <-> ngồi: phát chuỗi 13 khung quay người (đang chạy thấy lưng -> ngồi ngửa mặt nhìn khách) thay cho đổi ảnh đột ngột
+    const now=performance.now(),run=isRun(n);
+    if(M.lastRun!==undefined&&run!==M.lastRun&&!(M.sq2&&now-M.sq2.t<M.sq2.d)){M.sq2={down:!run,t:now,d:run?340:480,r0:M.lastRot};M.tr=null}
+    M.lastRun=run;if(run)M.lastRot=rot;
+    if(M.sq2){const kk=(now-M.sq2.t)/M.sq2.d;
+      if(kk<1){const e=kk<.5?2*kk*kk:1-Math.pow(-2*kk+2,2)/2,idx=M.sq2.down?1+Math.round(e*12):13-Math.round(e*12);
+        const r=M.sq2.down?lerpA(M.sq2.r0||0,0,Math.min(1,kk*2.2)):lerpA(0,rot,Math.max(0,kk*1.6-.6));
+        n='ts'+idx;ang={};blend=null;rot=r}
+      else M.sq2=null}
+    const d=TD[n],s=S()*k*(d.k||1),q=M.sq||1;const P={x,y,rot,sx:s*(1+(1-q)*.7),sy:s*q,anchor:d.a.c};
+    if(!M.sq2&&M.cur&&fam(M.cur.n)!==fam(n)&&!/^ts/.test(M.cur.n)){const up=fam(n)==='b';M.tr={c:M.cur,t:performance.now(),dur:up?300:360,up};M.sqv=(M.sqv||0)+(up?3.2:-4)}
+    M.cur={n,P,ang,alpha,blend};return P}
+    function paint(now){SQT.clear();
     let CP=M.cur&&M.cur.P;
     if(M.tr&&M.cur){const k=(now-M.tr.t)/M.tr.dur;if(k>=1)M.tr=null;else{const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,c=M.tr.c,r0=c.P.rot,r1=M.cur.P.rot;
       // tư thế cũ: xoay dần sang hướng mới, co người lại rồi mờ đi
@@ -2788,7 +2801,7 @@ const SQT=((D,PRE)=>{
       {const r=panel();if(r&&Math.abs(M.y-r.top)<16&&M.x>r.left&&M.x<r.right&&t>300){go('drape');break}}
       const k=Math.min(1,t/250);M.h+=((((-270)-M.h+540)%360)-180)*k*.08; // từ từ quay mặt ra phía khách
       if(M.bag)put('bag',A.bag(t),M.x,M.y,M.h-90+Math.sin(t/700)*3,1+.012*Math.sin(t/300));
-      else put('sit',A.rest(t),M.x,M.y,0,1+.012*Math.sin(t/300));
+      else put('ts13',{},M.x,M.y,0,1+.012*Math.sin(t/300));
       if(now-M.act>4500&&t>1500){const opts=['groom','roll','hop','wander','look'];go(opts[(idleN++ +Math.floor(Math.random()*3))%opts.length])}break}
     case 'to':{const T=M.task;let g;
       if(T.type==='bean'){if(!T.el.isConnected){M.task=null;go('rest');break}g=beanPos(T.el);
@@ -2824,7 +2837,7 @@ const SQT=((D,PRE)=>{
       put('run',A.run(.25,t),M.x,M.y-up*14,M.h-90+Math.sin(k*Math.PI*2*n)*10,1+up*.18);if(k>=1||now-M.act<300)go('rest');break}
     case 'wander':{if(!M.goal||t<20){const B=bounds();M.goal={x:cl(M.x+(Math.random()-.5)*220,B.l,B.r),y:cl(M.y+(Math.random()-.5)*200,B.t+40,B.b)}}
       const d=steer(M.goal.x,M.goal.y,dt,220);drawRun(t);if(d<5){M.v=0;M.goal=null;go('rest')}break}
-    case 'look':{const lk=t<500?-35:t<1000?35:0;M.h+=((((-270+lk)-M.h+540)%360)-180)*.12;if(M.bag)put('bag',A.bag(t),M.x,M.y,M.h-90,1);else put('sit',Object.assign(A.rest(t),{head:lk*.35}),M.x,M.y,0,1);if(t>1400)go('rest');break}
+    case 'look':{const lk=t<500?-35:t<1000?35:0;M.h+=((((-270+lk)-M.h+540)%360)-180)*.12;if(M.bag)put('bag',A.bag(t),M.x,M.y,M.h-90,1);else put('ts13',Object.assign(A.rest(t),{head:lk*.35}),M.x,M.y,0,1);if(t>1400)go('rest');break}
     }
     // giữ sóc trong khung nhìn
     paint(now);requestAnimationFrame(tick)}
