@@ -214,38 +214,26 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 // ===== Sóc 3D: ảnh từng tư thế + lưới biến dạng theo xương (WebGL) để tay, chân, đầu, đuôi cử động mềm như hoạt hình =====
 const SQ3=(()=>{
   // toạ độ xương tính theo pixel ảnh gốc (trước khi thu nhỏ); face:1 = ảnh quay mặt sang phải
-  const D={
-    stand:{w:375,h:562,face:0,a:{feet:[130,556],head:[125,40]},b:[
-      ['head',[125,250],[120,70],92],['tail1',[255,360],[340,230],62],['tail2',[340,230],[300,120],58,'tail1'],
-      ['armL',[40,285],[30,385],30],['armR',[228,295],[232,390],30],['legL',[88,470],[72,550],34],['legR',[195,470],[230,550],34]]},
-    run:{w:427,h:481,face:1,a:{feet:[235,470],head:[330,150]},b:[
-      ['head',[300,285],[335,170],92],['tail1',[175,275],[80,150],66],['tail2',[80,150],[120,35],58,'tail1'],
-      ['frontA',[330,345],[395,432],34],['frontB',[285,370],[300,462],30],['hindA',[135,330],[20,352],36],['hindB',[180,380],[140,425],30]]},
-    runb:{w:470,h:487,face:1,a:{feet:[250,478],head:[380,140]},b:[
-      ['head',[330,290],[370,170],95],['tail1',[160,270],[90,160],70],['tail2',[90,160],[110,40],62,'tail1'],
-      ['frontA',[370,390],[435,442],32],['frontB',[300,400],[320,466],30],['hindA',[90,320],[20,385],36],['hindB',[160,420],[175,465],30]]},
-    jump:{w:399,h:555,face:0,a:{feet:[150,548],grab:[175,40],head:[150,40]},b:[
-      ['head',[150,262],[150,90],92],['armL',[78,285],[25,120],34],['armR',[232,285],[330,118],34],
-      ['legL',[92,470],[92,552],34],['legR',[210,470],[222,540],34],['tail1',[275,380],[360,300],70],['tail2',[360,300],[330,420],50,'tail1']]},
-    hold:{w:330,h:641,face:0,a:{feet:[170,636],bean:[164,48],grip:[165,90]},b:[
-      ['head',[178,310],[180,175],88],['armL',[62,255],[140,95],34],['armR',[288,255],[205,95],34],
-      ['legL',[92,560],[80,632],34],['legR',[232,560],[262,632],34],['tail1',[75,470],[20,470],48],['tail2',[20,470],[40,560],42,'tail1']]},
-    angry:{w:385,h:541,face:0,a:{feet:[150,535],head:[150,40]},b:[
-      ['head',[150,235],[150,70],92],['legL',[65,465],[50,535],32],['legR',[222,465],[245,535],32],
-      ['tail1',[265,370],[350,320],60],['tail2',[350,320],[335,425],50,'tail1']]},
-    startle:{w:319,h:522,face:0,a:{feet:[170,515],head:[150,30]},b:[
-      ['head',[150,240],[150,80],90],['armL',[62,225],[8,150],32],['armR',[262,232],[315,195],32],
-      ['legL',[112,450],[112,515],30],['legR',[232,450],[242,508],30],['tail1',[285,330],[315,260],40]]}};
+  const D={ // một bộ nhân vật thống nhất (cùng phong cách 3D, cùng tỉ lệ)
+    stand:{w:472,h:425,face:0,k:1.75,a:{feet:[260,382],head:[300,60]},b:[['head',[300,200],[300,70],70]]},
+    nc:{w:273,h:248,face:1,k:1.91,a:{feet:[170,240],head:[215,40]},b:[['tail1',[80,130],[40,50],50]]},
+    jump:{w:242,h:432,face:0,k:1.7,a:{feet:[125,365],grab:[120,45],head:[120,40]},b:[
+      ['head',[120,160],[120,40],60],['armL',[70,130],[20,50],25],['armR',[180,130],[225,40],25],['tail1',[80,330],[50,420],45]]},
+    hold:{w:218,h:416,face:0,k:1.65,a:{feet:[140,412],bean:[140,18],grip:[140,32]},b:[
+      ['head',[140,170],[140,80],55],['tail1',[60,300],[20,280],50]]},
+    angry:{w:225,h:361,face:0,k:1.76,a:{feet:[113,355],head:[113,40]},b:[
+      ['head',[113,150],[113,60],60],['tail1',[200,250],[220,180],40],['legL',[60,320],[60,355],20]]},
+    startle:{w:290,h:360,face:0,k:1.76,a:{feet:[140,355],head:[140,30]},b:[
+      ['head',[140,150],[140,50],60],['armL',[70,195],[10,190],25],['armR',[210,195],[285,210],25]]}};
   D.grip=Object.assign({},D.hold);
   // bộ khung ảnh 3D chi tiết: phi nước đại 5 khung (thường / ngậm hạt), chạy->ngồi 5 khung, nhặt hạt 5 khung
   for(let i=1;i<=5;i++){
-    ['ga','gab'].forEach(p=>D[p+i]={w:416,h:337,face:1,k:1.25,a:{feet:[205,292],head:[300,80]},b:[['tail1',[150,170],[70,80],60]]});
-    D['tr'+i]={w:472,h:425,face:1,k:1.55,a:{feet:[260,382],head:[300,60]},b:[['tail1',[170,250],[90,140],60]]};
-    D['pk'+i]={w:398,h:436,face:1,k:1.15,a:{feet:[200,390],bean:[332,380],head:[300,60]},b:[]};
+    ['ga','gab'].forEach(p=>D[p+i]={w:416,h:337,face:1,k:1.85,a:{feet:[205,292],head:[300,80]},b:[['tail1',[150,170],[70,80],60]]});
+    D['tr'+i]={w:472,h:425,face:1,k:1.75,a:{feet:[260,382],head:[300,60]},b:[['tail1',[170,250],[90,140],60]]};
+    D['pk'+i]={w:398,h:436,face:1,k:1.4,a:{feet:[200,390],bean:[332,380],head:[300,60]},b:[]};
   }
   // 3 khung phi nước đại nhìn ngang (bay duỗi người -> chạm chân trước -> gom chân), bản thường và bản ngậm hạt
-  ['r1','r2','r3','rb1','rb2','rb3'].forEach(n=>D[n]={w:510,h:440,face:1,k:1.15,a:{feet:[262,366],head:[395,70]},b:[
-    ['head',[372,265],[405,110],80],['tail1',[230,215],[100,140],72],['tail2',[100,140],[110,40],60,'tail1']]});
+
   const GX=16,GY=20;
   let gl=null,prog,buf,ibuf,cv,dpr=1,ready=false,ctx2=null,LT=[1,1,1];
   const T={},MESH={};
@@ -445,14 +433,14 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function put(n,ang,anchor,x,y,rot=0,dt=.016,ex={}){
     const d=SQ3.D[n],s=SS()*(ex.k||1)*(d.k||1),sign=d.face?-M.flip:M.flip,br=ex.br||0;
     const P={x,y,rot,sx:s*sign*(1+(1-M.sq)*.8)*(1-br*.5),sy:s*M.sq*(1+br),anchor:d.a[anchor]};
-    const fam=q=>q.replace(/\d+$/,'');if(M.cur&&fam(M.cur.n)!==fam(n)){M.fade={c:M.cur,t:performance.now()};squash(/^r/.test(n)?2.2:-2.6)}
+    const fam=q=>q.replace(/\d+$/,'');if(M.cur&&fam(M.cur.n)!==fam(n)){M.fade={c:M.cur,t:performance.now()}}
     M.cur={n,P,ang,blend:ex.blend||null};
     const feet=SQ3.pt(n,P,d.a.feet),head=SQ3.pt(n,P,d.a.head||d.a.feet);
     const vx=M.last?(feet[0]-M.last[0])/Math.max(dt,.001):0;M.last=feet;springs(dt,vx);
     M.o={feet,head,grab:d.a.grab?SQ3.pt(n,P,d.a.grab):null};return M.o}
   function paint(now){M.lit=(M.lit??0)+((sec.classList.contains('is-on')?1:0)-(M.lit??0))*.08;SQ3.light(M.lit);SQ3.clear();
-    if(M.fade){const k=(now-M.fade.t)/170;if(k<1){const e=k*k*(3-2*k),c=M.fade.c;SQ3.draw(c.n,Object.assign({},c.P,{sx:c.P.sx*(1-.12*e),sy:c.P.sy*(1-.18*e)}),c.ang,(1-e)*.9)}else M.fade=null}
-    if(M.cur){const al=M.fade?Math.min(1,(now-M.fade.t)/170*1.6):1;SQ3.draw(M.cur.n,M.cur.P,M.cur.ang,al);
+    if(M.fade){const k=(now-M.fade.t)/110;if(k<1){const e=k*k*(3-2*k),c=M.fade.c;SQ3.draw(c.n,c.P,c.ang,(1-e)*.9)}else M.fade=null}
+    if(M.cur){const al=M.fade?Math.min(1,(now-M.fade.t)/110*2):1;SQ3.draw(M.cur.n,M.cur.P,M.cur.ang,al);
       if(M.cur.blend&&M.cur.blend.a>.02)SQ3.draw(M.cur.blend.n,M.cur.P,M.cur.ang,M.cur.blend.a*al)}}
   function shadowAt(x,g,k){socSh.style.transform='translate('+x.toFixed(1)+'px,'+g.toFixed(1)+'px) scale('+(Math.max(0,k)*SC()*.9).toFixed(2)+')';socSh.style.opacity=Math.max(0,k)}
   function fx(cls,x,y,vars,life){const e=document.createElement('i');e.className=cls;e.style.left=x+'px';e.style.top=y+'px';
@@ -488,12 +476,12 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function newBean(){setTimeout(()=>{cBean.classList.remove('gone');const bi=document.getElementById('cBean');bi.classList.add('grow');setTimeout(()=>bi.classList.remove('grow'),800)},700)}
   // chạy 4 chân: chân trước/sau đánh so le, thân nhấp nhô, chúi nhẹ; sải chân khớp tốc độ
   // phát 1 chuỗi khung theo thời gian (k: 0..1), hoà trộn khung kế để chuyển mượt
-  const late=f=>{const u=Math.max(0,(f-.62)/.38);return u*u*(3-2*u)}; // chỉ hoà trộn ở cuối mỗi khung để không bị bóng đôi
+  const late=f=>0; // chuyển khung dứt khoát như phim hoạt hình, không chồng 2 ảnh (hết bóng đôi, hết giật) // chỉ hoà trộn ở cuối mỗi khung để không bị bóng đôi
   function seq(pre,n,k,anchor,x,y,dt,ang={}){const q=Math.max(0,Math.min(.999,k))*(n-1),i=Math.floor(q),f=q-i,fs=late(f);
     return put(pre+(i+1),ang,anchor,x,y,0,dt,{blend:i+2<=n?{n:pre+(i+2),a:fs}:null})}
   function runAt(now,dt,x,g,v,dir,n='run'){const S=SC();M.stride+=Math.abs(v)*dt/(52*S);const ph=M.stride%1,w=ph*Math.PI*2;
-    const st=Math.floor(M.stride*2);if(st!==M.lastFoot){M.lastFoot=st;squash(-1);dust(x-dir*-18*S,g,-dir,1)}
-    M.flip=dir<0?1:-1;const bob=-Math.abs(Math.sin(w))*3*S;
+    const st=Math.floor(M.stride*2);if(st!==M.lastFoot){M.lastFoot=st;dust(x-dir*-18*S,g,-dir,1)}
+    M.flip=dir<0?1:-1;const bob=0;
     const P5=n==='runb'?'gab':'ga',q=ph*5,i=Math.floor(q)%5,f=q-Math.floor(q),fs=late(f);
     put(P5+(i+1),{tail1:10*Math.sin(w-1)-M.tl*.4},'feet',x,g+bob,0,dt,{blend:{n:P5+((i+1)%5+1),a:fs}});shadowAt(x,g,1+bob/30)}
   function mtick(now){
@@ -513,7 +501,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     case 'ready':{M.flip=1;const dx=b.x-M.x;let hop=0;
       if(Math.abs(dx)>6){M.x+=cl(dx*2.4,-90,90)*dt;const ph=(t/220)%1;hop=Math.sin(ph*Math.PI)*7;if(ph<.06&&!M._h){M._h=1;squash(-1.2)}if(ph>.5)M._h=0}
       const crouch=t>420?Math.min(1,(t-420)/260):0; // ngó lên hạt, hạ người lấy đà
-      put('stand',A.stand(t,{head:-6}),'feet',M.x,g-hop,0,dt,{br:-.07*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
+      put(crouch>.35?'nc':'stand',A.stand(t,{head:-6}),'feet',M.x,g-hop,0,dt,{br:-.05*crouch+.012*Math.sin(t/350)});shadowAt(M.x,g,1);
       if(t>720&&(Math.abs(dx)<24*S||t>1700)){const reach=(SQ3.D.jump.a.feet[1]-SQ3.D.jump.a.grab[1])*s;M.jx0=M.x;M.jx1=b.x;M.hp=Math.max(10,(g-b.y)-reach)+(M.first?-40*S:0);
         squash(4);dust(M.x-12,g,-1,3);dust(M.x+12,g,1,3);go('jump')}break}
     case 'jump':{const D=580,k=Math.min(1,t/D),up=k<.5?easeOut(k/.5):1-easeIn((k-.5)/.5);
