@@ -108,6 +108,7 @@ module.exports = async (req, res) => {
       if (okSet !== 'OK') return send(409, { ok: false, err: 'Mã đơn đã tồn tại.' });
       await redis('ZADD', 'ol', now, c);
       await redis('ZREMRANGEBYSCORE', 'ol', 0, now - TTL * 1000);
+      try { await require('./soc').stat({ orders: 1, orderCups: o.cnt }); } catch (e) { console.error(e); } // để trang quản trị so sánh đơn có nuôi sóc / tổng đơn
       let pt = null; // gắn đơn vào "Sóc của bạn" theo số điện thoại
       try { if (b.ph) pt = await require('./soc').linkOrder(b.ph, c, o.cnt); } catch (e) { console.error(e); }
       return send(200, { ok: true, c, k: tok, pt, order: view(o) });
