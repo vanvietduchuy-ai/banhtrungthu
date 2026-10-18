@@ -331,6 +331,16 @@ footer a{color:var(--ink)}
 .sqh{width:10px;height:9px;background:none;animation-duration:.8s}
 .sqh::before{content:"♥";position:absolute;left:0;top:-4px;font-size:11px;color:#E07A6A}
 .sqd{background:rgba(160,120,80,.35);width:10px;height:10px;margin:-5px}
+.sqg{position:absolute;z-index:46;left:0;top:0;pointer-events:none;width:10px;height:10px;margin:-5px;animation:sqs .8s ease-out forwards}
+.sqg::before{content:"✦";position:absolute;left:0;top:-5px;font-size:11px;color:#E8B83A;text-shadow:0 0 6px #F7D774}
+.sqz{position:absolute;z-index:46;left:0;top:0;pointer-events:none;font:italic 700 11px var(--body,system-ui);color:#7D6851;animation:sqZ 1.4s ease-out forwards}
+@keyframes sqZ{0%{opacity:0;transform:translate(0,0) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(14px,-22px) scale(1.25)}}
+.sqc{position:absolute;z-index:46;left:0;top:0;pointer-events:none;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:2px 2px 4px 4px;
+  background:linear-gradient(#FFFDF8,#EADBC2);box-shadow:inset 0 2px 0 #8A5A37,0 1px 2px rgba(0,0,0,.25)}
+.sqc::after{content:'';position:absolute;right:-2px;top:1px;width:2px;height:3px;border:1px solid #EADBC2;border-left:0;border-radius:0 3px 3px 0}
+.sqst{position:absolute;z-index:46;left:0;top:0;pointer-events:none;width:4px;height:10px;margin:-10px 0 0 -2px;border-radius:50%;background:rgba(255,255,255,.9);
+  filter:blur(1px);animation:sqSt 1s ease-out forwards}
+@keyframes sqSt{from{opacity:.9;transform:translateY(0) scaleX(1)}to{opacity:0;transform:translateY(-16px) scaleX(2.2)}}
 @keyframes sqs{from{transform:translate(0,0) scale(.5);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.2);opacity:0}}
 .sqw{position:absolute;z-index:46;left:0;top:0;pointer-events:none;width:7px;height:10px;margin:-5px 0 0 -3.5px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
   background:linear-gradient(160deg,#E6F6FF,#7FC4F0);animation:sqw .9s ease-in forwards}
@@ -2338,7 +2348,7 @@ body.g-on .o-back,body.g-on #oLive{display:none}
       last:{ c:o.c, s:'new', h:[{s:'new',t:Date.now()}], items:o.items, disc:o.disc || 0, sub:o.items.reduce((a,i)=>a+i.p*i.q,0), tot:(s => s - (o.disc ? Math.round(s*o.disc/100/1000)*1000 : 0))(o.items.reduce((a,i)=>a+i.p*i.q,0)), cnt:o.items.reduce((a,i)=>a+i.q,0), ship:o.ship, time:o.time, kind:o.kind, g:o.g }, local:true });
     paintAll();
     try{
-      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create', ph:($('#phone').value || '').trim() }, o)) }).then(x=>x.json());
+      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create', ph:(window.TCP && TCP.on()) ? ($('#phone').value || '').trim() : '' }, o)) }).then(x=>x.json());
       if(r.ok){ upsert({ c:o.c, k:r.k, last:r.order, local:false }); paintAll(); if(window.TCP) TCP.linked(($('#phone').value || '').trim(), r.pt, r.order && r.order.cnt); }
     }catch(e){}
   }
@@ -2626,6 +2636,12 @@ TD.sit=Object.assign({},TD.eat);
 [[125, 245],[125, 251],[124, 258],[125, 263],[123, 261],[123, 260],[123, 258],[124, 260],[123, 260],[124, 263],[124, 262],[124, 262],[125, 261]].forEach((c,i)=>TD['ts'+(i+1)]={w:245,h:556,k:1.195,a:{c,mouth:[125,170],hand:[200,260]},b:[]});
 // 6 khung phi nước đại nhìn từ trên xuống, thấy rõ 4 chân
 for(let i=1;i<=6;i++)TD['td'+i]={w:311,h:670,a:{c:[157,300],mouth:[157,90],hand:[240,300]},b:[['head',[157,190],[157,50],60],['tail1',[157,420],[157,660],70]]}; // ngồi ngửa mặt nhìn khách, 2 tay chụm trước ngực
+// đỉnh đầu từng khung [x, y, bề ngang đầu] để đội mũ / vương miện của sóc đang nuôi
+const HD={"eat":[70.9,34.4,107.5],"bag":[95.8,37.0,105.3],"back":[96.6,27.1,106.9],"groom":[79.2,31.5,107.5],"pant":[64.5,32.9,100.1],"ts1":[125.4,60.2,118.5],"ts2":[124.7,68.3,114.5],"ts3":[123.5,76.3,104.4],"ts4":[123.1,86.4,98.4],"ts5":[125.0,84.3,108.4],"ts6":[126.4,82.3,118.5],"ts7":[128.4,84.3,126.5],"ts8":[125.8,92.4,124.5],"ts9":[122.0,102.4,124.5],"ts10":[119.8,108.4,124.5],"ts11":[120.3,108.4,124.5],"ts12":[121.0,108.4,126.5],"ts13":[121.5,106.4,124.5],"td1":[156.8,64.6,109.1],"td2":[158.1,72.7,109.1],"td3":[157.5,72.7,109.1],"td4":[157.2,72.7,109.1],"td5":[161.1,72.7,109.1],"td6":[155.7,70.7,109.1]};
+for(const n in HD)if(TD[n])TD[n].a=Object.assign({},TD[n].a,{hd:HD[n]});TD.sit.a=TD.eat.a;
+// phụ kiện theo cấp: lá non, mũ hạt sồi, mũ nồi barista, mũ phớt trưởng quán, vương miện huyền thoại [bề ngang so với đầu, điểm bám]
+const ACC=[[.38,.95],[.62,.8],[.82,.72],[.9,.75],[.62,.86]],ACCH=[67,87,73,63,86];
+ACC.forEach((a,i)=>TD['acc'+i]={w:120,h:ACCH[i],a:{c:[60,ACCH[i]*a[1]]},b:[]});
 
 // ===== Sóc nhìn từ trên xuống: ảnh 3D + lưới biến dạng theo xương (WebGL) =====
 const SQT=((D,PRE)=>{
@@ -2688,11 +2704,15 @@ const SQT=((D,PRE)=>{
   const cv=document.getElementById('sqt'),sh=document.getElementById('sqtSh');
   if(!cv||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   SQT.init(cv,'/img/home/');
-  const S=()=>Math.min(1.25,Math.max(.9,innerWidth/430))*.085;   // cỡ sóc (~60px)
+  // sóc đang nuôi (từ "Sóc của bạn"): cấp quyết định cỡ, phụ kiện, thói quen
+  const PET=()=>window.TCPET&&window.TCPET.on?window.TCPET:null;
+  const lvl=()=>{const p=PET();return p&&p.lv>=0?Math.min(4,p.lv):-1};
+  const LVK=[.8,.9,1,1.05,1.1],LVV=[.82,.95,1,1,1.06];
+  const S=()=>Math.min(1.25,Math.max(.9,innerWidth/430))*.085*(lvl()<0?1:LVK[lvl()]);   // cỡ sóc (~60px)
   const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
   const M={sy:scrollY,sx:scrollX,scr:0,ret:null,x:innerWidth*.78,y:innerHeight*1.15,h:-90,v:0,st:'enter',ts:performance.now(),stride:0,goal:null,task:null,q:[],bag:false,act:0,lt:performance.now(),hop:0,pose:'run',fade:null,cur:null};
   const tot=()=>{try{return Object.values(cart).reduce((a,b)=>a+(+b||0),0)}catch(e){return 0}};
-  function go(st){M.st=st;M.ts=performance.now()}
+  function go(st){if(M.cup&&st!=='brew'){M.cup.remove();M.cup=null}M.st=st;M.ts=performance.now()}
   function bounds(){const mb=document.getElementById('mbar'),bot=mb&&mb.getBoundingClientRect().height?mb.getBoundingClientRect().top-24:innerHeight-30;
     let top=70;document.querySelectorAll('.nav,.cats').forEach(e=>{const r=e.getBoundingClientRect();if(r.height&&r.bottom>0&&r.top<200)top=Math.max(top,r.bottom+26)});
     return {l:26,r:innerWidth-26,t:top,b:Math.max(top+80,bot)}}
@@ -2738,9 +2758,16 @@ const SQT=((D,PRE)=>{
       const hop=M.tr.up?Math.sin(k*Math.PI)*7:Math.sin(k*Math.PI)*-3;
       CP=Object.assign({},M.cur.P,{rot:lerpA(r0,r1,Math.min(1,e*1.15)),sx:M.cur.P.sx*(.72+.28*e),sy:M.cur.P.sy*(.66+.34*e),y:M.cur.P.y-hop})}}
     if(M.cur){const al=M.tr?Math.min(1,(now-M.tr.t)/M.tr.dur*1.5):M.cur.alpha;SQT.draw(M.cur.n,CP,M.cur.ang,al);if(M.cur.blend&&M.cur.blend.a>.02)SQT.draw(M.cur.blend.n,CP,M.cur.ang,M.cur.blend.a*al);
+      drawAcc(M.cur.n,CP,M.cur.ang,al);
       if(M.bag&&M.cur.n!=='bag'){const P=CP,hp=SQT.pt(M.cur.n,P,TD[M.cur.n].a.hand),sw=Math.sin(now/120)*12;
         SQT.draw('bagonly',{x:hp[0],y:hp[1],rot:P.rot+sw,sx:P.sx/(TD[M.cur.n].k||1)*TD.bagonly.k,sy:P.sy/(TD[M.cur.n].k||1)*TD.bagonly.k,anchor:TD.bagonly.a.handle},null,1)}}
     const P=CP;if(P){sh.style.transform=`translate(${P.x}px,${P.y+6}px) scale(${(P.sx/.105).toFixed(2)})`}}
+  // mũ / vương miện theo cấp, bám đỉnh đầu, nghiêng theo xương đầu
+  function drawAcc(n,P,ang,al){const L=lvl(),d=TD[n],hd=d&&d.a.hd;if(L<0||!hd)return;
+    let p=[hd[0],hd[1]],r=0;const hb=d.b.find(b=>b[0]==='head');
+    if(hb&&ang&&ang.head){r=ang.head;const a=r*Math.PI/180,c=Math.cos(a),s=Math.sin(a),o=hb[1],dx=p[0]-o[0],dy=p[1]-o[1];p=[o[0]+c*dx-s*dy,o[1]+s*dx+c*dy]}
+    const q=SQT.pt(n,P,p),k=hd[2]*ACC[L][0]/120;
+    SQT.draw('acc'+L,{x:q[0],y:q[1],rot:P.rot+r,sx:P.sx*k,sy:P.sy*k,anchor:TD['acc'+L].a.c},null,al)}
   // ---- nhịp cử động từng tư thế ----
   const A={
     run:(ph,t)=>{const w=ph*Math.PI*2;return {armL:30*Math.sin(w),armR:-30*Math.sin(w+.5),legL:-28*Math.sin(w+.4),legR:28*Math.sin(w),head:4*Math.sin(w*2),tail1:14*Math.sin(w-1),tail2:18*Math.sin(w-1.8)}},
@@ -2750,7 +2777,7 @@ const SQT=((D,PRE)=>{
     back:(t)=>{const w=Math.sin(t/110);return {armL:22*w,armR:-22*w,legL:-26*Math.sin(t/95+1),legR:26*Math.sin(t/95),head:6*Math.sin(t/260),tail1:16*Math.sin(t/200)}},
     groom:(t)=>{const w=Math.sin(t/90);return {armL:14*w,armR:-14*Math.sin(t/90+.6),head:5*Math.sin(t/180),tail1:12*Math.sin(t/260)}}};
   // ---- di chuyển ----
-  function steer(tx,ty,dt,vmax=300){const dx=tx-M.x,dy=ty-M.y,d=Math.hypot(dx,dy);
+  function steer(tx,ty,dt,vmax=300){if(lvl()>=0)vmax*=LVV[lvl()];const dx=tx-M.x,dy=ty-M.y,d=Math.hypot(dx,dy);
     const want=Math.atan2(dy,dx)*180/Math.PI;let dh=((want-M.h+540)%360)-180;M.h+=cl(dh,-900*dt,900*dt); // quay đầu nhanh, lanh lợi
     const vt=Math.min(vmax,d*5.5);M.v+=(vt-M.v)*Math.min(1,dt*9);const k=Math.max(0,Math.cos(dh*Math.PI/180))*.85+.15;
     M.x+=Math.cos(M.h*Math.PI/180)*M.v*k*dt;M.y+=Math.sin(M.h*Math.PI/180)*M.v*k*dt;
@@ -2760,13 +2787,22 @@ const SQT=((D,PRE)=>{
   function drawRun(t){const ph=M.stride%1,q=ph*6,i=Math.floor(q)%6,f=q-Math.floor(q),fs=f*f*(3-2*f);
     const hop=Math.abs(Math.sin(ph*Math.PI*2))*.06*Math.min(1,M.v/120),w=ph*Math.PI*2;
     const sp=Math.min(1,M.v/160),ang={head:5*Math.sin(w*2),tail1:16*Math.sin(w-1),};
-    const P=put(RUNF[i],ang,M.x,M.y,M.h+90,1+hop,1,{n:RUNF[(i+1)%6],a:fs});const st=1+.07*Math.sin(w)*sp;P.sy*=st;P.sx/=Math.sqrt(st)}
+    const P=put(RUNF[i],ang,M.x,M.y,M.h+90,1+hop,1,{n:RUNF[(i+1)%6],a:fs});const st=1+.07*Math.sin(w)*sp;P.sy*=st;P.sx/=Math.sqrt(st);
+    if(lvl()===4&&M.v>60&&Math.floor(t/110)!==M._sg){M._sg=Math.floor(t/110);puff(M.x-Math.cos(M.h*Math.PI/180)*20+(Math.random()-.5)*10,M.y-Math.sin(M.h*Math.PI/180)*20,'sqg',1)}}
   // ---- nhận việc ----
   let lastPt={x:innerWidth/2,y:innerHeight/2};
   document.addEventListener('pointerdown',e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target};M.act=performance.now();
     if(e.target.closest&&e.target.closest('button,a,input,select,textarea,label,.stp'))return; // nút thì để phần thêm/bớt món xử lý
+    // chạm thẳng vào sóc: cù (chạm nhẹ) hoặc vuốt ve (kéo ngón qua lưng sóc)
+    if(SQT.ready&&!window.TCSQ_OFF&&!M.task&&!['enter','return'].includes(M.st)&&Math.hypot(e.clientX-M.x,e.clientY-(M.y-4))<34*S()/.085){
+      M.petting={x:e.clientX,y:e.clientY,d:0};M.goal=null;if(e.pointerType==='mouse')e.preventDefault();return}
     if(!M.task&&!M.q.length&&SQT.ready){M.goal=clampPt({x:e.clientX,y:e.clientY});if(!['enter'].includes(M.st))go('chase')}},true);
-  function onBump(d,after){if(!d||!SQT.ready)return;M.act=performance.now();
+  document.addEventListener('pointermove',e=>{const G=M.petting;if(!G)return;G.d+=Math.hypot(e.clientX-G.x,e.clientY-G.y);G.x=e.clientX;G.y=e.clientY;
+    if(G.d>22&&M.st!=='pet')go('pet');M.petLast=performance.now()},true);
+  const petUp=()=>{if(!M.petting)return;if(M.st!=='pet')go('tickle');M.petting=null;M.petLast=performance.now()};
+  document.addEventListener('pointerup',petUp,true);document.addEventListener('pointercancel',petUp,true);
+  document.addEventListener('touchmove',e=>{if(M.petting)e.preventDefault()},{passive:false});
+  function onBump(d,after){if(!d||!SQT.ready||window.TCSQ_OFF)return;M.act=performance.now();
     const el=lastPt.el&&lastPt.el.closest&&lastPt.el.closest('button'),r=el?el.getBoundingClientRect():null;
     const p=r?{x:r.left+r.width/2,y:r.top+r.height/2}:{x:lastPt.x,y:lastPt.y};
     if(d>0){for(let i=0;i<d;i++){const b=popBean(p.x,p.y);M.q.push({type:'bean',el:b,need:after>=2})}}
@@ -2785,6 +2821,8 @@ const SQT=((D,PRE)=>{
     const dt=Math.min(.05,Math.max(0,(now-M.lt)/1000));M.lt=now;const t=now-M.ts;
     M.sq=M.sq||1;M.sqv=M.sqv||0;M.sqv+=(-(M.sq-1)*220-M.sqv*12)*dt;M.sq=cl(M.sq+M.sqv*dt,.68,1.3);
     if(!SQT.ready){requestAnimationFrame(tick);return}
+    if(window.TCSQ_OFF){if(!M.hid){M.hid=1;SQT.clear();sh.style.opacity=0;M.task=null;M.q.length=0}requestAnimationFrame(tick);return}
+    if(M.hid){M.hid=0;sh.style.opacity='';M.y=innerHeight*1.15;M.x=innerWidth*.78;go('enter')}
     if(!M.task&&M.q.length&&!['bagout','bagin'].includes(M.st)){M.task=M.q.shift();
       if(M.task.type==='bean'&&M.task.need&&!M.bag){M.q.unshift(M.task);M.task=null;go('bagout')}else go('to')}
     // sóc đứng theo trang: khách cuộn thì sóc trôi theo nội dung
@@ -2803,7 +2841,9 @@ const SQT=((D,PRE)=>{
       if(Math.floor(t/300)!==M._br){M._br=Math.floor(t/300);puff(M.x+(Math.random()-.5)*8,M.y+4,'sqbr',1)}
       if(t>1900){go(M.task?'to':(M.panDrape?'drape':'rest'))}break}
     case 'enter':{const g=clampPt({x:innerWidth*.72,y:innerHeight*.62});const d=steer(g.x,g.y,dt,260);drawRun(t);if(d<6){M.v=0;go('rest')}break}
-    case 'chase':{const g=M.goal||{x:M.x,y:M.y};const d=steer(g.x,g.y,dt,340);drawRun(t);if(d<5){M.v=0;const dr=g.drape;M.goal=null;go(dr?'drape':'rest')}break}
+    case 'chase':{const g=M.goal||{x:M.x,y:M.y};const d=steer(g.x,g.y,dt,340);drawRun(t);if(d<5){M.v=0;const dr=g.drape;M.goal=null;go(dr?'drape':(lvl()===0&&Math.random()<.35?'tumble':'rest'))}break}
+    case 'tumble':{const k=Math.min(1,t/650); // sóc con chạy vụng, phanh không kịp lộn một vòng
+      put('back',A.back(t),M.x,M.y-Math.sin(k*Math.PI)*6,k*360,1-.1*Math.sin(k*Math.PI));if(t<40)puff(M.x,M.y+8,'sqd',3);if(k>=1)go('look');break}
     case 'drape':{const r=panel(); // nằm vắt vẻo trên mép khung đơn: 1 tay 1 chân buông thõng xuống, đung đưa
       if(!r){go('rest');break}M.y=r.top-3;M.x=cl(M.x,r.left+46,r.right-46);const sw=Math.sin(t/520),bl=Math.sin(t/1700);
       put('back',{armR:72+12*sw,legR:38-10*sw,armL:-8+4*bl,legL:-6,head:6*Math.sin(t/900),tail1:10*Math.sin(t/650)},M.x,M.y-9*S()/.105,90,1+.012*Math.sin(t/600));
@@ -2815,9 +2855,15 @@ const SQT=((D,PRE)=>{
       else put('ts13',{},M.x,M.y,0,1+.012*Math.sin(t/300));
       if(now-M.act>4500&&t>1500){
         // chưa đặt món thì hay chạy tới nút cộng "xin ăn"; đã đặt thì thỉnh thoảng
-        const hungry=tot()===0?.7:.25;
+        // khách chọn "không nuôi" thì sóc không xin ăn nữa; sóc đang nuôi mà đói thì xin nhiều hơn
+        const pm=window.TCPET,starving=PET()&&PET().mood!=='vui';
+        const hungry=pm&&pm.off?0:tot()===0?(starving?.85:.7):(starving?.45:.25);
         if(Math.random()<hungry&&pickPlus()){go('hintGo');break}
-        const opts=['groom','roll','hop','wander','look'];go(opts[(idleN++ +Math.floor(Math.random()*3))%opts.length])}break}
+        const opts=[['nap','roll','hop','look','groom'],['spin','hop','roll','wander','groom'],['brew','groom','wander','look','hop'],
+          ['inspect','look','groom','wander','brew'],['shine','inspect','hop','groom','spin']][lvl()]||['groom','roll','hop','wander','look'];
+        go(opts[(idleN++ +Math.floor(Math.random()*3))%opts.length])}
+      if(PET()&&PET().mood==='vui'&&Math.floor(t/2600)!==M._lv){M._lv=Math.floor(t/2600);if(t>800)puff(M.x+6,M.y-22,'sqh',1)}
+      break}
     case 'hintGo':{const H=M.hint,r=H&&H.el.isConnected&&H.el.getBoundingClientRect();
       if(!r||r.bottom<bounds().t||r.top>bounds().b){go('rest');break}
       const g=clampPt({x:r.left+r.width/2,y:r.top-14});const d=steer(g.x,g.y,dt,300);drawRun(t);
@@ -2829,7 +2875,43 @@ const SQT=((D,PRE)=>{
       const rub=Math.sin(t/140),lean=8+3*Math.sin(t/300);
       put('ts13',{},M.x,M.y,lean,1+.03*Math.max(0,rub));
       if(Math.floor(t/900)!==M._rb){M._rb=Math.floor(t/900);rumble(M.x,M.y)}
-      if(t>3600||now-M.act<300){H.el.classList.remove('sq-hint');go('rest')}break}
+      if(t>3600||now-M.act<300){H.el.classList.remove('sq-hint');go(H.look?'rest':'rest')}break}
+    case 'inspectGo':{const H=M.hint,r=H&&H.el.isConnected&&H.el.getBoundingClientRect(); // trưởng quán đi kiểm tra món
+      if(!r||r.bottom<bounds().t||r.top>bounds().b){go('rest');break}
+      const g=clampPt({x:r.left+r.width/2-30,y:r.top-20});const d=steer(g.x,g.y,dt,240);drawRun(t);if(d<6){M.v=0;go('inspectAt')}break}
+    case 'inspectAt':{const lk=Math.sin(t/260)*14; // nghiêng đầu ngắm món rồi gật gù chấm sao
+      put('ts13',{},M.x,M.y,lk,1+.015*Math.sin(t/200));
+      if(t>900&&!M._ins){M._ins=1;puff(M.x,M.y-26,'sqg',5)}if(t<40)M._ins=0;
+      if(t>1800||now-M.act<300)go('rest');break}
+    case 'inspect':{if(pickPlus())go('inspectGo');else go('look');break}
+    case 'nap':{const br=Math.sin(t/650); // sóc con ngủ gật: thở đều, đầu gục gặc, bay chữ z
+      put('groom',{head:3+2*br,tail1:4*Math.sin(t/900),armL:2*br,armR:-2*br},M.x,M.y,Math.sin(t/1300)*3,1+.025*br);
+      if(Math.floor(t/800)!==M._z){M._z=Math.floor(t/800);const e=document.createElement('i');e.className='sqz';e.textContent='z';
+        e.style.left=(M.x+10+scrollX)+'px';e.style.top=(M.y-26+scrollY)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1400)}
+      if(t>3600||now-M.act<300)go('rest');break}
+    case 'spin':{M.h+=dt*620;M.stride+=dt*2.4;const v0=M.v;M.v=150;drawRun(t);M.v=v0; // đuổi theo đuôi mình
+      if(Math.floor(t/120)!==M._du){M._du=Math.floor(t/120);puff(M.x,M.y+8,'sqd',1)}
+      if(t>1500){M.v=0;go('look')}break}
+    case 'brew':{const P=put('eat',A.eat(t*.45),M.x,M.y,Math.sin(t/500)*3,1); // barista: cầm ly cà phê nhấp từng ngụm
+      if(!M.cup){M.cup=document.createElement('i');M.cup.className='sqc';document.body.appendChild(M.cup)}
+      const h=SQT.pt('eat',P,TD.eat.a.hand);M.cup.style.left=(h[0]+scrollX)+'px';M.cup.style.top=(h[1]-3+scrollY)+'px';
+      if(Math.floor(t/380)!==M._st){M._st=Math.floor(t/380);const e=document.createElement('i');e.className='sqst';e.style.left=(h[0]+(Math.random()-.5)*4+scrollX)+'px';
+        e.style.top=(h[1]-4+scrollY)+'px';document.body.appendChild(e);setTimeout(()=>e.remove(),1000)}
+      if(t>2400&&!M._sip){M._sip=1;puff(M.x,M.y-20,'sqh',3)}if(t<40)M._sip=0;
+      if(t>3000||now-M.act<300){M.cup.remove();M.cup=null;go('rest')}break}
+    case 'shine':{const pu=Math.sin(t/180); // huyền thoại: toả ánh vàng lấp lánh
+      put('ts13',{},M.x,M.y-Math.max(0,Math.sin(t/300))*5,Math.sin(t/400)*4,1+.04*Math.max(0,pu));
+      if(Math.floor(t/200)!==M._sg){M._sg=Math.floor(t/200);const a=Math.random()*Math.PI*2;puff(M.x+Math.cos(a)*24,M.y-12+Math.sin(a)*20,'sqg',1)}
+      if(t>2000||now-M.act<300)go('rest');break}
+    case 'tickle':{const L=lvl(),k=Math.min(1,t/700),up=Math.sin(k*Math.PI); // bị cù: bật lên, khúc khích, tim bay
+      if(t<40){puff(M.x,M.y-22,L===4?'sqg':'sqh',L===4?6:4)}
+      put(t<350?'back':'ts13',t<350?A.back(t*2):{},M.x,M.y-up*(L===0?8:13),Math.sin(t/(L===0?45:70))*(L===0?16:9)*(1-k),1+up*.12);
+      if(t>760)go('rest');break}
+    case 'pet':{const on=!!M.petting||now-(M.petLast||0)<450; // được vuốt ve: lim dim mắt, nghiêng theo tay
+      const G=M.petting,lean=G?cl((G.x-M.x)*.35,-14,14):0;
+      put('groom',{head:lean*.4,armL:6*Math.sin(t/160),armR:-6*Math.sin(t/160),tail1:16*Math.sin(t/150)},M.x,M.y,lean*.5,1+.02*Math.sin(t/120));
+      if(Math.floor(t/260)!==M._ph){M._ph=Math.floor(t/260);puff(M.x+(Math.random()-.5)*20,M.y-24,lvl()===4?'sqg':'sqh',1)}
+      if(!on){M.act=now-4000;go('rest')}break}
     case 'to':{const T=M.task;let g;
       if(T.type==='bean'){if(!T.el.isConnected){M.task=null;go('rest');break}g=beanPos(T.el);
         const vis=g.y>0&&g.y<innerHeight&&g.x>0&&g.x<innerWidth;if(!vis&&t>2500){T.el.remove();M.task=null;go('rest');break}g=clampPt(g)}
@@ -2873,42 +2955,60 @@ const SQT=((D,PRE)=>{
 })();
 </script>
 
-<!-- ===== SOC CUA BAN: game nuoi soc theo so ly da dat ===== -->
+<!-- ===== SOC CUA BAN: game nuoi soc theo so ly da dat (tuy chon, khong bat buoc) ===== -->
 <style>
 .nav-pet{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#FFFDF8;border-radius:999px;padding:4px 12px 4px 5px;
   font-family:var(--body);font-size:11.5px;letter-spacing:.06em;color:var(--ink);cursor:pointer;transition:.2s;white-space:nowrap;position:relative}
 .nav-pet:hover{border-color:var(--ink)}
-.nav-pet img{width:24px;height:24px;border-radius:50%;object-fit:cover;object-position:50% 0;background:#F7EFE0}
+.nav-pet img{width:24px;height:24px;border-radius:50%;object-fit:cover;object-position:50% 8%;background:#F7EFE0}
 .nav-pet.hungry::after{content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--cream);animation:gPulse 1.6s infinite}
+.nav-pet.off{padding:4px;opacity:.7}.nav-pet.off .tx{display:none}.nav-pet.off img{filter:grayscale(.6)}
 @media(max-width:430px){.nav-pet .tx{display:none}.nav-pet{padding:4px}.nav-r{gap:5px}.nav-r .nav-tt{padding:7px 9px;letter-spacing:.03em}}
 .pt-bg{position:fixed;inset:0;z-index:177;background:rgba(24,15,10,.5);opacity:0;visibility:hidden;transition:.3s}
 .pt-bg.on{opacity:1;visibility:visible}
 .pt{position:fixed;z-index:178;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;background:#FDF8EF;border-radius:20px 20px 0 0;padding:14px 20px 26px;
-  transform:translateY(105%);transition:transform .38s cubic-bezier(.2,.8,.2,1);font-family:var(--body);color:var(--ink)}
+  transform:translateY(105%);transition:transform .38s cubic-bezier(.2,.8,.2,1);font-family:var(--body);color:var(--ink);overscroll-behavior:contain}
 .pt.on{transform:none}
-@media(min-width:701px){.pt{left:50%;bottom:auto;top:50%;width:420px;border-radius:20px;transform:translate(-50%,-40%) scale(.96);opacity:0;visibility:hidden;transition:.3s}
+@media(min-width:701px){.pt{left:50%;bottom:auto;top:50%;width:440px;border-radius:20px;transform:translate(-50%,-40%) scale(.96);opacity:0;visibility:hidden;transition:.3s}
   .pt.on{transform:translate(-50%,-50%);opacity:1;visibility:visible}}
 .pt .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 10px}
-.pt .x{position:absolute;right:10px;top:10px;width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:24px;color:var(--mute);cursor:pointer}
+.pt .x{position:absolute;right:10px;top:10px;width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:24px;color:var(--mute);cursor:pointer;z-index:2}
 .pt h3{font-family:var(--disp);font-size:28px;font-weight:500;line-height:1.1;text-align:center}
 .pt .sub{text-align:center;font-size:12px;color:var(--mute);margin-top:4px}
-.pt-stage{position:relative;height:200px;margin:12px auto 6px;display:flex;align-items:flex-end;justify-content:center;
-  background:radial-gradient(ellipse 60% 24% at 50% 92%,rgba(42,29,22,.12),transparent 70%)}
-.pt-stage img{width:auto;transform-origin:50% 100%;animation:ptBob 2.6s ease-in-out infinite;cursor:pointer;user-select:none;-webkit-user-drag:none}
-.pt-stage.buon img{filter:saturate(.75);animation-duration:4s}
-.pt-stage.eat img{animation:ptChew .22s ease-in-out infinite}
-.pt-stage.yay img{animation:ptHop .5s ease-out 2}
+.pt-stage{position:relative;height:215px;margin:10px auto 4px;display:flex;align-items:flex-end;justify-content:center;
+  background:radial-gradient(ellipse 52% 20% at 50% 94%,rgba(42,29,22,.13),transparent 70%)}
+.pt-pet{position:relative;transform-origin:50% 100%;animation:ptBob 2.6s ease-in-out infinite;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.pt-pet img{display:block;width:auto;pointer-events:none;-webkit-user-drag:none}
+.pt-stage.lv4 .pt-pet img{filter:drop-shadow(0 0 10px rgba(247,215,116,.75))}
+.pt-stage.doi .pt-pet{animation-duration:3.4s}
+.pt-stage.buon .pt-pet{animation-duration:4.4s}.pt-stage.buon .pt-pet img{filter:saturate(.7) brightness(.96)}
+.pt-pet.eat{animation:ptChew .22s ease-in-out infinite}
+.pt-pet.r0{animation:ptWob .7s ease-in-out}
+.pt-pet.r1{animation:ptHop .45s ease-out 2}
+.pt-pet.r2{animation:ptTilt .9s ease-in-out}
+.pt-pet.r3{animation:ptBow .9s ease-in-out}
+.pt-pet.r4{animation:ptGlow 1s ease-in-out}
+.pt-pet.pet{animation:ptSquish .5s ease-in-out infinite}
+.pt-pet.yay{animation:ptHop .5s ease-out 3}
 @keyframes ptBob{0%,100%{transform:scale(1,1)}50%{transform:scale(1.02,.98)}}
 @keyframes ptChew{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97) translateY(1px)}}
-@keyframes ptHop{0%{transform:none}35%{transform:translateY(-26px) scale(.97,1.04)}70%{transform:translateY(0) scale(1.05,.95)}100%{transform:none}}
-.pt-bean{position:absolute;width:18px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8a5a37,#4a2c18);left:50%;top:0;opacity:0;pointer-events:none}
+@keyframes ptHop{0%{transform:none}35%{transform:translateY(-24px) scale(.97,1.04)}70%{transform:translateY(0) scale(1.06,.94)}100%{transform:none}}
+@keyframes ptWob{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg) scale(1.03,.97)}45%{transform:rotate(7deg)}70%{transform:rotate(-4deg)}85%{transform:rotate(2deg)}}
+@keyframes ptTilt{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg) translateY(-4px)}60%{transform:rotate(3deg)}}
+@keyframes ptBow{0%,100%{transform:none}35%{transform:scale(1.02,.92) rotate(-3deg)}60%{transform:scale(.99,1.03)}}
+@keyframes ptGlow{0%,100%{transform:none;filter:none}50%{transform:translateY(-10px) scale(1.04);filter:brightness(1.12) drop-shadow(0 0 18px #F7D774)}}
+@keyframes ptSquish{0%,100%{transform:scale(1,1)}50%{transform:scale(1.04,.95)}}
+.pt-fx{position:absolute;left:50%;top:40%;pointer-events:none;font-size:16px;animation:ptFx 1.1s ease-out forwards;z-index:2}
+@keyframes ptFx{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2)}}
+.pt-bean{position:absolute;width:18px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8a5a37,#4a2c18);left:50%;top:0;opacity:0;pointer-events:none;z-index:2}
 .pt-bean::after{content:'';position:absolute;left:47%;top:15%;width:2px;height:70%;background:#2a170c;border-radius:2px;transform:rotate(8deg)}
 .pt-bean.go{animation:ptDrop .7s cubic-bezier(.45,0,.6,1) both}
-@keyframes ptDrop{0%{opacity:0;transform:translate(-50%,-10px) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,92px) rotate(260deg) scale(.6)}}
-.pt-say{position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 12px;font-size:12.5px;white-space:nowrap;
-  opacity:0;transition:.3s;pointer-events:none}
+@keyframes ptDrop{0%{opacity:0;transform:translate(-50%,-10px) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,var(--to,100px)) rotate(260deg) scale(.6)}}
+.pt-say{position:absolute;top:0;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 12px;font-size:12.5px;white-space:nowrap;
+  opacity:0;transition:.3s;pointer-events:none;z-index:3}
 .pt-say.on{opacity:1;transform:translateX(-50%) translateY(-4px)}
-.pt-name{display:flex;gap:8px;margin:6px 0 2px}
+.pt-hint{text-align:center;font-size:11px;color:var(--mute);margin-top:2px}
+.pt-name{display:flex;gap:8px;margin:8px 0 2px}
 .pt-name input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font:inherit;font-size:15px;background:#fff}
 .pt-lv{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;font-size:12px;color:var(--mute)}
 .pt-lv b{font-family:var(--disp);font-size:20px;font-weight:600;color:var(--ink)}
@@ -2916,47 +3016,83 @@ const SQT=((D,PRE)=>{
 .pt-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--gold),#d9b45a);transition:width .8s cubic-bezier(.2,.8,.2,1)}
 .pt-bar.full i{background:linear-gradient(90deg,#c0703a,#e6a15a)}
 .pt-bar.full.low i{background:linear-gradient(90deg,var(--red),#c65a48)}
+.pt-road{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;gap:4px}
+.pt-road div{flex:1;text-align:center;font-size:10px;color:var(--mute);line-height:1.25}
+.pt-road img{display:block;margin:0 auto 4px;height:46px;width:auto;filter:brightness(0) opacity(.16);transition:.3s}
+.pt-road div.on img{filter:none}.pt-road div.on{color:var(--ink)}
+.pt-road div.cur img{filter:drop-shadow(0 0 0 #fff) drop-shadow(0 2px 6px rgba(184,145,47,.55))}
+.pt-road div.cur{font-weight:600}
+.pt-road small{display:block;font-size:9.5px;opacity:.75}
 .pt-row{display:flex;gap:10px;margin-top:16px}
 .pt-chip{flex:1;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;text-align:center}
 .pt-chip b{display:block;font-family:var(--disp);font-size:24px;font-weight:600;line-height:1.1}
 .pt-chip span{font-size:11px;color:var(--mute);letter-spacing:.04em}
 .pt .btn-feed{width:100%;margin-top:16px;border:0;border-radius:999px;padding:14px;font:600 14px var(--body);letter-spacing:.04em;background:var(--ink);color:#FDF8EF;cursor:pointer;transition:.2s}
 .pt .btn-feed:disabled{opacity:.4;cursor:default}
+.pt .btn-ghost{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:999px;padding:12px;font:500 13px var(--body);background:transparent;color:var(--mute);cursor:pointer}
 .pt .btn-sec{border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:0 16px;font:600 13px var(--body);cursor:pointer}
 .pt .note{font-size:11.5px;color:var(--mute);line-height:1.55;margin-top:14px;text-align:center}
-.pt .pend{margin-top:12px;font-size:12.5px;background:rgba(184,145,47,.1);border-radius:12px;padding:9px 12px;text-align:center}
+.pt .pend{margin-top:12px;font-size:12.5px;background:rgba(184,145,47,.1);border-radius:12px;padding:9px 12px;text-align:center;line-height:1.5}
 .pt .err{color:var(--red);font-size:12.5px;text-align:center;margin-top:8px;min-height:1em}
-.pt-lvls{display:flex;justify-content:space-between;margin-top:14px;gap:4px}
-.pt-lvls div{flex:1;text-align:center;font-size:10px;color:var(--mute);line-height:1.3}
-.pt-lvls div i{display:block;width:10px;height:10px;border-radius:50%;margin:0 auto 4px;background:rgba(42,29,22,.12)}
-.pt-lvls div.on{color:var(--ink)}.pt-lvls div.on i{background:var(--gold)}
+.pt-line{display:flex;justify-content:center;align-items:flex-end;gap:6px;margin:16px 0 4px}
+.pt-line img{width:auto;display:block}
+.pt-feat{list-style:none;margin:14px 0 0;padding:0;font-size:13px;line-height:1.5}
+.pt-feat li{display:flex;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.pt-feat li:last-child{border:0}
+.pt-feat b{flex:0 0 22px;text-align:center}
+.pt-set{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-size:12.5px}
+.pt-set label{display:flex;justify-content:space-between;align-items:center;padding:6px 0;cursor:pointer}
+.pt-set input[type=checkbox]{appearance:none;width:38px;height:22px;border-radius:22px;background:rgba(42,29,22,.18);position:relative;transition:.2s;cursor:pointer;flex:0 0 38px}
+.pt-set input[type=checkbox]::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.pt-set input[type=checkbox]:checked{background:#1F6B4A}.pt-set input[type=checkbox]:checked::after{left:19px}
+.pt-set .lk{display:flex;justify-content:space-between;margin-top:6px}
+.pt-set a{color:var(--mute);font-size:11.5px}
 .pt-earn{margin-top:10px;font-size:12.5px;color:#1F6B4A;text-align:center}
+.pt-earn button{border:0;background:none;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+.pt-up{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(253,248,239,.94);z-index:4;border-radius:inherit;
+  animation:gIn .4s both;text-align:center;padding:20px}
+.pt-up b{font-family:var(--disp);font-size:30px;font-weight:600;margin-top:8px}
+.pt-up span{font-size:13px;color:var(--mute);margin-top:4px}
+.pt-up img{height:200px;width:auto;animation:ptHop .6s ease-out 2}
 </style>
 <div class="pt-bg" id="ptBg"></div>
 <div class="pt" id="pt" role="dialog" aria-modal="true" aria-labelledby="ptH"><div class="grab"></div><button type="button" class="x" id="ptX" aria-label="Đóng">×</button><div id="ptBd"></div></div>
 <script>
 (function(){
-  const API = '/api/soc', KEY = 'tcPet', IMG = 'img/home/sqt-';
+  const API = '/api/soc', KEY = 'tcPet', MODE = 'tcPetMode', VKEY = 'tcPetV', HIDE = 'tcSqHide', IMG = 'img/home/';
   const LV = [['Sóc con',0],['Sóc nhỏ',5],['Sóc barista',15],['Sóc trưởng quán',35],['Sóc huyền thoại',70]];
+  const LVH = [128,150,166,182,200];                       // lớn dần theo cấp
+  const LOOK = ['lá non trên đầu','mũ hạt sồi','mũ nồi + tạp dề barista','mũ phớt + nơ trưởng quán','vương miện + áo choàng vàng'];
+  const SKILL = ['Hay ngủ gật, chạy vụng hay lộn nhào','Nhảy tưng tưng, đuổi theo đuôi','Cầm ly cà phê nhấp từng ngụm','Đi kiểm tra từng món trong menu','Toả ánh vàng lấp lánh khi chạy'];
+  const TAP = [['Hi hi, nhột quá!','Bế tớ đi!','Tớ còn bé xíu à…'],['Tớ nhảy giỏi lắm nè!','Chơi với tớ đi!','Bắt được tớ không?'],
+               ['Hôm nay uống latte nhé?','Tớ vừa học vẽ latte art!','Thơm mùi cà phê chưa?'],['Mời bạn ngồi, tớ lấy menu!','Quán hôm nay đông khách ghê!','Món mới ngon lắm đó!'],
+               ['Cảm ơn bạn đã nuôi tớ lớn!','Ánh sáng cà phê toả khắp nơi!','Tớ là huyền thoại của quán!']];
+  const HUNGRY = ['Bụng tớ kêu ọt ọt…','Cho tớ vài hạt nhé?','Đói đói…'];
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const st = { get(){ try{ return JSON.parse(localStorage.getItem(KEY) || 'null') || null; }catch(e){ return null; } },
-               set(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} } };
+  const get = (k, d) => { try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } };
+  const set = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
   const norm = p => { let d = String(p || '').replace(/\D/g, ''); if(d.startsWith('84')) d = '0' + d.slice(2); return /^0\d{9,10}$/.test(d) ? d : ''; };
-  let S = st.get() || {}, P = null, busy = false;
-  const FN = m => m === 'eat' ? 'eat' : m === 'yay' ? 'back' : m === 'doi' ? 'pant' : m === 'buon' ? 'groom' : 'ts13';
-  const img = m => IMG + FN(m) + '.webp?v=6';
-  // cung mot co soc o moi tu the: [chieu cao anh, bu khoang trong duoi chan]
-  const SZ = { ts13:[252,-34], pant:[170,0], eat:[172,0], groom:[163,0], back:[176,0] };
-  const fit = (el, m) => { const z = SZ[FN(m)]; el.style.height = z[0] + 'px'; el.style.marginBottom = z[1] + 'px'; el.src = img(m); };
-  const icon = m => IMG + (m === 'vui' ? 'eat' : 'pant') + '.webp?v=6';
-  const SAY = { vui:['No căng rồi, cảm ơn nha!','Hôm nay uống gì đó?','Tớ thích mùi cà phê ở đây!'],
-                doi:['Bụng tớ kêu ọt ọt…','Cho tớ vài hạt nhé?','Đói đói…'], buon:['Lâu rồi không gặp bạn…','Tớ đói lả rồi…'] };
+  const pimg = i => IMG + 'sqp-' + Math.max(0, Math.min(4, i)) + '.webp?v=1';
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const mask = p => p.slice(0, 3) + '••••' + p.slice(-3);
+  let S = get(KEY, null) || {}, mode = get(MODE, ''), P = null, busy = false;
+  const V0 = get(VKEY, null);
 
-  // nut tren thanh nav
+  // chia se cho soc chay tren trang dat nuoc
+  function share(){
+    const v = P && P.exists ? { lv:P.lv.i, mood:P.mood, nm:P.nm } : (V0 || {});
+    window.TCPET = { on: mode === 'on' && v.lv != null, off: mode === 'off', lv: v.lv == null ? -1 : v.lv, mood: v.mood || 'vui', nm: v.nm || '' };
+    window.TCSQ_OFF = !!get(HIDE, false);
+    const b = document.getElementById('navPet'); if(!b) return;
+    b.classList.toggle('off', mode === 'off');
+    b.classList.toggle('hungry', mode === 'on' && !!P && P.exists && P.mood !== 'vui');
+    b.querySelector('img').src = pimg(window.TCPET.on ? window.TCPET.lv : 1);
+  }
+
   const navR = document.querySelector('.nav-r') || document.querySelector('.nav-in');
-  navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-pet" id="navPet"><img src="' + icon('vui') + '" alt=""><span class="tx">Sóc của bạn</span></button>');
+  navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-pet" id="navPet" aria-label="Sóc của bạn"><img src="' + pimg(1) + '" alt=""><span class="tx">Sóc của bạn</span></button>');
   const bg = document.getElementById('ptBg'), sh = document.getElementById('pt'), bd = document.getElementById('ptBd');
-  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; paint(); load(); }
+  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; paint(); if(mode === 'on') load(); }
   function close(){ bg.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = ''; }
   document.getElementById('navPet').addEventListener('click', open);
   bg.addEventListener('click', close); document.getElementById('ptX').addEventListener('click', close);
@@ -2967,105 +3103,168 @@ const SQT=((D,PRE)=>{
     const r = await fetch(API + q, method === 'GET' ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ ph:S.ph, t:S.t }, body)) });
     return r.json();
   }
+  function got(pet){
+    const was = P; P = pet;
+    if(P && P.exists){
+      const old = get(VKEY, null);
+      set(VKEY, { lv:P.lv.i, mood:P.mood, nm:P.nm });
+      if(old && old.lv != null && P.lv.i > old.lv) setTimeout(() => levelUp(P.lv.i), 350);
+      else if(was && was.exists && P.cups > was.cups) setTimeout(() => say('Yay! +' + (P.cups - was.cups) * 10 + ' hạt cà phê', 'yay'), 300);
+    }
+    share();
+  }
   async function load(){
-    if(!S.ph) return;
-    try{ const r = await call('GET'); if(r.ok){ const was = P; P = r.pet; earned(was); paint(); badge(); } else { P = P || null; paint(r.err); } }
+    if(mode !== 'on' || !S.ph) return;
+    try{ const r = await call('GET'); if(r.ok){ got(r.pet); paint(); } else paint(r.err); }
     catch(e){ paint('Chưa kết nối được — thử lại sau nhé.'); }
   }
-  function earned(was){
-    if(!was || !was.exists || !P.exists) return;
-    const g = P.cups - was.cups; if(g > 0) setTimeout(() => say('Yay! +' + g * 10 + ' hạt cà phê', 'yay'), 300);
+  // nhan nuoi muon: gan cac don vua dat tren may nay
+  async function claim(){
+    const os = get('tcOrders', []).filter(e => e && e.c && e.k && Date.now() - e.at < 3*86400e3 && !(e.last && e.last.s === 'cancel')).map(e => ({ c:e.c, k:e.k }));
+    if(!os.length) return 0;
+    try{ const r = await call('POST', { a:'claim', os }); if(r.ok){ S.t = r.t; set(KEY, S); got(r.pet); return r.n; } }catch(e){}
+    return 0;
   }
-  function badge(){ const b = document.getElementById('navPet'); if(!b || !P || !P.exists) return;
-    b.classList.toggle('hungry', P.mood !== 'vui'); b.querySelector('img').src = icon(P.mood); }
 
-  function lvHtml(lv, cups){
-    const pct = lv.next == null ? 100 : Math.round((cups - lv.at) / (lv.next - lv.at) * 100);
-    return '<div class="pt-lv"><b>' + esc(lv.n) + '</b><span>' + (lv.next == null ? 'Cấp cao nhất' : (lv.next - cups) + ' ly nữa → ' + esc(lv.nextN)) + '</span></div>' +
-      '<div class="pt-bar"><i style="width:' + pct + '%"></i></div>' +
-      '<div class="pt-lvls">' + LV.map(([n,a]) => '<div class="' + (cups >= a ? 'on' : '') + '"><i></i>' + n.replace('Sóc ','') + '</div>').join('') + '</div>';
+  function setMode(m){ mode = m; set(MODE, m); share(); }
+  function settings(){
+    return '<div class="pt-set"><label>Hiện sóc chạy trên trang đặt nước<input type="checkbox" id="ptShow"' + (get(HIDE, false) ? '' : ' checked') + '></label>' +
+      (mode === 'on' ? '<div class="lk"><a href="#" id="ptChg">Dùng số khác</a><a href="#" id="ptQuit">Thôi, không nuôi sóc</a></div>' : '') + '</div>';
   }
-  function paint(err){ paint0(err); bd.querySelectorAll('img[data-m]').forEach(e => fit(e, e.dataset.m)); }
-  function paint0(err){
+  function bindSet(){
+    const cb = document.getElementById('ptShow');
+    if(cb) cb.addEventListener('change', () => { set(HIDE, cb.checked ? null : true); share(); });
+    const a = document.getElementById('ptChg'); if(a) a.addEventListener('click', e => { e.preventDefault(); S = {}; set(KEY, null); P = null; set(VKEY, null); share(); paint(); });
+    const q = document.getElementById('ptQuit'); if(q) q.addEventListener('click', e => { e.preventDefault(); setMode('off'); paint(); });
+  }
+
+  function paint(err){
+    // 1. chua chon / khong nuoi: gioi thieu, hoi y khach
+    if(mode !== 'on'){
+      bd.innerHTML = '<h3 id="ptH">' + (mode === 'off' ? 'Bạn đang không nuôi sóc' : 'Nuôi một bé sóc?') + '</h3>' +
+        '<div class="sub">Hoàn toàn tuỳ bạn — không nuôi vẫn đặt nước bình thường</div>' +
+        '<div class="pt-line">' + LV.map((l, i) => '<img src="' + pimg(i) + '" alt="' + l[0] + '" style="height:' + Math.round(LVH[i] * .5) + 'px">').join('') + '</div>' +
+        '<ul class="pt-feat"><li><b>☕</b><span>Mỗi ly bạn đặt = 10 hạt cà phê cho sóc ăn.</span></li>' +
+        '<li><b>🌱</b><span>Sóc lớn dần qua 5 cấp, mỗi cấp một bộ đồ và thói quen riêng.</span></li>' +
+        '<li><b>🐾</b><span>Sóc chạy trên trang đặt nước chính là sóc của bạn — chạm để cù, vuốt để vuốt ve.</span></li></ul>' +
+        '<button class="btn-feed" id="ptYes">' + (mode === 'off' ? 'Nuôi lại sóc' : 'Nhận nuôi sóc') + '</button>' +
+        (mode === 'off' ? '' : '<button class="btn-ghost" id="ptNo">Không, cảm ơn</button>') +
+        '<div class="note">Không nuôi thì sóc không xin ăn, không nhắc nhở gì nữa.</div>' + settings();
+      bindSet();
+      document.getElementById('ptYes').addEventListener('click', () => { setMode('on'); paint(); if(S.ph) load(); });
+      const no = document.getElementById('ptNo'); if(no) no.addEventListener('click', () => { setMode('off'); close(); });
+      return;
+    }
+    // 2. nhap so dien thoai
     if(!S.ph){
-      bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="sub">Mỗi ly bạn đặt = 10 hạt cà phê để nuôi sóc</div>' +
-        '<div class="pt-stage"><img data-m="doi" alt="Sóc"></div>' +
-        '<div class="pt-name"><input id="ptPh" inputmode="tel" autocomplete="tel" placeholder="Số điện thoại bạn dùng khi đặt" value="' + esc((document.getElementById('phone') || {}).value || '') + '"><button class="btn-sec" id="ptGo">Xem sóc</button></div>' +
+      bd.innerHTML = '<h3 id="ptH">Nhận nuôi sóc</h3><div class="sub">Sóc gắn với số điện thoại bạn dùng khi đặt</div>' +
+        '<div class="pt-stage"><div class="pt-pet"><img src="' + pimg(0) + '" style="height:' + LVH[0] + 'px" alt="Sóc con"></div></div>' +
+        '<div class="pt-name"><input id="ptPh" inputmode="tel" autocomplete="tel" placeholder="Số điện thoại" value="' + esc((document.getElementById('phone') || {}).value || '') + '"><button class="btn-sec" id="ptGo">Nhận nuôi</button></div>' +
         '<div class="err" id="ptErr">' + esc(err || '') + '</div>' +
-        '<div class="note">Sóc gắn với số điện thoại đặt đơn. Quán chỉ lưu mã hoá của số, không lưu số thật. Chăm sóc (đặt tên, cho ăn) được trên máy bạn đã đặt đơn.</div>';
-      const go = () => { const p = norm(document.getElementById('ptPh').value); if(!p){ document.getElementById('ptErr').textContent = 'Số điện thoại chưa đúng.'; return; }
-        S = { ph:p, t:(S.ph === p ? S.t : '') }; st.set(S); P = null; paint(); load(); };
+        '<div class="note">Quán chỉ lưu mã hoá của số, không lưu số thật. Đơn bạn vừa đặt trên máy này được tính luôn cho sóc.</div>' + settings();
+      bindSet();
+      const go = async () => { const p = norm(document.getElementById('ptPh').value); if(!p){ document.getElementById('ptErr').textContent = 'Số điện thoại chưa đúng.'; return; }
+        S = { ph:p, t:'' }; set(KEY, S); P = null; paint(); const n = await claim(); if(!n) load(); else paint(); };
       document.getElementById('ptGo').addEventListener('click', go);
       document.getElementById('ptPh').addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
       return;
     }
-    if(!P){ bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="pt-stage"><img data-m="vui" alt="Sóc"></div><div class="sub">' + esc(err || 'Đang gọi sóc…') + '</div>' + changeLink(); bindChange(); return; }
+    if(!P){ bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="pt-stage"><div class="pt-pet"><img src="' + pimg(V0 ? V0.lv : 0) + '" style="height:' + LVH[V0 ? V0.lv : 0] + 'px" alt=""></div></div><div class="sub">' + esc(err || 'Đang gọi sóc…') + '</div>' + settings(); bindSet(); return; }
     if(!P.exists){
-      bd.innerHTML = '<h3 id="ptH">Chưa có sóc</h3><div class="sub">Số ' + mask(S.ph) + '</div>' +
-        '<div class="pt-stage"><img data-m="doi" alt="Sóc"></div>' +
-        '<div class="pend">Đặt ly đầu tiên với số này để nhận một bé sóc — mỗi ly được 10 hạt cà phê cho sóc ăn.</div>' + changeLink();
-      bindChange(); return;
+      bd.innerHTML = '<h3 id="ptH">Sóc đang chờ bạn</h3><div class="sub">Số ' + mask(S.ph) + '</div>' +
+        '<div class="pt-stage"><div class="pt-pet"><img src="' + pimg(0) + '" style="height:' + LVH[0] + 'px" alt="Sóc con"></div></div>' +
+        '<div class="pend">Đặt ly đầu tiên với số này là bé sóc về nhà bạn — mỗi ly được 10 hạt cà phê cho sóc ăn.</div>' + settings();
+      bindSet(); return;
     }
-    const named = !!P.nm, low = P.full < 25;
+    // 3. soc cua ban
+    const L = P.lv.i, named = !!P.nm, low = P.full < 25;
     bd.innerHTML = '<h3 id="ptH">' + (named ? esc(P.nm) : 'Sóc của bạn') + '</h3>' +
-      '<div class="sub">' + (P.mood === 'vui' ? 'Đang vui vẻ' : P.mood === 'doi' ? 'Hơi đói bụng' : 'Đói lả rồi') + ' · ' + P.cups + ' ly đã nuôi</div>' +
-      '<div class="pt-stage ' + P.mood + '" id="ptSt"><div class="pt-say" id="ptSay"></div><i class="pt-bean" id="ptBean"></i><img id="ptImg" data-m="' + P.mood + '" alt="Sóc"></div>' +
+      '<div class="sub">' + esc(P.lv.n) + ' · ' + (P.mood === 'vui' ? 'đang vui vẻ' : P.mood === 'doi' ? 'hơi đói bụng' : 'đói lả rồi') + '</div>' +
+      '<div class="pt-stage lv' + L + ' ' + P.mood + '" id="ptSt"><div class="pt-say" id="ptSay"></div><i class="pt-bean" id="ptBean"></i>' +
+        '<div class="pt-pet" id="ptPet"><img src="' + pimg(L) + '" style="height:' + LVH[L] + 'px" alt="' + esc(P.lv.n) + '"></div></div>' +
+      '<div class="pt-hint">Chạm để cù · vuốt để vuốt ve</div>' +
       (!named && P.canEdit ? '<div class="pt-name"><input id="ptNm" maxlength="20" placeholder="Đặt tên cho sóc"><button class="btn-sec" id="ptNmGo">Lưu</button></div>' : '') +
       '<div class="pt-lv"><span>Độ no</span><span>' + P.full + '%</span></div><div class="pt-bar full' + (low ? ' low' : '') + '"><i style="width:' + P.full + '%"></i></div>' +
-      lvHtml(P.lv, P.cups) +
+      '<div class="pt-lv"><b>' + esc(P.lv.n) + '</b><span>' + (P.lv.next == null ? 'Cấp cao nhất' : (P.lv.next - P.cups) + ' ly nữa → ' + esc(P.lv.nextN)) + '</span></div>' +
+      '<div class="pt-bar"><i style="width:' + (P.lv.next == null ? 100 : Math.round((P.cups - P.lv.at) / (P.lv.next - P.lv.at) * 100)) + '%"></i></div>' +
+      '<div class="pt-road">' + LV.map(([n, a], i) => '<div class="' + (P.cups >= a ? 'on' : '') + (i === L ? ' cur' : '') + '" title="' + esc(SKILL[i]) + '"><img src="' + pimg(i) + '" alt="">' + n.replace('Sóc ', '') + '<small>' + (P.cups >= a ? (i === L ? 'hiện tại' : 'đã qua') : a + ' ly') + '</small></div>').join('') + '</div>' +
+      '<div class="pend">Cấp này: ' + esc(LOOK[L]) + '. ' + esc(SKILL[L]) + '.</div>' +
       '<div class="pt-row"><div class="pt-chip"><b id="ptBeans">' + P.beans + '</b><span>HẠT CÀ PHÊ</span></div><div class="pt-chip"><b>' + P.cups + '</b><span>LY ĐÃ NUÔI</span></div></div>' +
       (P.pendCups ? '<div class="pend">⏳ ' + P.pendCups + ' ly đang chờ — hạt được cộng khi quán giao xong đơn.</div>' : '') +
       (P.canEdit ? '<button class="btn-feed" id="ptFeed"' + (P.beans < P.cost || P.full >= 100 ? ' disabled' : '') + '>' + (P.full >= 100 ? 'Sóc no căng rồi' : P.beans < P.cost ? 'Cần ' + P.cost + ' hạt để cho ăn' : 'Cho ăn · ' + P.cost + ' hạt') + '</button>'
                  : '<div class="pend">Máy này chỉ xem được sóc. Đặt một đơn bằng số ' + mask(S.ph) + ' trên máy này để chăm sóc.</div>') +
-      '<div class="err" id="ptErr">' + esc(err || '') + '</div>' +
-      '<div class="note">Mỗi ly = 10 hạt. Sóc đói dần nếu lâu không gặp, nhưng không bao giờ bỏ đi đâu.</div>' + changeLink();
-    bindChange();
-    document.getElementById('ptImg').addEventListener('click', () => say(pick(SAY[P.mood] || SAY.vui)));
+      '<div class="err" id="ptErr">' + esc(err || '') + '</div>' + settings();
+    bindSet(); bindPet(L);
     const fb = document.getElementById('ptFeed'); if(fb) fb.addEventListener('click', feed);
     const ng = document.getElementById('ptNmGo'); if(ng){ const doName = () => nameIt(document.getElementById('ptNm').value);
       ng.addEventListener('click', doName); document.getElementById('ptNm').addEventListener('keydown', e => { if(e.key === 'Enter') doName(); }); }
   }
-  const pick = a => a[Math.floor(Math.random() * a.length)];
-  const mask = p => p.slice(0, 3) + '••••' + p.slice(-3);
-  const changeLink = () => '<div class="note"><a href="#" id="ptChg" style="color:inherit">Dùng số khác</a></div>';
-  function bindChange(){ const a = document.getElementById('ptChg'); if(a) a.addEventListener('click', e => { e.preventDefault(); S = {}; st.set(null); P = null; paint(); }); }
+
+  // tuong tac truc tiep: cham = cu, vuot = vuot ve
+  function fx(ch, n){ const st = document.getElementById('ptSt'); if(!st) return;
+    for(let i = 0; i < n; i++){ const e = document.createElement('i'); e.className = 'pt-fx'; e.textContent = ch;
+      const a = -Math.PI/2 + (Math.random() - .5) * 2.2; e.style.setProperty('--dx', Math.cos(a) * (40 + Math.random()*40) + 'px'); e.style.setProperty('--dy', Math.sin(a) * (50 + Math.random()*40) + 'px');
+      e.style.animationDelay = (i * 60) + 'ms'; st.appendChild(e); setTimeout(() => e.remove(), 1300 + i*60); } }
+  function react(cls, ms){ const p = document.getElementById('ptPet'); if(!p) return; p.className = 'pt-pet ' + cls; clearTimeout(p._t); p._t = setTimeout(() => { p.className = 'pt-pet'; }, ms); }
+  function bindPet(L){
+    const el = document.getElementById('ptPet'); if(!el) return;
+    let g = null;
+    el.addEventListener('pointerdown', e => { g = { x:e.clientX, y:e.clientY, d:0, t:Date.now(), pet:false }; try{ el.setPointerCapture(e.pointerId); }catch(err){} });
+    el.addEventListener('pointermove', e => { if(!g) return; g.d += Math.hypot(e.clientX - g.x, e.clientY - g.y); g.x = e.clientX; g.y = e.clientY;
+      if(g.d > 26){ if(!g.pet){ g.pet = true; el.className = 'pt-pet pet'; say(P && P.mood !== 'vui' ? 'Ưm… nhưng tớ đói…' : 'Ưm… dễ chịu quá~'); }
+        if(Date.now() - (g.h || 0) > 220){ g.h = Date.now(); fx(L === 4 ? '✦' : '♥', 1); } } });
+    const up = () => { if(!g) return;
+      if(!g.pet){ // cu
+        if(P && P.mood !== 'vui'){ react('r0', 700); say(pick(HUNGRY)); fx('…', 1); }
+        else { react('r' + L, 1000); say(pick(TAP[L])); fx(L === 4 ? '✦' : L === 2 ? '☕' : '♥', L === 4 ? 6 : 3); }
+      } else { el.className = 'pt-pet'; fx('♥', 3); }
+      g = null; };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  }
   let sayT = 0;
-  function say(t, mode){
-    const el = document.getElementById('ptSay'), stg = document.getElementById('ptSt'); if(!el) return;
+  function say(t, mode2){
+    const el = document.getElementById('ptSay'); if(!el) return;
     el.textContent = t; el.classList.add('on'); clearTimeout(sayT); sayT = setTimeout(() => el.classList.remove('on'), 2200);
-    if(mode === 'yay'){ const im = document.getElementById('ptImg'); fit(im, 'yay'); stg.className = 'pt-stage yay';
-      setTimeout(() => { if(P){ fit(im, P.mood); stg.className = 'pt-stage ' + P.mood; } }, 1300); }
+    if(mode2 === 'yay'){ react('yay', 1500); fx(P && P.lv.i === 4 ? '✦' : '♥', 5); }
+  }
+  function levelUp(i){
+    if(!sh.classList.contains('on')) return;
+    const d = document.createElement('div'); d.className = 'pt-up';
+    d.innerHTML = '<img src="' + pimg(i) + '" alt=""><b>Lên cấp: ' + LV[i][0] + '!</b><span>' + esc(LOOK[i]) + ' · ' + esc(SKILL[i]) + '</span>';
+    sh.appendChild(d); d.addEventListener('click', () => d.remove()); setTimeout(() => d.remove(), 3600);
   }
   async function feed(){
     if(busy) return; busy = true;
     const fb = document.getElementById('ptFeed'); fb.disabled = true;
-    const stg = document.getElementById('ptSt'), im = document.getElementById('ptImg'), bean = document.getElementById('ptBean');
+    const bean = document.getElementById('ptBean'), pet = document.getElementById('ptPet');
+    bean.style.setProperty('--to', Math.round(LVH[P.lv.i] * .55) + 'px');
     bean.classList.remove('go'); void bean.offsetWidth; bean.classList.add('go');
-    setTimeout(() => { fit(im, 'eat'); stg.className = 'pt-stage eat'; }, 450);
+    setTimeout(() => { if(pet) pet.className = 'pt-pet eat'; }, 450);
     let r; try{ r = await call('POST', { a:'feed' }); }catch(e){ r = { ok:false, err:'Chưa kết nối được.' }; }
     setTimeout(() => { busy = false;
-      if(r.ok){ P = r.pet; paint(); badge(); say(P.full >= 100 ? 'No căng! Cảm ơn bạn!' : 'Ngon quá! Măm măm', P.full >= 100 ? 'yay' : ''); }
-      else { if(r.pet) P = r.pet; paint(r.err || 'Không cho ăn được.'); }
+      if(r.ok){ got(r.pet); paint(); say(P.full >= 100 ? 'No căng! Cảm ơn bạn!' : 'Ngon quá! Măm măm', P.full >= 100 ? 'yay' : ''); fx('♥', 3); }
+      else { if(r.pet) got(r.pet); paint(r.err || 'Không cho ăn được.'); }
     }, 1500);
   }
   async function nameIt(v){
     v = String(v || '').trim(); if(!v) return;
-    try{ const r = await call('POST', { a:'name', nm:v }); if(r.ok){ P = r.pet; paint(); say('Tớ là ' + P.nm + '!', 'yay'); } else paint(r.err); }
+    try{ const r = await call('POST', { a:'name', nm:v }); if(r.ok){ got(r.pet); paint(); say('Tớ là ' + P.nm + '!', 'yay'); } else paint(r.err); }
     catch(e){ paint('Chưa kết nối được.'); }
   }
   // goi tu TCO khi don vua tao xong
   function linked(ph, t, cnt){
-    ph = norm(ph); if(!ph || !t) return;
-    S = { ph, t }; st.set(S);
     const box = document.querySelector('#sentBox .sent');
-    if(box && cnt && !document.getElementById('ptEarn')){
-      box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ Đơn này sẽ nuôi sóc của bạn thêm ' + cnt * 10 + ' hạt cà phê · <a href="#" id="ptEarnGo" style="color:inherit">Xem sóc</a></div>');
-      document.getElementById('ptEarnGo').addEventListener('click', e => { e.preventDefault(); open(); });
-    }
-    load();
+    const old = document.getElementById('ptEarn'); if(old) old.remove();
+    if(mode === 'off' || !box) return;
+    if(mode === 'on'){
+      ph = norm(ph); if(ph && t){ S = { ph, t }; set(KEY, S); load(); }
+      if(cnt) box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ Đơn này sẽ nuôi sóc của bạn thêm ' + cnt * 10 + ' hạt cà phê · <button type="button" id="ptEarnGo">Xem sóc</button></div>');
+    } else box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ <button type="button" id="ptEarnGo">Nhận nuôi một bé sóc với đơn này?</button> (tuỳ bạn)</div>');
+    const b = document.getElementById('ptEarnGo'); if(b) b.addEventListener('click', open);
   }
-  window.TCP = { open, linked };
-  if(S.ph) load();
+  window.TCP = { open, linked, on: () => mode === 'on' };
+  share();
+  if(mode === 'on' && S.ph) load();
 })();
 </script>
 </body>
