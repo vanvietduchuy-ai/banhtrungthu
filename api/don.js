@@ -108,7 +108,9 @@ module.exports = async (req, res) => {
       if (okSet !== 'OK') return send(409, { ok: false, err: 'Mã đơn đã tồn tại.' });
       await redis('ZADD', 'ol', now, c);
       await redis('ZREMRANGEBYSCORE', 'ol', 0, now - TTL * 1000);
-      return send(200, { ok: true, c, k: tok, order: view(o) });
+      let pt = null; // gắn đơn vào "Sóc của bạn" theo số điện thoại
+      try { if (b.ph) pt = await require('./soc').linkOrder(b.ph, c, o.cnt); } catch (e) { console.error(e); }
+      return send(200, { ok: true, c, k: tok, pt, order: view(o) });
     }
 
     if (b.a === 'status') {
