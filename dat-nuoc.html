@@ -332,6 +332,12 @@ footer a{color:var(--ink)}
 .sqh::before{content:"♥";position:absolute;left:0;top:-4px;font-size:11px;color:#E07A6A}
 .sqd{background:rgba(160,120,80,.35);width:10px;height:10px;margin:-5px}
 @keyframes sqs{from{transform:translate(0,0) scale(.5);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(1.2);opacity:0}}
+.sqw{position:absolute;z-index:66;left:0;top:0;pointer-events:none;width:7px;height:10px;margin:-5px 0 0 -3.5px;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+  background:linear-gradient(160deg,#E6F6FF,#7FC4F0);animation:sqw .9s ease-in forwards}
+@keyframes sqw{0%{transform:scale(.3);opacity:0}25%{transform:translateY(-4px) scale(1);opacity:1}100%{transform:translateY(16px) scale(.8);opacity:0}}
+.sqbr{position:absolute;z-index:66;left:0;top:0;pointer-events:none;width:12px;height:8px;margin:-4px 0 0 -6px;border-radius:50%;background:rgba(255,255,255,.85);
+  box-shadow:0 0 6px rgba(255,255,255,.8);animation:sqbr .6s ease-out forwards}
+@keyframes sqbr{from{transform:translateY(0) scale(.4);opacity:.9}to{transform:translateY(14px) scale(1.6);opacity:0}}
 @media (prefers-reduced-motion:reduce){#sqt,#sqtSh{display:none}}
 </style>
 </head>
@@ -2607,7 +2613,10 @@ const TD={ // pixel ảnh gốc; đầu sóc hướng xuống dưới ảnh (+y)
     ['legL',[82,330],[48,320],30],['legR',[182,330],[212,320],30],['tail1',[130,420],[130,590],72]]},
   groom:{w:212,h:660,a:{c:[110,390],mouth:[105,320],hand:[200,400]},b:[
     ['armL',[40,330],[45,200],30],['armR',[180,330],[180,200],30],['head',[108,340],[108,210],70],['tail1',[110,530],[110,655],62]]},
-  bagonly:{w:104,h:144,a:{c:[52,72],handle:[25,15]},b:[]}};
+  bagonly:{w:104,h:144,a:{c:[52,72],handle:[25,15]},b:[]},
+  pant:{w:212,h:463,a:{c:[105,150],mouth:[105,195],hand:[190,200]},b:[['head',[105,190],[105,30],72],['tail1',[105,265],[105,455],72]]}};
+// 4 khung chạy phi nước đại nhìn từ trên xuống (thấy lưng), đầu hướng lên trên ảnh
+['b1','b2','b3','b4'].forEach(n=>TD[n]={w:280,h:720,a:{c:[140,330],mouth:[140,120],hand:[225,330]},b:[['head',[140,200],[140,50],58],['tail1',[140,430],[140,700],78]]});
 // ===== Sóc nhìn từ trên xuống: ảnh 3D + lưới biến dạng theo xương (WebGL) =====
 const SQT=((D,PRE)=>{
   const GX=12,GY=16;
@@ -2671,7 +2680,7 @@ const SQT=((D,PRE)=>{
   SQT.init(cv,'/img/home/');
   const S=()=>Math.min(1.25,Math.max(.9,innerWidth/430))*.105;   // cỡ sóc (~60px)
   const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-  const M={x:innerWidth*.78,y:innerHeight*1.15,h:-90,v:0,st:'enter',ts:performance.now(),stride:0,goal:null,task:null,q:[],bag:false,act:0,lt:performance.now(),hop:0,pose:'run',fade:null,cur:null};
+  const M={sy:scrollY,sx:scrollX,scr:0,ret:null,x:innerWidth*.78,y:innerHeight*1.15,h:-90,v:0,st:'enter',ts:performance.now(),stride:0,goal:null,task:null,q:[],bag:false,act:0,lt:performance.now(),hop:0,pose:'run',fade:null,cur:null};
   const tot=()=>{try{return Object.values(cart).reduce((a,b)=>a+(+b||0),0)}catch(e){return 0}};
   function go(st){M.st=st;M.ts=performance.now()}
   function bounds(){const mb=document.getElementById('mbar'),bot=mb&&mb.getBoundingClientRect().height?mb.getBoundingClientRect().top-24:innerHeight-30;
@@ -2688,11 +2697,12 @@ const SQT=((D,PRE)=>{
   function puff(x,y,cls='sqs',n=5){for(let i=0;i<n;i++){const e=document.createElement('i');e.className=cls;e.style.left=(x+scrollX)+'px';e.style.top=(y+scrollY)+'px';
     const a=Math.PI*2*i/n+Math.random()*.5;e.style.setProperty('--dx',Math.cos(a)*22+'px');e.style.setProperty('--dy',Math.sin(a)*22+'px');document.body.appendChild(e);setTimeout(()=>e.remove(),700)}}
   // ---- vẽ ----
-  function put(n,ang,x,y,rot,k=1,alpha=1){const d=TD[n],s=S()*k;const P={x,y,rot,sx:s,sy:s,anchor:d.a.c};
-    if(M.cur&&M.cur.n!==n&&!M.fade)M.fade={c:M.cur,t:performance.now()};M.cur={n,P,ang,alpha};return P}
+  const fam=n=>/^b\d$/.test(n)?'b':n;
+  function put(n,ang,x,y,rot,k=1,alpha=1,blend=null){const d=TD[n],s=S()*k;const P={x,y,rot,sx:s,sy:s,anchor:d.a.c};
+    if(M.cur&&fam(M.cur.n)!==fam(n)&&!M.fade)M.fade={c:M.cur,t:performance.now()};M.cur={n,P,ang,alpha,blend};return P}
   function paint(now){SQT.clear();
     if(M.fade){const k=(now-M.fade.t)/90;if(k<1)SQT.draw(M.fade.c.n,M.fade.c.P,M.fade.c.ang,(1-k)*.8);else M.fade=null}
-    if(M.cur){SQT.draw(M.cur.n,M.cur.P,M.cur.ang,M.cur.alpha);
+    if(M.cur){SQT.draw(M.cur.n,M.cur.P,M.cur.ang,M.cur.alpha);if(M.cur.blend&&M.cur.blend.a>.02)SQT.draw(M.cur.blend.n,M.cur.P,M.cur.ang,M.cur.blend.a);
       if(M.bag&&M.cur.n!=='bag'){const P=M.cur.P,hp=SQT.pt(M.cur.n,P,TD[M.cur.n].a.hand),sw=Math.sin(now/120)*12;
         SQT.draw('bagonly',{x:hp[0],y:hp[1],rot:P.rot+sw,sx:P.sx,sy:P.sy,anchor:TD.bagonly.a.handle},null,1)}}
     const P=M.cur&&M.cur.P;if(P){sh.style.transform=`translate(${P.x}px,${P.y+6}px) scale(${(P.sx/.105).toFixed(2)})`}}
@@ -2710,12 +2720,15 @@ const SQT=((D,PRE)=>{
     const vt=Math.min(vmax,d*5.5);M.v+=(vt-M.v)*Math.min(1,dt*9);const k=Math.max(0,Math.cos(dh*Math.PI/180))*.85+.15;
     M.x+=Math.cos(M.h*Math.PI/180)*M.v*k*dt;M.y+=Math.sin(M.h*Math.PI/180)*M.v*k*dt;
     M.stride+=M.v*k*dt/(46*S()/.105);return d}
-  function drawRun(t){const ph=M.stride%1,hop=Math.abs(Math.sin(ph*Math.PI*2))*.07*Math.min(1,M.v/120); // nhún nảy theo bước
-    put('run',A.run(ph,t),M.x,M.y,M.h-90+Math.sin(ph*Math.PI*2)*6,1+hop)}
+  // chạy: 4 khung nhìn từ lưng nối tiếp, chuyển khung mềm bằng hoà trộn; đuôi, đầu lắc theo nhịp
+  const RUNF=['b2','b3','b1','b4'];
+  function drawRun(t){const ph=M.stride%1,q=ph*4,i=Math.floor(q)%4,f=q-Math.floor(q),fs=f*f*(3-2*f);
+    const hop=Math.abs(Math.sin(ph*Math.PI*2))*.06*Math.min(1,M.v/120),w=ph*Math.PI*2;
+    put(RUNF[i],{head:7*Math.sin(w*2),tail1:16*Math.sin(w-1)},M.x,M.y,M.h+90+Math.sin(w)*5,1+hop,1,{n:RUNF[(i+1)%4],a:fs})}
   // ---- nhận việc ----
   let lastPt={x:innerWidth/2,y:innerHeight/2};
   document.addEventListener('pointerdown',e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target};M.act=performance.now();
-    if(e.target.closest('button,a,input,select,textarea,label,.stp'))return; // nút thì để phần thêm/bớt món xử lý
+    if(e.target.closest&&e.target.closest('button,a,input,select,textarea,label,.stp'))return; // nút thì để phần thêm/bớt món xử lý
     if(!M.task&&!M.q.length&&SQT.ready){M.goal=clampPt({x:e.clientX,y:e.clientY});if(!['enter'].includes(M.st))go('chase')}},true);
   function onBump(d,after){if(!d||!SQT.ready)return;M.act=performance.now();
     const el=lastPt.el&&lastPt.el.closest&&lastPt.el.closest('button'),r=el?el.getBoundingClientRect():null;
@@ -2731,11 +2744,26 @@ const SQT=((D,PRE)=>{
     if(!SQT.ready){requestAnimationFrame(tick);return}
     if(!M.task&&M.q.length&&!['bagout','bagin'].includes(M.st)){M.task=M.q.shift();
       if(M.task.type==='bean'&&M.task.need&&!M.bag){M.q.unshift(M.task);M.task=null;go('bagout')}else go('to')}
+    // sóc đứng theo trang: khách cuộn thì sóc trôi theo nội dung
+    const dsy=scrollY-M.sy,dsx=scrollX-M.sx;if(dsy||dsx){M.x-=dsx;M.y-=dsy;if(M.goal){M.goal.x-=dsx;M.goal.y-=dsy}M.sy=scrollY;M.sx=scrollX;M.scr=now}
+    {const B=bounds(),out=M.x<B.l-20||M.x>B.r+20||M.y<B.t-30||M.y>B.b+30;
+     if(out&&now-M.scr>260&&!['return','pant','enter','bagout','bagin'].includes(M.st)){
+       const far=innerHeight*.55;if(M.y<B.t-far)M.y=B.t-far;if(M.y>B.b+far)M.y=B.b+far;M.x=cl(M.x,-60,innerWidth+60);
+       M.ret={x:cl(M.x,B.l+40,B.r-40),y:M.y<B.t?B.t+110:M.y>B.b?B.b-110:cl(M.y,B.t+60,B.b-60)};go('return')}}
     switch(M.st){
+    case 'return':{const d=steer(M.ret.x,M.ret.y,dt,620);M.stride+=dt*1.2;drawRun(t); // phi nước đại về lại màn hình
+      if(Math.floor(t/90)!==M._du){M._du=Math.floor(t/90);puff(M.x-Math.cos(M.h*Math.PI/180)*18,M.y-Math.sin(M.h*Math.PI/180)*18,'sqd',1)}
+      if(d<10){M.v=0;go('pant')}break}
+    case 'pant':{const br=Math.sin(t/85); // thở hổn hển, ngực phập phồng, toát mồ hôi
+      put('pant',{head:3*br,tail1:8*Math.sin(t/200)},M.x,M.y,0,1+.05*br);
+      if(t<40){puff(M.x-14,M.y-30,'sqw',1);puff(M.x+14,M.y-34,'sqw',1)}
+      if(Math.floor(t/300)!==M._br){M._br=Math.floor(t/300);puff(M.x+(Math.random()-.5)*8,M.y+4,'sqbr',1)}
+      if(t>1900){go(M.task?'to':'rest')}break}
     case 'enter':{const g=clampPt({x:innerWidth*.72,y:innerHeight*.62});const d=steer(g.x,g.y,dt,260);drawRun(t);if(d<6){M.v=0;go('rest')}break}
     case 'chase':{const g=M.goal||{x:M.x,y:M.y};const d=steer(g.x,g.y,dt,340);drawRun(t);if(d<5){M.v=0;M.goal=null;go('rest')}break}
     case 'rest':{const k=Math.min(1,t/250);M.h+=((((-270)-M.h+540)%360)-180)*k*.08; // từ từ quay mặt ra phía khách
-      put(M.bag?'bag':'run',M.bag?A.bag(t):A.rest(t),M.x,M.y,M.h-90+Math.sin(t/700)*3,1+.012*Math.sin(t/300));
+      if(M.bag)put('bag',A.bag(t),M.x,M.y,M.h-90+Math.sin(t/700)*3,1+.012*Math.sin(t/300));
+      else put('b2',{head:5*Math.sin(t/800),tail1:12*Math.sin(t/420)},M.x,M.y,M.h+90+Math.sin(t/700)*3,1+.012*Math.sin(t/300));
       if(now-M.act>4500&&t>1500){const opts=['groom','roll','hop','wander','look'];go(opts[(idleN++ +Math.floor(Math.random()*3))%opts.length])}break}
     case 'to':{const T=M.task;let g;
       if(T.type==='bean'){if(!T.el.isConnected){M.task=null;go('rest');break}g=beanPos(T.el);
@@ -2771,10 +2799,9 @@ const SQT=((D,PRE)=>{
       put('run',A.run(.25,t),M.x,M.y-up*14,M.h-90+Math.sin(k*Math.PI*2*n)*10,1+up*.18);if(k>=1||now-M.act<300)go('rest');break}
     case 'wander':{if(!M.goal||t<20){const B=bounds();M.goal={x:cl(M.x+(Math.random()-.5)*220,B.l,B.r),y:cl(M.y+(Math.random()-.5)*200,B.t+40,B.b)}}
       const d=steer(M.goal.x,M.goal.y,dt,220);drawRun(t);if(d<5){M.v=0;M.goal=null;go('rest')}break}
-    case 'look':{const lk=t<500?-35:t<1000?35:0;M.h+=((((-270+lk)-M.h+540)%360)-180)*.12;put(M.bag?'bag':'run',M.bag?A.bag(t):A.rest(t),M.x,M.y,M.h-90,1);if(t>1400)go('rest');break}
+    case 'look':{const lk=t<500?-35:t<1000?35:0;M.h+=((((-270+lk)-M.h+540)%360)-180)*.12;if(M.bag)put('bag',A.bag(t),M.x,M.y,M.h-90,1);else put('b2',{head:5*Math.sin(t/300),tail1:14*Math.sin(t/300)},M.x,M.y,M.h+90,1);if(t>1400)go('rest');break}
     }
     // giữ sóc trong khung nhìn
-    const B=bounds();if(!['enter'].includes(M.st)){M.x=cl(M.x,B.l,B.r);M.y=cl(M.y,B.t,B.b)}
     paint(now);requestAnimationFrame(tick)}
   setTimeout(()=>{M.lt=performance.now();go('enter');requestAnimationFrame(tick)},900);
   addEventListener('resize',()=>SQT.size());
