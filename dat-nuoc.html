@@ -2348,7 +2348,7 @@ body.g-on .o-back,body.g-on #oLive{display:none}
       last:{ c:o.c, s:'new', h:[{s:'new',t:Date.now()}], items:o.items, disc:o.disc || 0, sub:o.items.reduce((a,i)=>a+i.p*i.q,0), tot:(s => s - (o.disc ? Math.round(s*o.disc/100/1000)*1000 : 0))(o.items.reduce((a,i)=>a+i.p*i.q,0)), cnt:o.items.reduce((a,i)=>a+i.q,0), ship:o.ship, time:o.time, kind:o.kind, g:o.g }, local:true });
     paintAll();
     try{
-      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create', ph:(window.TCP && TCP.on()) ? ($('#phone').value || '').trim() : '' }, o)) }).then(x=>x.json());
+      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create', ph:(window.TCP && TCP.on()) ? ($('#phone').value || '').trim() : '', ref:(window.TCP && TCP.on() && TCP.ref) ? TCP.ref() : '' }, o)) }).then(x=>x.json());
       if(r.ok){ upsert({ c:o.c, k:r.k, last:r.order, local:false }); paintAll(); if(window.TCP) TCP.linked(($('#phone').value || '').trim(), r.pt, r.order && r.order.cnt); }
     }catch(e){}
   }
@@ -3104,6 +3104,13 @@ const SQT=((D,PRE)=>{
 .pt-demo button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 9px;font:500 11px var(--body);cursor:pointer}
 .pt-demo button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .pt-board{margin-top:6px}
+.pt-acts{display:flex;gap:6px;justify-content:center;margin:10px 0 2px;flex-wrap:wrap}
+.pt-acts button{border:1px solid var(--line);background:#FFF8E6;border-radius:999px;padding:7px 12px;font:500 12px var(--body);color:var(--ink);cursor:pointer}
+.pt-steps{display:flex;gap:6px;margin:10px 0 4px}.pt-steps span{flex:1;text-align:center;font-size:11px;color:var(--mute);border:1px dashed var(--line);border-radius:10px;padding:6px 2px;line-height:1.35}
+.pt-steps span.on{border-style:solid;border-color:#1F6B4A;color:#1F6B4A;background:rgba(31,107,74,.07)}.pt-steps b{font-weight:600}
+.pt-toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:6;background:var(--ink);color:#FDF8EF;border-radius:999px;padding:9px 16px;font:500 12.5px var(--body);white-space:nowrap;animation:gIn .35s both}
+.pt-sharebox{overflow:auto;justify-content:flex-start;padding-top:24px}.pt-sharebox img.card{height:auto;width:min(300px,76%);border-radius:14px;box-shadow:0 10px 30px rgba(42,29,22,.2);animation:none}
+.pt-sbtn{display:flex;flex-direction:column;gap:0;width:min(300px,86%);margin-top:6px}.pt-sbtn .btn-ghost{text-align:center;text-decoration:none;display:block}
 .pt-house{font-style:normal;font-size:9.5px;font-weight:600;letter-spacing:.04em;background:var(--ink);color:#FDF8EF;border-radius:999px;padding:1px 7px;margin-right:3px}
 .pt-first{text-align:center;padding:14px 10px 4px}.pt-first img{height:120px;width:auto;display:block;margin:0 auto 8px}
 .pt-first b{display:block;font-family:var(--disp);font-size:22px;font-weight:600}.pt-first span{display:block;font-size:12.5px;color:var(--mute);margin-top:4px;line-height:1.5}
@@ -3198,14 +3205,20 @@ const SQT=((D,PRE)=>{
   }
   async function load(){
     if(mode !== 'on' || !S.ph) return;
-    try{ const r = await call('GET'); if(r.ok){ got(r.pet); paint(); } else paint(r.err); }
+    try{ const r = await call('GET'); if(r.ok){ got(r.pet); paint(); daily(); } else paint(r.err); }
     catch(e){ paint('Chưa kết nối được — thử lại sau nhé.'); }
   }
+  // qua ghe tham moi ngay: soc tang 2 hat khi khach ghe
+  async function daily(){
+    if(!P || !P.exists || !P.canEdit || P.daily || P.demo) return;
+    try{ const r = await call('POST', { a:'daily' }); if(r.ok && r.gift){ got(r.pet); if(sh.classList.contains('on') && document.getElementById('ptPet')){ repaintKeep(); note('🎁 Sóc tặng bạn ' + r.gift + ' hạt vì ghé thăm hôm nay'); say('chít chít!', 'yay'); } } }catch(e){}
+  }
+  function note(t){ const e = document.createElement('div'); e.className = 'pt-toast'; e.textContent = t; sh.appendChild(e); setTimeout(() => e.remove(), 3200); }
   // nhan nuoi muon: gan cac don vua dat tren may nay
   async function claim(){
     const os = get('tcOrders', []).filter(e => e && e.c && e.k && Date.now() - e.at < 3*86400e3 && !(e.last && e.last.s === 'cancel')).map(e => ({ c:e.c, k:e.k }));
     if(!os.length || S.ph === DEMO) return 0;
-    try{ const r = await call('POST', { a:'claim', os }); if(r.ok){ S.t = r.t; set(KEY, S); got(r.pet); return r.n; } }catch(e){}
+    try{ const r = await call('POST', { a:'claim', os, ref:get('tcRef', '') }); if(r.ok){ S.t = r.t; set(KEY, S); got(r.pet); return r.n; } }catch(e){}
     return 0;
   }
 
@@ -3218,13 +3231,18 @@ const SQT=((D,PRE)=>{
   async function showBoard(per){
     boardPer = per || boardPer; stopBeg(); ev('board', true);
     bd.innerHTML = '<h3 id="ptH">Bảng xếp hạng</h3><div class="sub">Xếp theo số ly đã nuôi sóc · chỉ hiện tên sóc</div>' +
-      '<div class="pt-tabs" style="justify-content:center"><button data-p="month"' + (boardPer === 'month' ? ' class="on"' : '') + '>Tháng này</button><button data-p="all"' + (boardPer === 'all' ? ' class="on"' : '') + '>Mọi thời</button></div>' +
+      '<div class="pt-tabs" style="justify-content:center"><button data-p="month"' + (boardPer === 'month' ? ' class="on"' : '') + '>Tháng này</button><button data-p="all"' + (boardPer === 'all' ? ' class="on"' : '') + '>Mọi thời</button><button data-p="grp"' + (boardPer === 'grp' ? ' class="on"' : '') + '>Tổ sóc</button></div>' +
       '<div id="ptBoard" class="pt-board"><div class="sub">Đang tải…</div></div><button class="btn-ghost" id="ptBack">← Quay lại</button>';
     bd.querySelectorAll('.pt-tabs button').forEach(b => b.addEventListener('click', () => showBoard(b.dataset.p)));
     document.getElementById('ptBack').addEventListener('click', () => paint());
     let r; try{ r = await fetch(API + '?a=top&per=' + boardPer + (S.ph && S.ph !== DEMO ? '&ph=' + encodeURIComponent(S.ph) : '') + '&_=' + Date.now()).then(x => x.json()); }catch(e){ r = null; }
     const box = document.getElementById('ptBoard'); if(!box) return;
     if(!r || !r.ok){ box.innerHTML = '<div class="sub">Chưa tải được bảng xếp hạng.</div>'; return; }
+    if(boardPer === 'grp'){
+      box.innerHTML = r.list.length ? r.list.map((x, i) => '<div class="pt-rk' + (i < 3 ? ' top' : '') + '"><b>' + (['🥇','🥈','🥉'][i] || (i + 1)) + '</b><span><em>' + esc(x.n) + '</em><small>' + x.mem + ' sóc trong tổ</small></span><strong>' + x.cups + ' ly</strong></div>').join('') +
+        '<div class="note">Xếp theo số ly cả tổ đặt trong tháng này.</div>'
+        : '<div class="pt-first"><img src="' + IMG + 'sqc-1.webp?v=1" alt=""><b>Chưa có tổ sóc nào</b><span>Rủ bạn bè, đồng nghiệp lập tổ sóc — cả tổ đạt mốc ly là ai cũng được thêm hạt.</span></div>';
+      return; }
     if(!r.list.length){ box.innerHTML = '<div class="pt-first"><img src="' + IMG + 'sqc-2.webp?v=1" alt=""><b>Mùa đầu tiên của bảng xếp hạng</b><span>Chưa có sóc nào lên bảng' + (boardPer === 'month' ? ' tháng này' : '') + '. Đặt một ly để sóc của bạn là sóc đầu tiên đứng top!</span></div>'; return; }
     const md = ['🥇','🥈','🥉'];
     box.innerHTML = r.list.map((x, i) => { const w = x.wear || x.hat, src = w && WORN[w] ? wimg(w, x.lv) : pimg(x.lv);
@@ -3255,7 +3273,7 @@ const SQT=((D,PRE)=>{
   function stopBeg(){ clearInterval(begT); begT = 0; }
   function startBeg(){
     stopBeg(); begN = 0;
-    setTimeout(() => say(BEG[0]), 500);
+    setTimeout(() => { if(document.querySelector('#ptPet.pt-cute')) say(BEG[0]); }, 500);
     begT = setInterval(() => { if(!document.getElementById('ptPet')) return stopBeg();
       const p = document.getElementById('ptPet'); if(p && p._busy) return;
       const i = [0,4,0,1,0,3][begN++ % 6]; face(i); if(i) setTimeout(() => face(0), 1300); }, 2600);
@@ -3297,6 +3315,7 @@ const SQT=((D,PRE)=>{
     if(mode !== 'on'){
       bd.innerHTML = '<h3 id="ptH">' + (mode === 'off' ? 'Bạn đang không nuôi sóc' : 'Nuôi một bé sóc?') + '</h3>' +
         '<div class="sub">Hoàn toàn tuỳ bạn — không nuôi vẫn đặt nước bình thường</div>' + cuteStage(170) +
+        (grpJoin ? '<div class="pend">👥 Bạn được rủ vào một tổ sóc — nhận nuôi sóc và đặt ly đầu tiên là vào tổ được ngay.</div>' : '') +
         '<button class="pt-brd" id="ptBrd">🏆 Xem bảng xếp hạng sóc</button>' +
         '<ul class="pt-feat"><li><b>☕</b><span>Mỗi ly bạn đặt = 10 hạt cà phê cho sóc ăn.</span></li>' +
         '<li><b>🌱</b><span>Sóc lớn dần qua 5 cấp, mỗi cấp một bộ đồ và thói quen riêng.</span></li>' +
@@ -3338,7 +3357,9 @@ const SQT=((D,PRE)=>{
     const L = P.lv.i, named = !!P.nm, low = P.full < 25, eq = tryEq || P.eq || {};
     bd.innerHTML = '<h3 id="ptH">' + (named ? esc(P.nm) : 'Sóc của bạn') + '</h3>' +
       '<div class="sub">' + esc(P.lv.n) + ' · ' + (P.mood === 'vui' ? 'đang vui vẻ' : P.mood === 'doi' ? 'hơi đói bụng' : 'đói lả rồi') + '</div>' +
-      '<button class="pt-brd" id="ptBrd">🏆 Bảng xếp hạng</button>' +
+      '<div class="pt-acts"><button id="ptBrd">🏆 Xếp hạng</button><button id="ptGrp">👥 Tổ sóc' + (P.grp ? ' ✓' : '') + '</button><button id="ptShare">📤 Khoe sóc</button></div>' +
+      (!P.grp && grpJoin && !P.demo ? '<div class="pend">👥 Bạn được mời vào một tổ sóc · <a href="#" id="ptGoJoin" style="color:inherit">Vào tổ</a></div>' : '') +
+      (P.grpGift && get('tcGG', 0) !== P.grpGift.at ? '<div class="pend" id="ptGG">🎉 Tổ sóc đạt mốc ' + P.grpGift.step + ' ly tháng này — cả tổ được +' + P.grpGift.n + ' hạt!</div>' : '') +
       (P.demo ? '<div class="pt-demo"><b>DEMO</b>Xem từng cấp:' + LV.map((l, i) => '<button data-lv="' + i + '"' + (i === L ? ' class="on"' : '') + '>' + l[0].replace('Sóc ', '') + '</button>').join('') + '</div>' : '') +
       '<div class="pt-stage lv' + L + ' ' + P.mood + '" id="ptSt" style="height:' + (LVH[L] + 62) + 'px"><i class="pt-bean" id="ptBean"></i>' +
         '<div class="pt-pet" id="ptPet">' + doll(L, eq, LVH[L], sel) + '</div></div>' +
@@ -3355,6 +3376,10 @@ const SQT=((D,PRE)=>{
                  : '<div class="pend">Máy này chỉ xem được sóc. Đặt một đơn bằng số ' + mask(S.ph) + ' trên máy này để chăm sóc.</div>') +
       '<div class="err" id="ptErr">' + esc(err || '') + '</div>' + shopHtml() + settings();
     bindSet(); bindPet(L); bindShop(); document.getElementById('ptBrd').addEventListener('click', () => showBoard());
+    document.getElementById('ptGrp').addEventListener('click', () => showGroup());
+    const gj0 = document.getElementById('ptGoJoin'); if(gj0) gj0.addEventListener('click', e => { e.preventDefault(); showGroup(); });
+    document.getElementById('ptShare').addEventListener('click', shareCard);
+    if(P.grpGift && get('tcGG', 0) !== P.grpGift.at) set('tcGG', P.grpGift.at);
     const fb = document.getElementById('ptFeed'); if(fb) fb.addEventListener('click', feed);
     const ng = document.getElementById('ptNmGo'); if(ng){ const doName = () => nameIt(document.getElementById('ptNm').value);
       ng.addEventListener('click', doName); document.getElementById('ptNm').addEventListener('keydown', e => { if(e.key === 'Enter') doName(); }); }
@@ -3469,7 +3494,108 @@ const SQT=((D,PRE)=>{
     } else box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ <button type="button" id="ptEarnGo">Nhận nuôi một bé sóc với đơn này?</button> (tuỳ bạn)</div>');
     const b = document.getElementById('ptEarnGo'); if(b) b.addEventListener('click', open);
   }
-  window.TCP = { open, linked, on: () => mode === 'on' };
+  // ---------- khoe soc: tao anh the soc de chia se ----------
+  const tName = n => /^tổ\s/i.test(n || '') ? n : 'Tổ ' + n;
+  const shareUrl = () => location.origin + '/dat-nuoc?soc=' + (P && P.id || '');
+  function loadImg(src){ return new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }); }
+  async function makeCard(){
+    const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#FDF8EF'); g.addColorStop(1, '#F3E6CF'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.fillStyle = 'rgba(184,145,47,.12)'; x.beginPath(); x.arc(W / 2, 640, 380, 0, Math.PI * 2); x.fill();
+    try{ await document.fonts.ready; }catch(e){}
+    x.textAlign = 'center'; x.fillStyle = '#2A1D16';
+    x.font = '600 40px "Cormorant Garamond", serif'; x.fillText('THE CURATOR  ·  SÓC CỦA BẠN', W / 2, 92);
+    const L = P.lv.i, w = worn(P.eq || {}), im = await loadImg(w ? wimg(w, L) : pimg(L));
+    const ih = 700, iw = ih * im.width / im.height; x.fillStyle = 'rgba(42,29,22,.12)'; x.beginPath(); x.ellipse(W / 2, 950, iw * .55, 34, 0, 0, Math.PI * 2); x.fill();
+    x.drawImage(im, (W - iw) / 2, 950 - ih + 10, iw, ih);
+    x.fillStyle = '#2A1D16'; x.font = '600 96px "Cormorant Garamond", serif'; x.fillText(P.nm || 'Sóc của tôi', W / 2, 1080);
+    x.font = '400 38px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#8A6A1E'; x.fillText(P.lv.n + '  ·  ' + P.cups + ' ly đã nuôi', W / 2, 1142);
+    let rank = ''; try{ const r = await fetch(API + '?a=card&id=' + P.id).then(z => z.json()); if(r.ok && r.card.rank) rank = 'Hạng #' + r.card.rank + ' bảng xếp hạng' + (r.card.grp ? '  ·  ' + tName(r.card.grp) : ''); }catch(e){}
+    if(rank){ x.font = '500 32px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#2A1D16'; x.fillText(rank, W / 2, 1196); }
+    x.fillStyle = '#2A1D16'; x.fillRect(0, H - 110, W, 110); x.fillStyle = '#FDF8EF'; x.font = '500 34px "Be Vietnam Pro", sans-serif';
+    x.fillText('Nhận nuôi sóc tại thecuratorcafe.vn/dat-nuoc', W / 2, H - 45);
+    return new Promise(ok => c.toBlob(b => ok(b), 'image/png'));
+  }
+  async function shareCard(){
+    ev('share'); const btn = document.getElementById('ptShare'); if(btn){ btn.disabled = true; btn.textContent = 'Đang tạo ảnh…'; }
+    let blob = null; try{ blob = await makeCard(); }catch(e){}
+    if(btn){ btn.disabled = false; btn.textContent = '📤 Khoe sóc'; }
+    const url = shareUrl(), text = 'Sóc ' + (P.nm || 'của mình') + ' đã ' + P.cups + ' ly ở The Curator rồi nè! Nuôi sóc cùng mình nhé 🐿️';
+    const file = blob && new File([blob], 'soc-' + (P.nm || 'cua-toi') + '.png', { type:'image/png' });
+    const d = document.createElement('div'); d.className = 'pt-up pt-sharebox';
+    d.innerHTML = (blob ? '<img class="card" src="' + URL.createObjectURL(blob) + '" alt="">' : '') +
+      '<div class="pt-sbtn">' + (navigator.share ? '<button class="btn-feed" id="ptSNative">Chia sẻ</button>' : '') +
+      (blob ? '<a class="btn-ghost" id="ptSDl" download="' + esc(file.name) + '" href="' + URL.createObjectURL(blob) + '">Tải ảnh</a>' : '') +
+      '<button class="btn-ghost" id="ptSCopy">Sao chép link</button><button class="btn-ghost" id="ptSX">Đóng</button></div>' +
+      '<span>Bạn bè mở link sẽ thấy sóc của bạn. Nếu họ nhận nuôi và ly đầu tiên được giao, cả hai cùng được +20 hạt.</span>';
+    sh.appendChild(d);
+    d.querySelector('#ptSX').onclick = () => d.remove();
+    d.querySelector('#ptSCopy').onclick = async e => { try{ await navigator.clipboard.writeText(text + ' ' + url); e.target.textContent = 'Đã sao chép ✓'; }catch(err){ prompt('Sao chép link:', url); } };
+    const n = d.querySelector('#ptSNative'); if(n) n.onclick = async () => {
+      try{ if(file && navigator.canShare && navigator.canShare({ files:[file] })) await navigator.share({ files:[file], text, url }); else await navigator.share({ text, url }); }catch(e){} };
+  }
+
+  // ---------- xem soc cua ban be (link chia se) ----------
+  async function showFriend(id){
+    stopBeg(); ev('friend', true);
+    bd.innerHTML = '<h3 id="ptH">Sóc của bạn bè</h3><div class="sub">Đang gọi sóc…</div>';
+    let r; try{ r = await fetch(API + '?a=card&id=' + encodeURIComponent(id)).then(z => z.json()); }catch(e){ r = null; }
+    if(!r || !r.ok){ bd.innerHTML = '<h3 id="ptH">Không tìm thấy sóc</h3><div class="sub">Link có thể đã cũ.</div><button class="btn-feed" id="ptFB">Xem sóc của bạn</button>'; document.getElementById('ptFB').onclick = () => paint(); return; }
+    const c = r.card, src = c.wear && WORN[c.wear] ? wimg(c.wear, c.lv) : pimg(c.lv), mine = P && P.id === id;
+    bd.innerHTML = '<h3 id="ptH">' + esc(c.n) + '</h3><div class="sub">' + LV[c.lv][0] + ' · ' + c.cups + ' ly đã nuôi' + (c.rank ? ' · hạng #' + c.rank : '') + (c.grp ? ' · ' + esc(tName(c.grp)) : '') + '</div>' +
+      '<div class="pt-stage" id="ptSt" style="height:' + (LVH[c.lv] + 50) + 'px"><div class="pt-pet"><img src="' + src + '" style="height:' + LVH[c.lv] + 'px;width:auto;display:block" alt=""></div></div>' +
+      (mine ? '<div class="pend">Đây là sóc của bạn đó!</div><button class="btn-feed" id="ptFB">Xem sóc của bạn</button>'
+        : '<div class="pend">Bạn của bạn đang nuôi sóc ở The Curator. Nhận nuôi một bé sóc — khi ly đầu tiên của bạn được giao, <b>cả hai cùng được +20 hạt</b>.</div>' +
+          '<button class="btn-feed" id="ptFB">' + (mode === 'on' && S.ph ? 'Xem sóc của bạn' : 'Nhận nuôi sóc của bạn') + '</button><button class="btn-ghost" id="ptFX">Để sau</button>');
+    document.getElementById('ptFB').onclick = () => { if(mode !== 'on'){ ev('optin'); setMode('on'); } paint(); if(S.ph) load(); };
+    const fx2 = document.getElementById('ptFX'); if(fx2) fx2.onclick = close;
+  }
+
+  // ---------- to soc: nhom ban be cung nuoi ----------
+  let grpJoin = get('tcGrpJoin', '') || '';
+  async function showGroup(){
+    stopBeg();
+    const head = '<h3 id="ptH">Tổ sóc</h3><div class="sub">Rủ bạn bè, đồng nghiệp cùng nuôi — cả tổ đạt mốc ly trong tháng là mỗi sóc được thêm hạt</div>';
+    const back = '<button class="btn-ghost" id="ptBack">← Quay lại</button>';
+    const bindBack = () => { document.getElementById('ptBack').onclick = () => paint(); };
+    if(!P || !P.exists){ bd.innerHTML = head + '<div class="pend">Nhận nuôi sóc và đặt ly đầu tiên để vào tổ nhé.</div>' + back; bindBack(); return; }
+    if(P.grp){
+      bd.innerHTML = head + '<div class="sub">Đang tải…</div>';
+      let r; try{ r = await fetch(API + '?a=group&code=' + P.grp + '&ph=' + encodeURIComponent(S.ph) + '&_=' + Date.now()).then(z => z.json()); }catch(e){ r = null; }
+      if(!r || !r.ok){ bd.innerHTML = head + '<div class="err">' + esc(r && r.err || 'Chưa tải được tổ.') + '</div>' + back; bindBack(); return; }
+      const g = r.group, top = g.next || g.steps[g.steps.length - 1], pc = Math.min(100, Math.round(g.month / top * 100));
+      bd.innerHTML = '<h3 id="ptH">' + esc(g.nm) + '</h3><div class="sub">Mã tổ <b>' + g.code + '</b> · ' + g.list.length + '/' + g.max + ' sóc' + (g.rank ? ' · hạng #' + g.rank + ' tháng này' : '') + '</div>' +
+        '<div class="pt-lv"><b>' + g.month + ' ly tháng này</b><span>' + (g.next ? 'còn ' + (g.next - g.month) + ' ly → mốc ' + g.next : 'đã qua mọi mốc!') + '</span></div><div class="pt-bar"><i style="width:' + pc + '%"></i></div>' +
+        '<div class="pt-steps">' + g.steps.map(x => '<span class="' + (g.paid.includes(x) ? 'on' : '') + '">' + x + ' ly<br><b>+' + g.bonus + ' hạt</b></span>').join('') + '</div>' +
+        '<div class="pt-board">' + g.list.map(m => { const src = m.wear && WORN[m.wear] ? wimg(m.wear, m.lv) : pimg(m.lv);
+          return '<div class="pt-rk' + (m.me ? ' top' : '') + '"><img src="' + src + '" alt=""><span><em>' + esc(m.n) + (m.me ? ' (bạn)' : '') + '</em><small>' + (m.owner ? '👑 Trưởng tổ · ' : '') + LV[m.lv][0] + '</small></span><strong>' + m.cups + ' ly</strong></div>'; }).join('') + '</div>' +
+        '<button class="btn-feed" id="ptInv">Mời bạn vào tổ</button><button class="btn-ghost" id="ptLeave">Rời tổ</button>' + back +
+        '<div class="note">Số ly tính từ khi vào tổ, cộng khi quán giao xong đơn. Mỗi mốc thưởng một lần mỗi tháng.</div>';
+      bindBack();
+      document.getElementById('ptInv').onclick = async e => { const url = location.origin + '/dat-nuoc?to=' + g.code, text = 'Vào tổ sóc "' + g.nm + '" ở The Curator với mình nhé! Mã tổ: ' + g.code;
+        try{ if(navigator.share){ await navigator.share({ text, url }); return; } await navigator.clipboard.writeText(text + ' ' + url); e.target.textContent = 'Đã sao chép link mời ✓'; }catch(err){} };
+      document.getElementById('ptLeave').onclick = async () => { if(!confirm('Rời tổ "' + g.nm + '"?')) return; const r2 = await call('POST', { a:'gleave' }); if(r2.ok){ got(r2.pet); showGroup(); } };
+      return;
+    }
+    let pre = null; if(grpJoin){ try{ const r = await fetch(API + '?a=group&code=' + grpJoin).then(z => z.json()); if(r.ok) pre = r.group; }catch(e){} }
+    bd.innerHTML = head + (pre ? '<div class="pend">Bạn được mời vào tổ <b>' + esc(pre.nm) + '</b> (' + pre.list.length + '/' + pre.max + ' sóc)</div><button class="btn-feed" id="ptJoinPre">Vào tổ ' + esc(pre.nm) + '</button>' : '') +
+      (P.canEdit ? '<div class="pt-name"><input id="ptGc" maxlength="6" placeholder="Nhập mã tổ" style="text-transform:uppercase" value="' + esc(grpJoin) + '"><button class="btn-sec" id="ptGj">Vào tổ</button></div>' +
+        '<div class="note" style="margin:6px 0 2px">hoặc lập tổ mới</div><div class="pt-name"><input id="ptGn" maxlength="20" placeholder="Tên tổ, vd. Tổ Văn Phòng"><button class="btn-sec" id="ptGm">Lập tổ</button></div>'
+        : '<div class="pend">Máy này chỉ xem được sóc — đặt một đơn trên máy này để vào tổ.</div>') +
+      '<div class="err" id="ptErr"></div>' + back;
+    bindBack();
+    const act = async body => { const r = await call('POST', body); if(r.ok){ grpJoin = ''; set('tcGrpJoin', null); got(r.pet); say('chít chít!', 'yay'); showGroup(); } else document.getElementById('ptErr').textContent = r.err || 'Chưa được.'; };
+    const jp = document.getElementById('ptJoinPre'); if(jp) jp.onclick = () => act({ a:'gjoin', code:grpJoin });
+    const gj = document.getElementById('ptGj'); if(gj) gj.onclick = () => act({ a:'gjoin', code:document.getElementById('ptGc').value });
+    const gm = document.getElementById('ptGm'); if(gm) gm.onclick = () => act({ a:'gcreate', nm:document.getElementById('ptGn').value });
+  }
+
+  window.TCP = { open, linked, on: () => mode === 'on', ref: () => get('tcRef', '') };
+  // link chia se: ?soc=<id> xem soc ban be (luu nguoi gioi thieu), ?to=<ma> moi vao to soc
+  { const u = new URLSearchParams(location.search), sid = (u.get('soc') || '').replace(/[^a-f0-9]/g, '').slice(0, 32), to = (u.get('to') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+    if(sid || to){ history.replaceState(null, '', location.pathname);
+      if(sid){ if(!(get(VKEY, null) && S.ph)) set('tcRef', sid); setTimeout(() => { open(); setTimeout(() => showFriend(sid), 60); }, 700); }
+      else { grpJoin = to; set('tcGrpJoin', to); setTimeout(async () => { open(); if(mode === 'on' && S.ph){ await load(); } setTimeout(() => (P && P.exists) ? showGroup() : null, 80); }, 700); } } }
   // sóc demo chỉ dành cho chủ quán: mở /dat-nuoc?demo rồi nhập mã PIN quầy (không có nút nào cho khách thấy)
   if(new URLSearchParams(location.search).has('demo')){
     let pin = ''; try{ pin = localStorage.getItem('tcCashierPin') || ''; }catch(e){}

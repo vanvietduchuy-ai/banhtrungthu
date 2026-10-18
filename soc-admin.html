@@ -120,6 +120,12 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--mute);margin-top:8px
         tileH(fmt(feed), 'Lượt cho sóc ăn', fmt(credit * 10) + ' hạt đã phát') +
         tileH(fmt(buy), 'Món đồ đã bán', fmt(spent) + ' hạt đã tiêu') +
       '</div>' +
+      '<h2 class="sec">Lan toả</h2><div class="tiles">' +
+        tileH(fmt(sum('ev_share')), 'Lượt khoe sóc', fmt(sum('ev_friend')) + ' lượt bạn bè mở link') +
+        tileH(fmt(sum('refLink')), 'Bạn bè nhận nuôi qua link', fmt(sum('ref')) + ' đã đặt ly đầu (+20 hạt mỗi bên)') +
+        tileH(fmt(sum('gcreate')), 'Tổ sóc mới lập', fmt(sum('gjoin')) + ' lượt vào tổ · ' + fmt(sum('gbonus')) + ' mốc tổ đạt') +
+        tileH(fmt(sum('daily')), 'Lượt nhận quà ghé thăm', 'khách quay lại mở sóc trong ngày') +
+      '</div>' +
       '<h2 class="sec">Hiệu quả theo ngày</h2>' +
       '<div class="grid2"><div class="card"><h3>Ly mỗi ngày</h3><div class="legend"><span><i style="background:var(--s2)"></i>Khách nuôi sóc</span><span><i style="background:var(--s1)"></i>Khách khác</span></div><div class="chart" id="c1"></div></div>' +
       '<div class="card"><h3>Sóc có khách ghé mỗi ngày</h3><div class="note">Khách mở sóc, cho ăn, mua đồ hoặc đặt đơn</div><div class="chart" id="c2"></div></div></div>' +
