@@ -58,7 +58,10 @@ async function stat(fields, extra) {
   if (extra) cmds.push(...extra);
   try { await pipe(cmds); } catch (e) { console.error(e); }
 }
-const EVENTS = ['open', 'optin', 'optout', 'tickle', 'pet', 'board'];
+const EVENTS = ['open', 'optin', 'optout', 'tickle', 'pet', 'board', 'share', 'friend'];
+// lan toả: giới thiệu bạn (cả hai +REF_BONUS hạt khi bạn được giao ly đầu tiên), tổ sóc (đạt mốc ly trong tháng -> mỗi thành viên +GRP_BONUS), quà ghé thăm mỗi ngày
+const REF_BONUS = 20, GRP_BONUS = 15, GRP_MAX = 10, GRP_STEPS = [20, 50, 100, 200], DAILY_GIFT = 2;
+const cleanCode = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex').slice(0, 32);
 const normPhone = p => { let d = String(p || '').replace(/\D/g, ''); if (d.startsWith('84')) d = '0' + d.slice(2); return /^0\d{9,10}$/.test(d) ? d : ''; };
 const petKey = ph => 'pet:' + sha('tc-pet:' + ph);
@@ -81,6 +84,8 @@ function view(p, now, canEdit) {
     pendCups: (p.pend || []).reduce((a, x) => a + (x.cnt || 0), 0),
     born: p.born, canEdit: !!canEdit, cost: FEED_COST,
     inv: p.inv || [], eq: p.eq || {}, demo: !!p.demo,
+    id: p._id || '', grp: p.grp || '', daily: p.dailyAt === vnDay(now), refN: p.refN || 0, house: !!p.house,
+    grpGift: p.grpGift && now - p.grpGift.at < 3 * 86400e3 ? p.grpGift : null,
   };
 }
 // cộng hạt cho các đơn đã hoàn thành
@@ -125,7 +130,24 @@ module.exports = async (req, res) => {
       return send(200, { ok: true });
     }
     // bảng xếp hạng: tháng này hoặc mọi thời — chỉ tên sóc, cấp, số ly; không lộ số điện thoại
-    if (b.a === 'top') return send(200, { ok: true, ...(await board(b.per === 'all' ? 'all' : 'month', normPhone(b.ph))) });
+    if (b.a === 'top') {
+      if (b.per === 'grp') return send(200, { ok: true, ...(await groupBoard()) });
+      return send(200, { ok: true, ...(await board(b.per === 'all' ? 'all' : 'month', normPhone(b.ph))) });
+    }
+    // thẻ sóc công khai (khi khách chia sẻ link): chỉ tên, cấp, số ly, món đang mặc, hạng
+    if (b.a === 'card') {
+      const id = String(b.id || '').replace(/[^a-f0-9]/g, '').slice(0, 32), k = 'pet:' + id, r0 = id && await redis('GET', k);
+      if (!r0) return send(404, { ok: false, err: 'Không tìm thấy sóc.' });
+      const q = JSON.parse(r0); if (q.demo) return send(404, { ok: false, err: 'Không tìm thấy sóc.' });
+      const rk = await redis('ZREVRANK', 'pets', k), eq = q.eq || {};
+      let gn = ''; if (q.grp) { const gr = await redis('GET', 'grp:' + q.grp); if (gr) gn = JSON.parse(gr).nm || ''; }
+      return send(200, { ok: true, card: { n: q.hide || !q.nm ? petTag(k) : q.nm, lv: levelOf(q.cups || 0).i, cups: q.cups || 0, wear: Object.values(eq)[0] || '', rank: rk == null ? null : rk + 1, grp: gn, house: !!q.house } });
+    }
+    if (b.a === 'group') {
+      const code = cleanCode(b.code), gr = code && await redis('GET', 'grp:' + code);
+      if (!gr || gr === '{}') return send(404, { ok: false, err: 'Không tìm thấy tổ sóc này.' });
+      return send(200, { ok: true, group: await groupView(code, JSON.parse(gr), normPhone(b.ph)) });
+    }
     // quản trị: cần mã PIN quầy
     if (b.a === 'admin' || b.a === 'hide' || b.a === 'house') {
       // vào bằng tài khoản admin (cùng trang quản trị menu) hoặc mã PIN quầy
@@ -162,7 +184,7 @@ module.exports = async (req, res) => {
         if (!c || !x.k) continue;
         const raw0 = await redis('GET', 'o:' + c); if (!raw0) continue;
         const o = JSON.parse(raw0); if (o.k !== sha(x.k) || o.s === 'cancel') continue;
-        const t = await module.exports.linkOrder(ph, c, o.cnt); if (t) { tok = t; n++; }
+        const t = await module.exports.linkOrder(ph, c, o.cnt, b.ref); if (t) { tok = t; n++; }
       }
       if (!tok) return send(400, { ok: false, err: 'Chưa có đơn nào trên máy này để nhận nuôi — đặt một ly là có sóc ngay.' });
       const p2 = JSON.parse(await redis('GET', key));
@@ -177,7 +199,7 @@ module.exports = async (req, res) => {
       await redis('SET', key, raw);
     }
     if (!raw) return send(200, { ok: true, pet: { exists: false } });
-    const p = JSON.parse(raw);
+    const p = JSON.parse(raw); p._id = key.slice(4);
     const canEdit = p.demo || !!(b.t && (p.toks || []).includes(sha(b.t)));
     if (p.demo && (p.beans || 0) < 200) p.beans = 999;
     let changed = await settle(p, now);
@@ -209,18 +231,44 @@ module.exports = async (req, res) => {
         if (b.id) { const it = SHOP[b.id]; if (!it || it.soon || it.s !== b.s || !(p.inv || []).includes(b.id)) return send(400, { ok: false, err: 'Bạn chưa có món này.' }); p.eq = { [b.s]: b.id }; }
         else delete p.eq[b.s];
         changed = true;
+      } else if (b.a === 'daily') {
+        if (p.dailyAt === vnDay(now)) return send(200, { ok: true, gift: 0, pet: view(p, now, canEdit) });
+        p.dailyAt = vnDay(now); p.beans = (p.beans || 0) + DAILY_GIFT; changed = true; p._gift = DAILY_GIFT;
+      } else if (b.a === 'gcreate' || b.a === 'gjoin') {
+        if (p.demo) return send(400, { ok: false, err: 'Sóc demo không vào tổ.' });
+        if (p.grp) return send(400, { ok: false, err: 'Sóc đã ở trong một tổ — rời tổ cũ trước nhé.' });
+        let code, g;
+        if (b.a === 'gcreate') {
+          const nm = cleanName(b.nm); if (!nm) return send(400, { ok: false, err: 'Đặt tên cho tổ sóc nhé.' });
+          for (let i = 0; i < 6 && !code; i++) { const c = crypto.randomBytes(4).toString('hex').toUpperCase().replace(/[01]/g, 'K').slice(0, 5); if ((await redis('SET', 'grp:' + c, '{}', 'NX')) === 'OK') code = c; }
+          if (!code) return send(500, { ok: false, err: 'Thử lại nhé.' });
+          g = { nm, owner: key, mem: [], at: now, paid: {} };
+        } else {
+          code = cleanCode(b.code); const gr = code && await redis('GET', 'grp:' + code);
+          if (!gr || gr === '{}') return send(404, { ok: false, err: 'Không tìm thấy tổ sóc này.' });
+          g = JSON.parse(gr); if ((g.mem || []).length >= GRP_MAX) return send(400, { ok: false, err: 'Tổ đã đủ ' + GRP_MAX + ' sóc.' });
+        }
+        g.mem = (g.mem || []).filter(k => k !== key).concat([key]);
+        await redis('SET', 'grp:' + code, JSON.stringify(g)); p.grp = code; changed = true; p._gev = b.a;
+      } else if (b.a === 'gleave') {
+        if (p.grp) { const gr = await redis('GET', 'grp:' + p.grp); if (gr) { const g = JSON.parse(gr); g.mem = (g.mem || []).filter(k => k !== key);
+          if (g.mem.length) { if (g.owner === key) g.owner = g.mem[0]; await redis('SET', 'grp:' + p.grp, JSON.stringify(g)); } else await redis('DEL', 'grp:' + p.grp); } }
+        delete p.grp; changed = true;
       } else if (b.a === 'lv' && p.demo) {
         const i = Math.max(0, Math.min(LEVELS.length - 1, Math.floor(Number(b.i) || 0)));
         p.cups = LEVELS[i].at + (i ? 2 : 1); changed = true;
       } else return send(400, { ok: false, err: 'Thao tác không hợp lệ.' });
     }
     const st = {}, ex = [];
+    if (p._cr && !p.demo) await afterCredit(p, key, now, st);
+    if (p._gift) st.daily = 1; const gift = p._gift || 0; delete p._gift;
+    if (p._gev) { st[p._gev] = 1; delete p._gev; }
     if (p._cr) { st.credit = p._cr; if (!p.demo) ex.push(['ZINCRBY', 'petm:' + vnMonth(now), p._cr, key], ['EXPIRE', 'petm:' + vnMonth(now), 120 * 86400]); delete p._cr; }
     if (req.method === 'POST') { if (b.a === 'feed') { st.feed = 1; st.spent = FEED_COST; } if (b.a === 'buy' && p._bought) { st.buy = 1; st['buy_' + b.id] = 1; st.spent = (st.spent || 0) + p._bought; } if (b.a === 'name') st.named = 1; }
-    delete p._bought;
-    if (changed) await redis('SET', key, JSON.stringify(p));
+    delete p._bought; const pid = p._id; delete p._id;
+    if (changed) await redis('SET', key, JSON.stringify(p)); p._id = pid;
     if (!p.demo) { ex.push(['ZADD', 'pets', p.cups || 0, key], ['PFADD', 'pact:' + vnDay(now), key], ['EXPIRE', 'pact:' + vnDay(now), 400 * 86400]); await stat(st, ex); }
-    return send(200, { ok: true, pet: view(p, now, canEdit) });
+    return send(200, { ok: true, gift, pet: view(p, now, canEdit) });
   } catch (e) {
     console.error(e);
     return send(500, { ok: false, err: 'Lỗi máy chủ.' });
@@ -228,7 +276,7 @@ module.exports = async (req, res) => {
 };
 
 // dùng chung cho api/don: gắn đơn vào sóc của khách, trả token cho máy vừa đặt
-module.exports.linkOrder = async function (phone, code, cnt) {
+module.exports.linkOrder = async function (phone, code, cnt, ref) {
   const ph = normPhone(phone);
   if (!ph || ph === DEMO || !code || !(cnt > 0)) return null;
   const key = petKey(ph), now = Date.now();
@@ -239,7 +287,7 @@ module.exports.linkOrder = async function (phone, code, cnt) {
   const p = raw ? JSON.parse(raw) : { nm: '', beans: 0, cups: 0, full: 70, fedAt: now, born: now, pend: [], toks: [] };
   p.got = p.got || [];
   const st = {};
-  if (!raw) st.adopt = 1;
+  if (!raw) { st.adopt = 1; const rf = String(ref || '').replace(/[^a-f0-9]/g, '').slice(0, 32); if (rf && 'pet:' + rf !== key && await redis('EXISTS', 'pet:' + rf)) { p.ref = rf; st.refLink = 1; } }
   if (!p.got.includes(code) && !(p.pend || []).some(x => x.c === code)) { p.pend = (p.pend || []).concat([{ c: code, cnt: Math.min(99, cnt), at: now }]).slice(-30); st.link = 1; st.linkCups = Math.min(99, cnt); }
   const tok = crypto.randomBytes(12).toString('hex');
   p.toks = (p.toks || []).concat([sha(tok)]).slice(-6);
@@ -281,4 +329,43 @@ async function admin(days) {
     return { id: k.slice(4), tag: petTag(k), nm: q.nm || '', hide: !!q.hide, house: !!q.house, cups: c, beans: q.beans || 0, lv: levelOf(c).i, born: q.born || 0, fedAt: q.fedAt || 0, items: (q.inv || []).length }; });
   const shop = {}; Object.keys(SHOP).forEach(id => { shop[id] = { p: SHOP[id].p, n: all['buy_' + id] || 0, soon: !!SHOP[id].soon }; });
   return { days, series, all, pets, act7, actN, lv, top, shop, monthTop: monRaw.length / 2 };
+}
+
+// ---- sau khi cộng ly: thưởng giới thiệu bạn, mốc tổ sóc ----
+async function afterCredit(p, key, now, st) {
+  if (p.ref && !p.refPaid) {
+    p.refPaid = 1; p.beans = (p.beans || 0) + REF_BONUS; st.ref = 1;
+    const rk = 'pet:' + p.ref, rr = await redis('GET', rk);
+    if (rr) { const q = JSON.parse(rr); q.beans = (q.beans || 0) + REF_BONUS; q.refN = (q.refN || 0) + 1; await redis('SET', rk, JSON.stringify(q)); }
+  }
+  if (p.grp) {
+    const m = vnMonth(now), gz = 'grpm:' + m;
+    const tot = Number(await redis('ZINCRBY', gz, p._cr, p.grp)); await redis('EXPIRE', gz, 120 * 86400);
+    const gr = await redis('GET', 'grp:' + p.grp); if (!gr) return;
+    const g = JSON.parse(gr); g.paid = g.paid || {}; const done = g.paid[m] || [];
+    const hit = GRP_STEPS.filter(x => tot >= x && !done.includes(x));
+    if (!hit.length) return;
+    g.paid[m] = done.concat(hit); await redis('SET', 'grp:' + p.grp, JSON.stringify(g));
+    const bonus = GRP_BONUS * hit.length, others = (g.mem || []).filter(k => k !== key), gift = { at: now, n: bonus, step: hit[hit.length - 1] };
+    p.beans = (p.beans || 0) + bonus; p.grpGift = gift; st.gbonus = hit.length;
+    if (others.length) { const raws = await redis('MGET', ...others); const cmds = [];
+      others.forEach((k, i) => { if (!raws[i]) return; const q = JSON.parse(raws[i]); q.beans = (q.beans || 0) + bonus; q.grpGift = gift; cmds.push(['SET', k, JSON.stringify(q)]); });
+      await pipe(cmds); }
+  }
+}
+async function groupView(code, g, ph) {
+  const mem = g.mem || [], raws = mem.length ? await redis('MGET', ...mem) : [];
+  const m = vnMonth(), r = await pipe([['ZSCORE', 'grpm:' + m, code], ['ZREVRANK', 'grpm:' + m, code]]);
+  const month = Number(r[0] || 0), me = ph ? petKey(ph) : '';
+  const list = mem.map((k, i) => { let q = {}; try { q = JSON.parse(raws[i] || '{}'); } catch (e) {}
+    return { n: q.hide || !q.nm ? petTag(k) : q.nm, lv: levelOf(q.cups || 0).i, cups: q.cups || 0, wear: Object.values(q.eq || {})[0] || '', me: k === me, owner: k === g.owner }; }).sort((a, b) => b.cups - a.cups);
+  const next = GRP_STEPS.find(x => x > month) || null;
+  return { code, nm: g.nm, list, month, next, steps: GRP_STEPS, bonus: GRP_BONUS, max: GRP_MAX, rank: r[1] == null ? null : r[1] + 1, paid: (g.paid || {})[m] || [] };
+}
+async function groupBoard() {
+  const z = 'grpm:' + vnMonth(), top = await redis('ZREVRANGE', z, 0, 9, 'WITHSCORES') || [];
+  const codes = [], sc = []; for (let i = 0; i < top.length; i += 2) { codes.push(top[i]); sc.push(Number(top[i + 1])); }
+  const raws = codes.length ? await redis('MGET', ...codes.map(c => 'grp:' + c)) : [];
+  const list = codes.map((c, i) => { let g = {}; try { g = JSON.parse(raws[i] || '{}'); } catch (e) {} return { n: g.nm || 'Tổ ' + c, mem: (g.mem || []).length, cups: sc[i] }; }).filter(x => x.cups > 0 && x.mem);
+  return { per: 'grp', list, total: await redis('ZCARD', z) };
 }
