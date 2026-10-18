@@ -450,11 +450,11 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function go(st){M.st=st;M.ts=performance.now()}
   const cardEl=document.getElementById('card');
   function cardTop(){const c=cardEl.getBoundingClientRect(),r=sec.getBoundingClientRect();return {y:c.top-r.top+1,l:c.left-r.left,r:c.right-r.left}}
-  function toStartle(){const c=cardTop(),f=M.o?M.o.feet:[M.x,M.y];M.x=f[0];M.y0=f[1];M.lx=cl(M.x,c.l+46,c.r-46);M.sx0=M.x;
-    M.dir=(M.lx>c.l+(c.r-c.l)/2)?-1:1;M.fall=false;go('startle')}
+  function toStartle(){const c=cardTop(),f=M.o?M.o.feet:[M.x,M.y];M.x=f[0];M.y0=f[1];M.lx=cl(M.x,c.l+46,c.r-120);M.sx0=M.x;
+    M.dir=1;M.fall=false;go('startle')}
   // hạt rơi khỏi tay khi giật mình: nảy trên mép bảng rồi nằm yên chờ sóc quay lại nhặt
   function dropBean(x,y){const el=document.createElement('i');el.className='dbean';sec.appendChild(el);
-    M.drop={x,y,vx:-M.dir*(70+Math.random()*40),vy:-180,rot:0,rest:false,el}}
+    M.drop={x,y,vx:M.dir*(70+Math.random()*40),vy:-180,rot:0,rest:false,el}}
   function dropTick(dt){const D=M.drop;if(!D||M.st==='pick')return;const c=cardTop();
     if(!D.rest){D.vy+=1400*dt;D.x+=D.vx*dt;D.y+=D.vy*dt;D.rot+=D.vx*dt*5;
       if(D.y>=c.y-7&&D.vy>0){D.y=c.y-7;if(Math.abs(D.vy)<140){D.rest=true}else{D.vy*=-.42;D.vx*=.55}}}
@@ -468,7 +468,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function mascotStart(){
     if(M.used||RM||sec.classList.contains('is-on'))return false;
     if(!SQ3.ready){setTimeout(mascotStart,400);return false}
-    Object.assign(M,{used:true,run:true,grab:false,miss:0,maxMiss:3+Math.floor(Math.random()*3),first:true,bean:false,flip:1,x:sec.clientWidth+90,sq:1,sqv:0,lt:performance.now(),stride:0,last:null,cur:null,fade:null});
+    Object.assign(M,{used:true,run:true,grab:false,miss:0,maxMiss:3+Math.floor(Math.random()*3),first:true,bean:false,flip:-1,x:-90,sq:1,sqv:0,lt:performance.now(),stride:0,last:null,cur:null,fade:null});
     socEl.classList.add('on');socSh.classList.add('on');go('enter');M.raf=requestAnimationFrame(mtick);return true}
   function exclaim(x,y){socEx.style.left=x+'px';socEx.style.top=y+'px';socEx.classList.remove('on');void socEx.offsetWidth;socEx.classList.add('on')}
   function exFollow(){if(M.o){socEx.style.left=(M.o.head[0]-8)+'px';socEx.style.top=(M.o.head[1]-30)+'px'}}
@@ -491,11 +491,11 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(sec.classList.contains('is-on')&&!['pull','spull','startle','look','fetch','pick','exit'].includes(M.st)){M.bean=false;if(M.grab){M.grab=false;drag=false}squash(3);toStartle()}
     dropTick(dt);
     switch(M.st){
-    case 'enter':{const tx=b.x+24*S,v=cl((M.x-tx)*1.5,70,170);M.x-=v*dt;M.y=g;runAt(now,dt,M.x,g,v,-1);
-      if(M.x<=tx+2){M.x=tx;squash(-2.4);dust(M.x-14,g,-1,3);go('skid')}break}
-    case 'skid':{M.flip=1; // phanh gấp: ngả người ra sau rồi đứng dựng lên
-      M.x-=Math.max(0,1-t/300)*80*dt; // phanh, hạ mông, nhổm dậy, ngồi dựng nhìn khách
-      M.flip=1;if(t<620)seq('tr',11,easeOut(t/620),'feet',M.x,g,dt);else{M.flip=1;put('stand',A.stand(t),'feet',M.x,g,0,dt)}
+    case 'enter':{const tx=b.x-24*S,v=cl((tx-M.x)*1.5,70,170);M.x+=v*dt;M.y=g;runAt(now,dt,M.x,g,v,1);
+      if(M.x>=tx-2){M.x=tx;dust(M.x+14,g,1,3);go('skid')}break}
+    case 'skid':{M.flip=-1; // phanh gấp: ngả người ra sau rồi đứng dựng lên
+      M.x+=Math.max(0,1-t/300)*80*dt; // phanh, hạ mông, nhổm dậy, ngồi dựng nhìn khách
+      M.flip=-1;if(t<620)seq('tr',11,easeOut(t/620),'feet',M.x,g,dt);else{M.flip=1;put('stand',A.stand(t),'feet',M.x,g,0,dt)}
       shadowAt(M.x,g,1);if(t>820)go('ready');break}
     case 'ready':{M.flip=1;const dx=b.x-M.x;let hop=0;
       if(Math.abs(dx)>6){M.x+=cl(dx*2.4,-90,90)*dt;const ph=(t/220)%1;hop=Math.sin(ph*Math.PI)*7;if(ph<.06&&!M._h){M._h=1;squash(-1.2)}if(ph>.5)M._h=0}
@@ -523,9 +523,9 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       if(t<60)exclaim(M.x+6,g-86*S);
       if(Math.floor(t/240)!==M._puff&&t<1400){M._puff=Math.floor(t/240);fx('steam',M.x+(Math.random()<.5?-16:16),g-78*S,{'--dx':((Math.random()-.5)*20)+'px'},850)}
       if(t>1700){socEx.classList.remove('on');M.stride=0;go('sulk')}break}
-    case 'sulk':{if(t<420){M.flip=-1;seq('tr',11,1-easeIn(t/420),'feet',M.x,g,dt);shadowAt(M.x,g,1);break}
-      const v=Math.min(1,(t-420)/400)*cl(W*.22,130,170);M.x+=v*dt;runAt(now,dt,M.x,g,v,1);
-      if(M.x>W+100){socSh.classList.remove('on');M.last=null;M.flip=1;go('slide')}break}
+    case 'sulk':{if(t<420){M.flip=1;seq('tr',11,1-easeIn(t/420),'feet',M.x,g,dt);shadowAt(M.x,g,1);break}
+      const v=Math.min(1,(t-420)/400)*cl(W*.22,130,170);M.x-=v*dt;runAt(now,dt,M.x,g,v,-1);
+      if(M.x<-100){socSh.classList.remove('on');M.last=null;M.flip=1;go('slide')}break}
     case 'slide':{ // tuột dây từ trên xuống: 2 tay ôm dây, đến cuối dây thì ôm lấy hạt
       const end=b.y+(SQ3.D.hold.a.grip[1]-SQ3.D.hold.a.bean[1])*s;
       const k=Math.min(1,t/2200),top=-30,yA=top+(end-top)*easeOut(k),x=ropeXAt(yA),wob=Math.sin(t/120)*(1-k);
@@ -565,7 +565,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
       put('pk'+fr,{},'feet',M.x,gy,0,dt);shadowAt(M.x,gy,1);
       if(t>=380&&t<700&&Math.floor((t-380)/150)!==M._sn){M._sn=Math.floor((t-380)/150);fx('sqsn',D.x-M.fdir*6,D.y-8,{'--dx':(-M.fdir*10)+'px'},500)}
       if(D&&t>=980){D.el.remove();M.drop=null;M.bean=true}
-      if(t>1700){M.stride=0;M.dir=M.fdir;go('exit')}break}
+      if(t>1700){M.stride=0;M.dir=1;go('exit')}break}
     case 'exit':{const c=cardTop();let gy=c.y;const v=easeIn(Math.min(1,t/420))*cl(W*.5,220,320);M.x+=M.dir*v*dt;
       const off=M.x<c.l+6||M.x>c.r-6;
       if(off&&!M.fall){M.fall=true;M.fy=gy;M.vy=-120;squash(2)}
