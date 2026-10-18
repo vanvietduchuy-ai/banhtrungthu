@@ -2604,18 +2604,12 @@ const TD={ // pixel ảnh gốc; đầu sóc hướng xuống dưới ảnh (+y)
   run:{w:266,h:606,a:{c:[130,380],mouth:[112,345],hand:[220,400]},b:[
     ['head',[115,380],[110,190],80],['tail1',[140,240],[170,120],70],['tail2',[170,120],[205,20],62,'tail1'],
     ['armL',[62,350],[22,372],26],['armR',[198,362],[232,402],26],['legL',[95,462],[60,590],32],['legR',[182,452],[215,505],28]]},
-  eat:{w:233,h:480,a:{c:[117,330],mouth:[115,305],hand:[200,360]},b:[
-    ['head',[116,330],[116,160],82],['armL',[62,335],[102,310],24],['armR',[172,335],[132,310],24],['tail1',[118,150],[112,25],72],['legL',[70,440],[60,470],22],['legR',[165,440],[180,470],22]]},
-  bag:{w:272,h:542,a:{c:[125,330],mouth:[112,300],bag:[220,470],hand:[220,470]},b:[
-    ['head',[115,330],[112,170],82],['armR',[210,360],[215,440],44],['tail1',[125,160],[120,25],72],['armL',[55,350],[30,380],24],['legL',[80,470],[75,520],24]]},
-  back:{w:250,h:597,a:{c:[130,280],mouth:[115,150],hand:[220,200]},b:[
-    ['head',[115,200],[115,40],80],['armL',[42,215],[22,150],26],['armR',[212,210],[232,150],26],
-    ['legL',[82,330],[48,320],30],['legR',[182,330],[212,320],30],['tail1',[130,420],[130,590],72]]},
-  groom:{w:212,h:660,a:{c:[110,390],mouth:[105,320],hand:[200,400]},b:[
-    ['armL',[40,330],[45,200],30],['armR',[180,330],[180,200],30],['head',[108,340],[108,210],70],['tail1',[110,530],[110,655],62]]},
-  bagonly:{w:104,h:144,a:{c:[52,72],handle:[25,15]},b:[]},
-  pant:{w:212,h:463,a:{c:[105,150],mouth:[105,195],hand:[190,200]},b:[['head',[105,190],[105,30],72],['tail1',[105,265],[105,455],72]]}};
-// 4 khung chạy phi nước đại nhìn từ trên xuống (thấy lưng), đầu hướng lên trên ảnh
+  eat:{w:152,h:342,k:1.321,a:{c:[74,165],mouth:[76,168],hand:[76,175]},b:[['head',[76,140],[76,40],50],['tail1',[76,250],[76,335],45]]},
+  bag:{w:185,h:347,k:1.24,a:{c:[114,171],mouth:[112,140],bag:[30,240],hand:[40,190]},b:[['head',[112,120],[112,30],50],['tail1',[115,260],[115,340],45]]},
+  back:{w:181,h:409,k:1.132,a:{c:[93,195],mouth:[90,115],hand:[150,130]},b:[['head',[90,100],[90,20],45],['tail1',[93,300],[93,400],45]]},
+  groom:{w:162,h:324,k:1.326,a:{c:[80,159],mouth:[80,150],hand:[140,180]},b:[['head',[80,120],[80,30],50],['tail1',[80,240],[80,320],45]]},
+  bagonly:{w:65,h:136,k:1.24,a:{c:[32,70],handle:[40,12]},b:[]},
+  pant:{w:143,h:326,k:1.374,a:{c:[68,157],mouth:[70,160],hand:[130,180]},b:[['head',[70,130],[70,40],50],['tail1',[70,240],[70,320],45]]}};
 TD.sit=Object.assign({},TD.eat);
 // 13 khung chuyển chạy <-> ngồi nhìn từ trên xuống (ảnh gốc + khung chèn giữa)
 [[125, 245],[125, 251],[124, 258],[125, 263],[123, 261],[123, 260],[123, 258],[124, 260],[123, 260],[124, 263],[124, 262],[124, 262],[125, 261]].forEach((c,i)=>TD['ts'+(i+1)]={w:245,h:556,k:1.195,a:{c,mouth:[125,170],hand:[200,260]},b:[]});
@@ -2651,7 +2645,7 @@ const SQT=((D,PRE)=>{
         gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);T[n]=tx}
       else T[n]=im;
-      if(++left===names.length){ready=true;res()}};im.src=base+PRE+n+'.webp?v=5'}))}
+      if(++left===names.length){ready=true;res()}};im.src=base+PRE+n+'.webp?v=6'}))}
   function size(){if(!cv)return;dpr=Math.min(2,devicePixelRatio||1);const w=cv.clientWidth,h=cv.clientHeight;
     if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr)}}
   function clear(){if(!cv)return;size();if(gl){gl.viewport(0,0,cv.width,cv.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT)}else if(ctx2)ctx2.clearRect(0,0,cv.width,cv.height)}
@@ -2734,7 +2728,7 @@ const SQT=((D,PRE)=>{
       CP=Object.assign({},M.cur.P,{rot:lerpA(r0,r1,Math.min(1,e*1.15)),sx:M.cur.P.sx*(.72+.28*e),sy:M.cur.P.sy*(.66+.34*e),y:M.cur.P.y-hop})}}
     if(M.cur){const al=M.tr?Math.min(1,(now-M.tr.t)/M.tr.dur*1.5):M.cur.alpha;SQT.draw(M.cur.n,CP,M.cur.ang,al);if(M.cur.blend&&M.cur.blend.a>.02)SQT.draw(M.cur.blend.n,CP,M.cur.ang,M.cur.blend.a*al);
       if(M.bag&&M.cur.n!=='bag'){const P=CP,hp=SQT.pt(M.cur.n,P,TD[M.cur.n].a.hand),sw=Math.sin(now/120)*12;
-        SQT.draw('bagonly',{x:hp[0],y:hp[1],rot:P.rot+sw,sx:P.sx,sy:P.sy,anchor:TD.bagonly.a.handle},null,1)}}
+        SQT.draw('bagonly',{x:hp[0],y:hp[1],rot:P.rot+sw,sx:P.sx/(TD[M.cur.n].k||1)*TD.bagonly.k,sy:P.sy/(TD[M.cur.n].k||1)*TD.bagonly.k,anchor:TD.bagonly.a.handle},null,1)}}
     const P=CP;if(P){sh.style.transform=`translate(${P.x}px,${P.y+6}px) scale(${(P.sx/.105).toFixed(2)})`}}
   // ---- nhịp cử động từng tư thế ----
   const A={
@@ -2834,7 +2828,7 @@ const SQT=((D,PRE)=>{
       if(t>2600||now-M.act<300){go('rest')}break}
     case 'hop':{const n=3,D=1500,k=Math.min(1,t/D),ph=(k*n)%1,up=Math.sin(ph*Math.PI); // nhảy tưng tưng tại chỗ
       if(ph<.05&&!M._hp){M._hp=1;puff(M.x,M.y+10,'sqd',3)}if(ph>.5)M._hp=0;
-      put('run',A.run(.25,t),M.x,M.y-up*14,M.h-90+Math.sin(k*Math.PI*2*n)*10,1+up*.18);if(k>=1||now-M.act<300)go('rest');break}
+      put('ts13',A.run(.25,t),M.x,M.y-up*14,M.h-90+Math.sin(k*Math.PI*2*n)*10,1+up*.18);if(k>=1||now-M.act<300)go('rest');break}
     case 'wander':{if(!M.goal||t<20){const B=bounds();M.goal={x:cl(M.x+(Math.random()-.5)*220,B.l,B.r),y:cl(M.y+(Math.random()-.5)*200,B.t+40,B.b)}}
       const d=steer(M.goal.x,M.goal.y,dt,220);drawRun(t);if(d<5){M.v=0;M.goal=null;go('rest')}break}
     case 'look':{const lk=t<500?-35:t<1000?35:0;M.h+=((((-270+lk)-M.h+540)%360)-180)*.12;if(M.bag)put('bag',A.bag(t),M.x,M.y,M.h-90,1);else put('ts13',Object.assign(A.rest(t),{head:lk*.35}),M.x,M.y,0,1);if(t>1400)go('rest');break}
