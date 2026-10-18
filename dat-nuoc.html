@@ -2338,8 +2338,8 @@ body.g-on .o-back,body.g-on #oLive{display:none}
       last:{ c:o.c, s:'new', h:[{s:'new',t:Date.now()}], items:o.items, disc:o.disc || 0, sub:o.items.reduce((a,i)=>a+i.p*i.q,0), tot:(s => s - (o.disc ? Math.round(s*o.disc/100/1000)*1000 : 0))(o.items.reduce((a,i)=>a+i.p*i.q,0)), cnt:o.items.reduce((a,i)=>a+i.q,0), ship:o.ship, time:o.time, kind:o.kind, g:o.g }, local:true });
     paintAll();
     try{
-      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create' }, o)) }).then(x=>x.json());
-      if(r.ok){ upsert({ c:o.c, k:r.k, last:r.order, local:false }); paintAll(); }
+      const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ a:'create', ph:($('#phone').value || '').trim() }, o)) }).then(x=>x.json());
+      if(r.ok){ upsert({ c:o.c, k:r.k, last:r.order, local:false }); paintAll(); if(window.TCP) TCP.linked(($('#phone').value || '').trim(), r.pt, r.order && r.order.cnt); }
     }catch(e){}
   }
   async function refresh(force){
@@ -2870,6 +2870,202 @@ const SQT=((D,PRE)=>{
     paint(now);requestAnimationFrame(tick)}
   setTimeout(()=>{M.lt=performance.now();go('enter');requestAnimationFrame(tick)},900);
   addEventListener('resize',()=>SQT.size());
+})();
+</script>
+
+<!-- ===== SOC CUA BAN: game nuoi soc theo so ly da dat ===== -->
+<style>
+.nav-pet{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#FFFDF8;border-radius:999px;padding:4px 12px 4px 5px;
+  font-family:var(--body);font-size:11.5px;letter-spacing:.06em;color:var(--ink);cursor:pointer;transition:.2s;white-space:nowrap;position:relative}
+.nav-pet:hover{border-color:var(--ink)}
+.nav-pet img{width:24px;height:24px;border-radius:50%;object-fit:cover;object-position:50% 0;background:#F7EFE0}
+.nav-pet.hungry::after{content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--cream);animation:gPulse 1.6s infinite}
+@media(max-width:430px){.nav-pet .tx{display:none}.nav-pet{padding:4px}.nav-r{gap:5px}.nav-r .nav-tt{padding:7px 9px;letter-spacing:.03em}}
+.pt-bg{position:fixed;inset:0;z-index:177;background:rgba(24,15,10,.5);opacity:0;visibility:hidden;transition:.3s}
+.pt-bg.on{opacity:1;visibility:visible}
+.pt{position:fixed;z-index:178;left:0;right:0;bottom:0;max-height:92vh;overflow:auto;background:#FDF8EF;border-radius:20px 20px 0 0;padding:14px 20px 26px;
+  transform:translateY(105%);transition:transform .38s cubic-bezier(.2,.8,.2,1);font-family:var(--body);color:var(--ink)}
+.pt.on{transform:none}
+@media(min-width:701px){.pt{left:50%;bottom:auto;top:50%;width:420px;border-radius:20px;transform:translate(-50%,-40%) scale(.96);opacity:0;visibility:hidden;transition:.3s}
+  .pt.on{transform:translate(-50%,-50%);opacity:1;visibility:visible}}
+.pt .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 10px}
+.pt .x{position:absolute;right:10px;top:10px;width:38px;height:38px;border:0;border-radius:50%;background:transparent;font-size:24px;color:var(--mute);cursor:pointer}
+.pt h3{font-family:var(--disp);font-size:28px;font-weight:500;line-height:1.1;text-align:center}
+.pt .sub{text-align:center;font-size:12px;color:var(--mute);margin-top:4px}
+.pt-stage{position:relative;height:200px;margin:12px auto 6px;display:flex;align-items:flex-end;justify-content:center;
+  background:radial-gradient(ellipse 60% 24% at 50% 92%,rgba(42,29,22,.12),transparent 70%)}
+.pt-stage img{width:auto;transform-origin:50% 100%;animation:ptBob 2.6s ease-in-out infinite;cursor:pointer;user-select:none;-webkit-user-drag:none}
+.pt-stage.buon img{filter:saturate(.75);animation-duration:4s}
+.pt-stage.eat img{animation:ptChew .22s ease-in-out infinite}
+.pt-stage.yay img{animation:ptHop .5s ease-out 2}
+@keyframes ptBob{0%,100%{transform:scale(1,1)}50%{transform:scale(1.02,.98)}}
+@keyframes ptChew{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97) translateY(1px)}}
+@keyframes ptHop{0%{transform:none}35%{transform:translateY(-26px) scale(.97,1.04)}70%{transform:translateY(0) scale(1.05,.95)}100%{transform:none}}
+.pt-bean{position:absolute;width:18px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8a5a37,#4a2c18);left:50%;top:0;opacity:0;pointer-events:none}
+.pt-bean::after{content:'';position:absolute;left:47%;top:15%;width:2px;height:70%;background:#2a170c;border-radius:2px;transform:rotate(8deg)}
+.pt-bean.go{animation:ptDrop .7s cubic-bezier(.45,0,.6,1) both}
+@keyframes ptDrop{0%{opacity:0;transform:translate(-50%,-10px) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,92px) rotate(260deg) scale(.6)}}
+.pt-say{position:absolute;top:2px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 12px;font-size:12.5px;white-space:nowrap;
+  opacity:0;transition:.3s;pointer-events:none}
+.pt-say.on{opacity:1;transform:translateX(-50%) translateY(-4px)}
+.pt-name{display:flex;gap:8px;margin:6px 0 2px}
+.pt-name input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font:inherit;font-size:15px;background:#fff}
+.pt-lv{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;font-size:12px;color:var(--mute)}
+.pt-lv b{font-family:var(--disp);font-size:20px;font-weight:600;color:var(--ink)}
+.pt-bar{height:9px;border-radius:9px;background:rgba(42,29,22,.08);overflow:hidden;margin-top:6px}
+.pt-bar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,var(--gold),#d9b45a);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.pt-bar.full i{background:linear-gradient(90deg,#c0703a,#e6a15a)}
+.pt-bar.full.low i{background:linear-gradient(90deg,var(--red),#c65a48)}
+.pt-row{display:flex;gap:10px;margin-top:16px}
+.pt-chip{flex:1;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;text-align:center}
+.pt-chip b{display:block;font-family:var(--disp);font-size:24px;font-weight:600;line-height:1.1}
+.pt-chip span{font-size:11px;color:var(--mute);letter-spacing:.04em}
+.pt .btn-feed{width:100%;margin-top:16px;border:0;border-radius:999px;padding:14px;font:600 14px var(--body);letter-spacing:.04em;background:var(--ink);color:#FDF8EF;cursor:pointer;transition:.2s}
+.pt .btn-feed:disabled{opacity:.4;cursor:default}
+.pt .btn-sec{border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:0 16px;font:600 13px var(--body);cursor:pointer}
+.pt .note{font-size:11.5px;color:var(--mute);line-height:1.55;margin-top:14px;text-align:center}
+.pt .pend{margin-top:12px;font-size:12.5px;background:rgba(184,145,47,.1);border-radius:12px;padding:9px 12px;text-align:center}
+.pt .err{color:var(--red);font-size:12.5px;text-align:center;margin-top:8px;min-height:1em}
+.pt-lvls{display:flex;justify-content:space-between;margin-top:14px;gap:4px}
+.pt-lvls div{flex:1;text-align:center;font-size:10px;color:var(--mute);line-height:1.3}
+.pt-lvls div i{display:block;width:10px;height:10px;border-radius:50%;margin:0 auto 4px;background:rgba(42,29,22,.12)}
+.pt-lvls div.on{color:var(--ink)}.pt-lvls div.on i{background:var(--gold)}
+.pt-earn{margin-top:10px;font-size:12.5px;color:#1F6B4A;text-align:center}
+</style>
+<div class="pt-bg" id="ptBg"></div>
+<div class="pt" id="pt" role="dialog" aria-modal="true" aria-labelledby="ptH"><div class="grab"></div><button type="button" class="x" id="ptX" aria-label="Đóng">×</button><div id="ptBd"></div></div>
+<script>
+(function(){
+  const API = '/api/soc', KEY = 'tcPet', IMG = 'img/home/sqt-';
+  const LV = [['Sóc con',0],['Sóc nhỏ',5],['Sóc barista',15],['Sóc trưởng quán',35],['Sóc huyền thoại',70]];
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const st = { get(){ try{ return JSON.parse(localStorage.getItem(KEY) || 'null') || null; }catch(e){ return null; } },
+               set(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} } };
+  const norm = p => { let d = String(p || '').replace(/\D/g, ''); if(d.startsWith('84')) d = '0' + d.slice(2); return /^0\d{9,10}$/.test(d) ? d : ''; };
+  let S = st.get() || {}, P = null, busy = false;
+  const FN = m => m === 'eat' ? 'eat' : m === 'yay' ? 'back' : m === 'doi' ? 'pant' : m === 'buon' ? 'groom' : 'ts13';
+  const img = m => IMG + FN(m) + '.webp?v=6';
+  // cung mot co soc o moi tu the: [chieu cao anh, bu khoang trong duoi chan]
+  const SZ = { ts13:[252,-34], pant:[170,0], eat:[172,0], groom:[163,0], back:[176,0] };
+  const fit = (el, m) => { const z = SZ[FN(m)]; el.style.height = z[0] + 'px'; el.style.marginBottom = z[1] + 'px'; el.src = img(m); };
+  const icon = m => IMG + (m === 'vui' ? 'eat' : 'pant') + '.webp?v=6';
+  const SAY = { vui:['No căng rồi, cảm ơn nha!','Hôm nay uống gì đó?','Tớ thích mùi cà phê ở đây!'],
+                doi:['Bụng tớ kêu ọt ọt…','Cho tớ vài hạt nhé?','Đói đói…'], buon:['Lâu rồi không gặp bạn…','Tớ đói lả rồi…'] };
+
+  // nut tren thanh nav
+  const navR = document.querySelector('.nav-r') || document.querySelector('.nav-in');
+  navR.insertAdjacentHTML('afterbegin', '<button type="button" class="nav-pet" id="navPet"><img src="' + icon('vui') + '" alt=""><span class="tx">Sóc của bạn</span></button>');
+  const bg = document.getElementById('ptBg'), sh = document.getElementById('pt'), bd = document.getElementById('ptBd');
+  function open(){ bg.classList.add('on'); sh.classList.add('on'); document.body.style.overflow = 'hidden'; paint(); load(); }
+  function close(){ bg.classList.remove('on'); sh.classList.remove('on'); document.body.style.overflow = ''; }
+  document.getElementById('navPet').addEventListener('click', open);
+  bg.addEventListener('click', close); document.getElementById('ptX').addEventListener('click', close);
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && sh.classList.contains('on')) close(); });
+
+  async function call(method, body){
+    const q = method === 'GET' ? '?ph=' + encodeURIComponent(S.ph) + (S.t ? '&t=' + S.t : '') + '&_=' + Date.now() : '';
+    const r = await fetch(API + q, method === 'GET' ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({ ph:S.ph, t:S.t }, body)) });
+    return r.json();
+  }
+  async function load(){
+    if(!S.ph) return;
+    try{ const r = await call('GET'); if(r.ok){ const was = P; P = r.pet; earned(was); paint(); badge(); } else { P = P || null; paint(r.err); } }
+    catch(e){ paint('Chưa kết nối được — thử lại sau nhé.'); }
+  }
+  function earned(was){
+    if(!was || !was.exists || !P.exists) return;
+    const g = P.cups - was.cups; if(g > 0) setTimeout(() => say('Yay! +' + g * 10 + ' hạt cà phê', 'yay'), 300);
+  }
+  function badge(){ const b = document.getElementById('navPet'); if(!b || !P || !P.exists) return;
+    b.classList.toggle('hungry', P.mood !== 'vui'); b.querySelector('img').src = icon(P.mood); }
+
+  function lvHtml(lv, cups){
+    const pct = lv.next == null ? 100 : Math.round((cups - lv.at) / (lv.next - lv.at) * 100);
+    return '<div class="pt-lv"><b>' + esc(lv.n) + '</b><span>' + (lv.next == null ? 'Cấp cao nhất' : (lv.next - cups) + ' ly nữa → ' + esc(lv.nextN)) + '</span></div>' +
+      '<div class="pt-bar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="pt-lvls">' + LV.map(([n,a]) => '<div class="' + (cups >= a ? 'on' : '') + '"><i></i>' + n.replace('Sóc ','') + '</div>').join('') + '</div>';
+  }
+  function paint(err){ paint0(err); bd.querySelectorAll('img[data-m]').forEach(e => fit(e, e.dataset.m)); }
+  function paint0(err){
+    if(!S.ph){
+      bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="sub">Mỗi ly bạn đặt = 10 hạt cà phê để nuôi sóc</div>' +
+        '<div class="pt-stage"><img data-m="doi" alt="Sóc"></div>' +
+        '<div class="pt-name"><input id="ptPh" inputmode="tel" autocomplete="tel" placeholder="Số điện thoại bạn dùng khi đặt" value="' + esc((document.getElementById('phone') || {}).value || '') + '"><button class="btn-sec" id="ptGo">Xem sóc</button></div>' +
+        '<div class="err" id="ptErr">' + esc(err || '') + '</div>' +
+        '<div class="note">Sóc gắn với số điện thoại đặt đơn. Quán chỉ lưu mã hoá của số, không lưu số thật. Chăm sóc (đặt tên, cho ăn) được trên máy bạn đã đặt đơn.</div>';
+      const go = () => { const p = norm(document.getElementById('ptPh').value); if(!p){ document.getElementById('ptErr').textContent = 'Số điện thoại chưa đúng.'; return; }
+        S = { ph:p, t:(S.ph === p ? S.t : '') }; st.set(S); P = null; paint(); load(); };
+      document.getElementById('ptGo').addEventListener('click', go);
+      document.getElementById('ptPh').addEventListener('keydown', e => { if(e.key === 'Enter') go(); });
+      return;
+    }
+    if(!P){ bd.innerHTML = '<h3 id="ptH">Sóc của bạn</h3><div class="pt-stage"><img data-m="vui" alt="Sóc"></div><div class="sub">' + esc(err || 'Đang gọi sóc…') + '</div>' + changeLink(); bindChange(); return; }
+    if(!P.exists){
+      bd.innerHTML = '<h3 id="ptH">Chưa có sóc</h3><div class="sub">Số ' + mask(S.ph) + '</div>' +
+        '<div class="pt-stage"><img data-m="doi" alt="Sóc"></div>' +
+        '<div class="pend">Đặt ly đầu tiên với số này để nhận một bé sóc — mỗi ly được 10 hạt cà phê cho sóc ăn.</div>' + changeLink();
+      bindChange(); return;
+    }
+    const named = !!P.nm, low = P.full < 25;
+    bd.innerHTML = '<h3 id="ptH">' + (named ? esc(P.nm) : 'Sóc của bạn') + '</h3>' +
+      '<div class="sub">' + (P.mood === 'vui' ? 'Đang vui vẻ' : P.mood === 'doi' ? 'Hơi đói bụng' : 'Đói lả rồi') + ' · ' + P.cups + ' ly đã nuôi</div>' +
+      '<div class="pt-stage ' + P.mood + '" id="ptSt"><div class="pt-say" id="ptSay"></div><i class="pt-bean" id="ptBean"></i><img id="ptImg" data-m="' + P.mood + '" alt="Sóc"></div>' +
+      (!named && P.canEdit ? '<div class="pt-name"><input id="ptNm" maxlength="20" placeholder="Đặt tên cho sóc"><button class="btn-sec" id="ptNmGo">Lưu</button></div>' : '') +
+      '<div class="pt-lv"><span>Độ no</span><span>' + P.full + '%</span></div><div class="pt-bar full' + (low ? ' low' : '') + '"><i style="width:' + P.full + '%"></i></div>' +
+      lvHtml(P.lv, P.cups) +
+      '<div class="pt-row"><div class="pt-chip"><b id="ptBeans">' + P.beans + '</b><span>HẠT CÀ PHÊ</span></div><div class="pt-chip"><b>' + P.cups + '</b><span>LY ĐÃ NUÔI</span></div></div>' +
+      (P.pendCups ? '<div class="pend">⏳ ' + P.pendCups + ' ly đang chờ — hạt được cộng khi quán giao xong đơn.</div>' : '') +
+      (P.canEdit ? '<button class="btn-feed" id="ptFeed"' + (P.beans < P.cost || P.full >= 100 ? ' disabled' : '') + '>' + (P.full >= 100 ? 'Sóc no căng rồi' : P.beans < P.cost ? 'Cần ' + P.cost + ' hạt để cho ăn' : 'Cho ăn · ' + P.cost + ' hạt') + '</button>'
+                 : '<div class="pend">Máy này chỉ xem được sóc. Đặt một đơn bằng số ' + mask(S.ph) + ' trên máy này để chăm sóc.</div>') +
+      '<div class="err" id="ptErr">' + esc(err || '') + '</div>' +
+      '<div class="note">Mỗi ly = 10 hạt. Sóc đói dần nếu lâu không gặp, nhưng không bao giờ bỏ đi đâu.</div>' + changeLink();
+    bindChange();
+    document.getElementById('ptImg').addEventListener('click', () => say(pick(SAY[P.mood] || SAY.vui)));
+    const fb = document.getElementById('ptFeed'); if(fb) fb.addEventListener('click', feed);
+    const ng = document.getElementById('ptNmGo'); if(ng){ const doName = () => nameIt(document.getElementById('ptNm').value);
+      ng.addEventListener('click', doName); document.getElementById('ptNm').addEventListener('keydown', e => { if(e.key === 'Enter') doName(); }); }
+  }
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const mask = p => p.slice(0, 3) + '••••' + p.slice(-3);
+  const changeLink = () => '<div class="note"><a href="#" id="ptChg" style="color:inherit">Dùng số khác</a></div>';
+  function bindChange(){ const a = document.getElementById('ptChg'); if(a) a.addEventListener('click', e => { e.preventDefault(); S = {}; st.set(null); P = null; paint(); }); }
+  let sayT = 0;
+  function say(t, mode){
+    const el = document.getElementById('ptSay'), stg = document.getElementById('ptSt'); if(!el) return;
+    el.textContent = t; el.classList.add('on'); clearTimeout(sayT); sayT = setTimeout(() => el.classList.remove('on'), 2200);
+    if(mode === 'yay'){ const im = document.getElementById('ptImg'); fit(im, 'yay'); stg.className = 'pt-stage yay';
+      setTimeout(() => { if(P){ fit(im, P.mood); stg.className = 'pt-stage ' + P.mood; } }, 1300); }
+  }
+  async function feed(){
+    if(busy) return; busy = true;
+    const fb = document.getElementById('ptFeed'); fb.disabled = true;
+    const stg = document.getElementById('ptSt'), im = document.getElementById('ptImg'), bean = document.getElementById('ptBean');
+    bean.classList.remove('go'); void bean.offsetWidth; bean.classList.add('go');
+    setTimeout(() => { fit(im, 'eat'); stg.className = 'pt-stage eat'; }, 450);
+    let r; try{ r = await call('POST', { a:'feed' }); }catch(e){ r = { ok:false, err:'Chưa kết nối được.' }; }
+    setTimeout(() => { busy = false;
+      if(r.ok){ P = r.pet; paint(); badge(); say(P.full >= 100 ? 'No căng! Cảm ơn bạn!' : 'Ngon quá! Măm măm', P.full >= 100 ? 'yay' : ''); }
+      else { if(r.pet) P = r.pet; paint(r.err || 'Không cho ăn được.'); }
+    }, 1500);
+  }
+  async function nameIt(v){
+    v = String(v || '').trim(); if(!v) return;
+    try{ const r = await call('POST', { a:'name', nm:v }); if(r.ok){ P = r.pet; paint(); say('Tớ là ' + P.nm + '!', 'yay'); } else paint(r.err); }
+    catch(e){ paint('Chưa kết nối được.'); }
+  }
+  // goi tu TCO khi don vua tao xong
+  function linked(ph, t, cnt){
+    ph = norm(ph); if(!ph || !t) return;
+    S = { ph, t }; st.set(S);
+    const box = document.querySelector('#sentBox .sent');
+    if(box && cnt && !document.getElementById('ptEarn')){
+      box.insertAdjacentHTML('afterend', '<div class="pt-earn" id="ptEarn">🐿️ Đơn này sẽ nuôi sóc của bạn thêm ' + cnt * 10 + ' hạt cà phê · <a href="#" id="ptEarnGo" style="color:inherit">Xem sóc</a></div>');
+      document.getElementById('ptEarnGo').addEventListener('click', e => { e.preventDefault(); open(); });
+    }
+    load();
+  }
+  window.TCP = { open, linked };
+  if(S.ph) load();
 })();
 </script>
 </body>
