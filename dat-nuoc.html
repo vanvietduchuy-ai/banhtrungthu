@@ -2616,9 +2616,10 @@ const TD={ // pixel ảnh gốc; đầu sóc hướng xuống dưới ảnh (+y)
   bagonly:{w:104,h:144,a:{c:[52,72],handle:[25,15]},b:[]},
   pant:{w:212,h:463,a:{c:[105,150],mouth:[105,195],hand:[190,200]},b:[['head',[105,190],[105,30],72],['tail1',[105,265],[105,455],72]]}};
 // 4 khung chạy phi nước đại nhìn từ trên xuống (thấy lưng), đầu hướng lên trên ảnh
-TD.sit=Object.assign({},TD.eat); // ngồi ngửa mặt nhìn khách, 2 tay chụm trước ngực
-['b1','b2','b3','b4'].forEach(n=>TD[n]={w:280,h:720,a:{c:[140,330],mouth:[140,120],hand:[225,330]},b:[['head',[140,200],[140,50],58],['tail1',[140,430],[140,700],78],
-  ['fL',[92,250],[70,90],30],['fR',[188,250],[210,90],30],['hL',[88,440],[55,560],32],['hR',[192,440],[225,560],32]]});
+TD.sit=Object.assign({},TD.eat);
+// 6 khung phi nước đại nhìn từ trên xuống, thấy rõ 4 chân
+for(let i=1;i<=6;i++)TD['td'+i]={w:311,h:670,a:{c:[157,300],mouth:[157,90],hand:[240,300]},b:[['head',[157,190],[157,50],60],['tail1',[157,420],[157,660],70]]}; // ngồi ngửa mặt nhìn khách, 2 tay chụm trước ngực
+
 // ===== Sóc nhìn từ trên xuống: ảnh 3D + lưới biến dạng theo xương (WebGL) =====
 const SQT=((D,PRE)=>{
   const GX=12,GY=16;
@@ -2705,7 +2706,7 @@ const SQT=((D,PRE)=>{
   function puff(x,y,cls='sqs',n=5){for(let i=0;i<n;i++){const e=document.createElement('i');e.className=cls;e.style.left=(x+scrollX)+'px';e.style.top=(y+scrollY)+'px';
     const a=Math.PI*2*i/n+Math.random()*.5;e.style.setProperty('--dx',Math.cos(a)*22+'px');e.style.setProperty('--dy',Math.sin(a)*22+'px');document.body.appendChild(e);setTimeout(()=>e.remove(),700)}}
   // ---- vẽ ----
-  const fam=n=>/^b\d$/.test(n)?'b':n;
+  const fam=n=>/^(b|td)\d$/.test(n)?'b':n;
   function put(n,ang,x,y,rot,k=1,alpha=1,blend=null){const d=TD[n],s=S()*k,q=M.sq||1;const P={x,y,rot,sx:s*(1+(1-q)*.7),sy:s*q,anchor:d.a.c};
     if(M.cur&&fam(M.cur.n)!==fam(n)){const up=fam(n)==='b';M.tr={c:M.cur,t:performance.now(),dur:up?300:360,up};M.sqv=(M.sqv||0)+(up?3.2:-4)}
     M.cur={n,P,ang,alpha,blend};return P}
@@ -2737,11 +2738,11 @@ const SQT=((D,PRE)=>{
     M.x+=Math.cos(M.h*Math.PI/180)*M.v*k*dt;M.y+=Math.sin(M.h*Math.PI/180)*M.v*k*dt;
     M.stride+=M.v*k*dt/(46*S()/.105);return d}
   // chạy: 4 khung nhìn từ lưng nối tiếp, chuyển khung mềm bằng hoà trộn; đuôi, đầu lắc theo nhịp
-  const RUNF=['b2','b3','b1','b4'];
-  function drawRun(t){const ph=M.stride%1,q=ph*4,i=Math.floor(q)%4,f=q-Math.floor(q),fs=f*f*(3-2*f);
+  const RUNF=['td1','td2','td3','td4','td5','td6'];
+  function drawRun(t){const ph=M.stride%1,q=ph*6,i=Math.floor(q)%6,f=q-Math.floor(q),fs=f*f*(3-2*f);
     const hop=Math.abs(Math.sin(ph*Math.PI*2))*.06*Math.min(1,M.v/120),w=ph*Math.PI*2;
-    const sp=Math.min(1,M.v/160),ang={head:5*Math.sin(w*2),tail1:16*Math.sin(w-1),fL:-32*Math.sin(w)*sp,fR:-32*Math.sin(w+.35)*sp,hL:32*Math.sin(w+Math.PI)*sp,hR:32*Math.sin(w+Math.PI+.35)*sp};
-    const P=put(RUNF[i],ang,M.x,M.y,M.h+90,1+hop,1,{n:RUNF[(i+1)%4],a:fs});const st=1+.07*Math.sin(w)*sp;P.sy*=st;P.sx/=Math.sqrt(st)}
+    const sp=Math.min(1,M.v/160),ang={head:5*Math.sin(w*2),tail1:16*Math.sin(w-1),};
+    const P=put(RUNF[i],ang,M.x,M.y,M.h+90,1+hop,1,{n:RUNF[(i+1)%6],a:fs});const st=1+.07*Math.sin(w)*sp;P.sy*=st;P.sx/=Math.sqrt(st)}
   // ---- nhận việc ----
   let lastPt={x:innerWidth/2,y:innerHeight/2};
   document.addEventListener('pointerdown',e=>{lastPt={x:e.clientX,y:e.clientY,el:e.target};M.act=performance.now();
