@@ -127,8 +127,21 @@ module.exports = async (req, res) => {
     // bảng xếp hạng: tháng này hoặc mọi thời — chỉ tên sóc, cấp, số ly; không lộ số điện thoại
     if (b.a === 'top') return send(200, { ok: true, ...(await board(b.per === 'all' ? 'all' : 'month', normPhone(b.ph))) });
     // quản trị: cần mã PIN quầy
-    if (b.a === 'admin' || b.a === 'hide') {
-      if (!pinOk(req.headers['x-staff-pin'])) return send(403, { ok: false, err: 'Sai mã PIN.' });
+    if (b.a === 'admin' || b.a === 'hide' || b.a === 'house') {
+      // vào bằng tài khoản admin (cùng trang quản trị menu) hoặc mã PIN quầy
+      let tokOk = false; try { tokOk = require('./menu').tokenOk(req); } catch (e) {}
+      if (!tokOk && !pinOk(req.headers['x-staff-pin'])) return send(403, { ok: false, err: 'Sai mật khẩu / mã PIN.' });
+      // sóc nhà quán: sóc thật của nhân viên (đặt nước bằng số của mình), luôn gắn nhãn "Nhà Curator" trên bảng xếp hạng
+      if (b.a === 'house') {
+        let k;
+        if (b.ph) { const hp = normPhone(b.ph); if (!hp || hp === DEMO) return send(400, { ok: false, err: 'Số điện thoại chưa đúng.' }); k = petKey(hp); }
+        else k = 'pet:' + String(b.k || '').replace(/[^a-f0-9]/g, '').slice(0, 32);
+        const r0 = await redis('GET', k), now0 = Date.now();
+        const q = r0 ? JSON.parse(r0) : { nm: '', beans: 0, cups: 0, full: 70, fedAt: now0, born: now0, pend: [], toks: [] };
+        if (b.off) delete q.house; else { q.house = true; const nm = cleanName(b.nm); if (nm) q.nm = nm; }
+        await redis('SET', k, JSON.stringify(q)); await redis('ZADD', 'pets', q.cups || 0, k);
+        return send(200, { ok: true, house: !!q.house });
+      }
       if (b.a === 'hide') {
         const k = 'pet:' + String(b.k || '').replace(/[^a-f0-9]/g, '').slice(0, 32); const r0 = await redis('GET', k);
         if (!r0) return send(404, { ok: false, err: 'Không thấy sóc.' });
@@ -244,7 +257,7 @@ async function board(per, ph) {
   for (let i = 0; i < top.length; i += 2) { keys.push(top[i]); scores.push(Number(top[i + 1])); }
   const raws = keys.length ? await redis('MGET', ...keys) : [];
   const list = keys.map((k, i) => { let q = {}; try { q = JSON.parse(raws[i] || '{}'); } catch (e) {}
-    const eq = q.eq || {}; return { n: q.hide || !q.nm ? petTag(k) : q.nm, lv: levelOf(q.cups || 0).i, cups: scores[i], hat: eq.hat || '' }; }).filter(x => x.cups > 0);
+    const eq = q.eq || {}; return { n: q.hide || !q.nm ? petTag(k) : q.nm, lv: levelOf(q.cups || 0).i, cups: scores[i], hat: eq.hat || '', wear: Object.values(eq)[0] || '', house: !!q.house }; }).filter(x => x.cups > 0);
   let me = null;
   if (ph && ph !== DEMO) {
     const k = petKey(ph), r = await pipe([['ZREVRANK', z, k], ['ZSCORE', z, k], ['ZCARD', z]]);
@@ -265,7 +278,7 @@ async function admin(days) {
   const keys = []; for (let i = 0; i < topRaw.length; i += 2) keys.push([topRaw[i], Number(topRaw[i + 1])]);
   const raws = keys.length ? await redis('MGET', ...keys.map(x => x[0])) : [];
   const top = keys.map(([k, c], i) => { let q = {}; try { q = JSON.parse(raws[i] || '{}'); } catch (e) {}
-    return { id: k.slice(4), tag: petTag(k), nm: q.nm || '', hide: !!q.hide, cups: c, beans: q.beans || 0, lv: levelOf(c).i, born: q.born || 0, fedAt: q.fedAt || 0, items: (q.inv || []).length }; });
+    return { id: k.slice(4), tag: petTag(k), nm: q.nm || '', hide: !!q.hide, house: !!q.house, cups: c, beans: q.beans || 0, lv: levelOf(c).i, born: q.born || 0, fedAt: q.fedAt || 0, items: (q.inv || []).length }; });
   const shop = {}; Object.keys(SHOP).forEach(id => { shop[id] = { p: SHOP[id].p, n: all['buy_' + id] || 0, soon: !!SHOP[id].soon }; });
   return { days, series, all, pets, act7, actN, lv, top, shop, monthTop: monRaw.length / 2 };
 }

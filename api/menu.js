@@ -218,3 +218,4 @@ module.exports = async (req, res) => {
     return send(res, 400, { error: e.message || 'Lỗi' });
   }
 };
+module.exports.tokenOk = tokenOk;
