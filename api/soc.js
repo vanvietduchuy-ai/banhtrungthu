@@ -13,6 +13,17 @@ const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOK_ = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const BEANS_PER_CUP = 10, FEED_COST = 10, FEED_GAIN = 25, HUNGRY_HOURS = 96; // no 100% -> đói hẳn sau 4 ngày
 const AUTO_CREDIT_MS = 24 * 3600e3;
+// cửa hàng đồ cho sóc: giá tính bằng hạt cà phê, mỗi ô (slot) mặc 1 món
+const SHOP = {
+  nonla: { s: 'hat', p: 40 }, beanie: { s: 'hat', p: 30 }, santa: { s: 'hat', p: 50 }, cap: { s: 'hat', p: 30 },
+  flower: { s: 'hat', p: 40 }, party: { s: 'hat', p: 25 },
+  glasses: { s: 'eye', p: 35 }, hearts: { s: 'eye', p: 45 },
+  scarf: { s: 'neck', p: 30 }, bow: { s: 'neck', p: 20 }, bell: { s: 'neck', p: 35 },
+  overall: { s: 'body', p: 60 },
+};
+const SLOTS = ['hat', 'eye', 'neck', 'body'];
+// số demo để trình diễn: ai cũng chăm được, hạt không bao giờ hết, đổi cấp tuỳ ý
+const DEMO = '0123456789';
 const LEVELS = [
   { at: 0, n: 'Sóc con' }, { at: 5, n: 'Sóc nhỏ' }, { at: 15, n: 'Sóc barista' },
   { at: 35, n: 'Sóc trưởng quán' }, { at: 70, n: 'Sóc huyền thoại' },
@@ -49,6 +60,7 @@ function view(p, now, canEdit) {
     full: f, mood: f >= 60 ? 'vui' : f >= 25 ? 'doi' : 'buon',
     pendCups: (p.pend || []).reduce((a, x) => a + (x.cnt || 0), 0),
     born: p.born, canEdit: !!canEdit, cost: FEED_COST,
+    inv: p.inv || [], eq: p.eq || {}, demo: !!p.demo,
   };
 }
 // cộng hạt cho các đơn đã hoàn thành
@@ -104,14 +116,20 @@ module.exports = async (req, res) => {
       const p2 = JSON.parse(await redis('GET', key));
       return send(200, { ok: true, t: tok, n, pet: view(p2, now, true) });
     }
-    const raw = await redis('GET', key);
+    let raw = await redis('GET', key);
+    if (!raw && ph === DEMO) {
+      raw = JSON.stringify({ nm: 'Hạt Dẻ', beans: 999, cups: 40, full: 70, fedAt: now, born: now - 30 * 86400e3, pend: [], toks: [], inv: [], eq: {}, demo: true });
+      await redis('SET', key, raw);
+    }
     if (!raw) return send(200, { ok: true, pet: { exists: false } });
     const p = JSON.parse(raw);
-    const canEdit = !!(b.t && (p.toks || []).includes(sha(b.t)));
+    const canEdit = p.demo || !!(b.t && (p.toks || []).includes(sha(b.t)));
+    if (p.demo && (p.beans || 0) < 200) p.beans = 999;
     let changed = await settle(p, now);
 
     if (req.method === 'POST') {
       if (!canEdit) return send(403, { ok: false, err: 'Máy này chưa đặt đơn bằng số này nên chưa chăm sóc được.' });
+      if (b.a === 'name' && p.demo) return send(400, { ok: false, err: 'Sóc demo giữ tên Hạt Dẻ nhé.' });
       if (b.a === 'name') {
         const nm = cleanName(b.nm);
         if (!nm) return send(400, { ok: false, err: 'Tên chưa hợp lệ.' });
@@ -121,6 +139,24 @@ module.exports = async (req, res) => {
         const f = fullness(p, now);
         if (f >= 100) return send(400, { ok: false, err: 'Sóc no căng rồi!', pet: view(p, now, canEdit) });
         p.beans -= FEED_COST; p.full = Math.min(100, f + FEED_GAIN); p.fedAt = now; changed = true;
+      } else if (b.a === 'buy') {
+        const it = SHOP[b.id];
+        if (!it) return send(400, { ok: false, err: 'Món này không có.' });
+        p.inv = p.inv || []; p.eq = p.eq || {};
+        if (!p.inv.includes(b.id)) {
+          if ((p.beans || 0) < it.p) return send(400, { ok: false, err: 'Chưa đủ hạt — cần ' + it.p + ' hạt.', pet: view(p, now, canEdit) });
+          p.beans -= it.p; p.inv.push(b.id);
+        }
+        p.eq[it.s] = b.id; changed = true;
+      } else if (b.a === 'wear') {
+        p.eq = p.eq || {};
+        if (!SLOTS.includes(b.s)) return send(400, { ok: false, err: 'Thao tác không hợp lệ.' });
+        if (b.id) { const it = SHOP[b.id]; if (!it || it.s !== b.s || !(p.inv || []).includes(b.id)) return send(400, { ok: false, err: 'Bạn chưa có món này.' }); p.eq[b.s] = b.id; }
+        else delete p.eq[b.s];
+        changed = true;
+      } else if (b.a === 'lv' && p.demo) {
+        const i = Math.max(0, Math.min(LEVELS.length - 1, Math.floor(Number(b.i) || 0)));
+        p.cups = LEVELS[i].at + (i ? 2 : 1); changed = true;
       } else return send(400, { ok: false, err: 'Thao tác không hợp lệ.' });
     }
     if (changed) await redis('SET', key, JSON.stringify(p));
@@ -134,7 +170,7 @@ module.exports = async (req, res) => {
 // dùng chung cho api/don: gắn đơn vào sóc của khách, trả token cho máy vừa đặt
 module.exports.linkOrder = async function (phone, code, cnt) {
   const ph = normPhone(phone);
-  if (!ph || !code || !(cnt > 0)) return null;
+  if (!ph || ph === DEMO || !code || !(cnt > 0)) return null;
   const key = petKey(ph), now = Date.now();
   // mỗi đơn chỉ nuôi được một sóc, một lần
   const claimed = await redis('SET', 'pc:' + code, key, 'NX', 'EX', 5 * 86400);
