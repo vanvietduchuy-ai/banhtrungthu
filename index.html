@@ -38,7 +38,7 @@ if(/[?&]nhom=/i.test(location.search))location.replace('/dat-nuoc'+location.sear
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{background:#070504;color:var(--cream);margin:0;height:100%}
+html,body{background:#070504;color:var(--cream);margin:0;height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow:hidden}
 img{max-width:100%}
 body{font-family:var(--body);font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -78,7 +78,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   background:radial-gradient(closest-side,rgba(255,240,180,.9),rgba(255,214,120,.35) 55%,rgba(255,214,120,0))}
 #lamp .core.c1{left:var(--x1);top:var(--y1);opacity:var(--h1,0)}
 #lamp .core.c2{left:var(--x2);top:var(--y2);opacity:var(--h2,0)}
-#lamp .beam{position:absolute;left:var(--x3);top:var(--y3);width:70vmin;height:60vh;transform:translate(-50%,-6%);pointer-events:none;mix-blend-mode:screen;
+#lamp .beam{position:absolute;left:var(--x3);top:var(--y3);width:70vmin;height:60vh;height:60svh;transform:translate(-50%,-6%);pointer-events:none;mix-blend-mode:screen;
   background:radial-gradient(ellipse 50% 100% at 50% 0%,rgba(255,244,218,.42),rgba(255,236,200,.14) 40%,rgba(255,236,200,.04) 70%,rgba(255,236,200,0) 100%);opacity:var(--h3,0)}
 /* video nền: hiện 3s sau khi bật đèn */
 #lamp .vbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.4s ease;filter:brightness(.82)}
@@ -150,6 +150,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   background:rgba(24,16,11,.62);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);border:1px solid rgba(255,214,140,.18);border-radius:20px;
   padding:20px 18px 18px;box-shadow:0 30px 70px -30px rgba(0,0,0,.8);opacity:0;transform:translateY(24px) scale(.98);filter:blur(6px);pointer-events:none;
   transition:opacity .6s .25s,transform .8s .25s cubic-bezier(.2,.8,.2,1),filter .6s .25s}
+.card{max-height:calc(100vh - 84px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));max-height:calc(100svh - 84px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}.card::-webkit-scrollbar{display:none}
 .card.on{opacity:1;transform:none;filter:none;pointer-events:auto}
 .card h2{font-family:var(--serif);font-weight:500;letter-spacing:.01em;font-size:30px;line-height:1.05}
 .card h2 em{display:block;font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;font-size:21px;color:var(--gold);margin-top:4px}
@@ -172,9 +173,32 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   .card.on{transform:translateY(-50%)}
 }
 #lamp.is-on .lamp-hd{opacity:0}
-@media (max-width:899px){.lamp-hd{top:auto;bottom:calc(17vh + env(safe-area-inset-bottom,0px));left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));max-width:none;text-align:center}.lamp-hd h1{font-size:clamp(28px,8vw,36px)}}
+@media (max-width:899px){.lamp-hd{top:auto;bottom:calc(17vh + env(safe-area-inset-bottom,0px));bottom:calc(17svh + env(safe-area-inset-bottom,0px));left:max(18px,env(safe-area-inset-left,0px));right:max(18px,env(safe-area-inset-right,0px));max-width:none;text-align:center}.lamp-hd h1{font-size:clamp(28px,8vw,36px)}}
 @media (max-width:899px){.card{padding:16px 16px 14px;border-radius:18px}.card h2{font-size:26px}.card h2 em{font-size:19px}.card .info{margin-top:10px;padding-top:10px;gap:6px}.card .info li{font-size:12.5px;grid-template-columns:68px 1fr}.card .meta{margin-top:8px}}
 @media (prefers-reduced-motion:reduce){.hint i{animation:none}.card{transition:opacity .3s}}
+/* ---------- thích ứng mọi điện thoại ---------- */
+@media (max-width:359px){
+  .brand{padding:7px 10px 6px}.brand b{font-size:14px;letter-spacing:.1em;white-space:nowrap}.brand small{font-size:6.5px;letter-spacing:.2em;white-space:nowrap}
+  .nav a.order{padding:8px 13px;font-size:12px}
+  .card{padding:14px 14px 12px}.card h2{font-size:23px}.card h2 em{font-size:17px}.card .info li{grid-template-columns:62px 1fr;font-size:12px}
+}
+@media (max-width:899px) and (max-height:680px) and (orientation:portrait){
+  .card{padding:13px 14px 12px}.card h2{font-size:23px}.card h2 em{font-size:17px}.card .st{margin-top:8px}.card .go{height:46px;margin-top:8px}.card .row a{height:40px}.card .meta{display:none}
+  .lamp-hd h1{font-size:clamp(24px,7.4vw,30px)}
+}
+/* điện thoại xoay ngang: thẻ nằm bên phải, không phủ kín màn hình */
+@media (orientation:landscape) and (max-height:520px){
+  .nav{top:calc(6px + env(safe-area-inset-top,0px))}
+  .card{left:auto;right:max(14px,env(safe-area-inset-right,0px));top:calc(54px + env(safe-area-inset-top,0px));bottom:max(10px,env(safe-area-inset-bottom,0px));width:min(360px,48vw);max-height:none;padding:12px 14px 12px;border-radius:16px;transform:translateY(16px) scale(.98)}
+  .card.on{transform:none}
+  .card h2{font-size:22px}.card h2 em{font-size:16px;margin-top:2px}.card .st{margin-top:8px;font-size:11.5px}
+  .card .info{margin-top:8px;padding-top:8px;gap:4px}.card .info li{font-size:12px;grid-template-columns:62px 1fr;gap:8px}
+  .card .go{height:42px;margin-top:8px;font-size:13px}.card .row a{height:38px;font-size:12.5px}.card .meta{display:none}
+  .lamp-hd{left:max(18px,env(safe-area-inset-left,0px));right:auto;top:auto;bottom:max(14px,env(safe-area-inset-bottom,0px));max-width:min(300px,36vw);text-align:left}
+  .lamp-hd h1{font-size:clamp(22px,4.4vw,30px)}
+  #pull{height:150px;margin-top:-105px}
+}
+
 
 </style>
 
@@ -306,11 +330,11 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SRC=[[.587,.361],[.157,.354],[.487,.2875]]; // 1 đèn lồng phải · 2 đèn lồng trái · 3 đèn âm trần
   let ax=0,ay=0,lw=0,len=110;
   function place(){
-    const W=sec.clientWidth,H=sec.clientHeight,mob=W<900,s=Math.max(W/NW,H/NH)*(mob?1.2:1.1),w=NW*s,h=NH*s;
+    const W=sec.clientWidth,H=sec.clientHeight,land=W>H&&H<=520,mob=W<900&&!land,s=Math.max(W/NW,H/NH)*(mob?1.2:1.1),w=NW*s,h=NH*s;
     // đặt đèn lồng: mobile ở 1/4 trên (chừa chỗ cho thẻ phía dưới), desktop lệch phải (thẻ bên trái)
-    const ox=Math.min(0,Math.max(W-w,(mob?.62:.55)*W-LX*w)),oy=Math.min(0,Math.max(H-h,(mob?.24:.36)*H-LY*h));
+    const ox=Math.min(0,Math.max(W-w,(mob?.62:land?.34:.55)*W-LX*w)),oy=Math.min(0,Math.max(H-h,(mob?.24:land?.34:.36)*H-LY*h));
     sec.querySelectorAll('.ph').forEach(im=>{im.style.left=ox+'px';im.style.top=oy+'px';im.style.width=w+'px';im.style.height=h+'px'});
-    const cx=ox+LX*w,cy=oy+LY*h;ax=cx;ay=oy+LB*h;lw=LW*w;len=Math.max(80,Math.min(140,H*(mob?.15:.17)));
+    const cx=ox+LX*w,cy=oy+LY*h;ax=cx;ay=oy+LB*h;lw=LW*w;len=Math.max(70,Math.min(140,H*(mob?.15:land?.3:.17)));
     SRC.forEach(([x,y],k)=>{sec.style.setProperty('--x'+(k+1),(ox+x*w)+'px');sec.style.setProperty('--y'+(k+1),(oy+y*h)+'px')});sec.style.setProperty('--lw',(lw*2.2)+'px');
     initRope();
   }
@@ -581,7 +605,7 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
     paint(now);M.raf=requestAnimationFrame(mtick);
   }
-  addEventListener('resize',place);place();requestAnimationFrame(step);requestAnimationFrame(light);
+  addEventListener('resize',place);addEventListener('orientationchange',()=>setTimeout(place,250));place();requestAnimationFrame(step);requestAnimationFrame(light);
 })();
 
 
